@@ -10,6 +10,6 @@ public class Force {
     Knight RightKnight;
     King king;
     Queen queen;
-    int Totalpieces=16;
+    int Totalpieces=8;
 
 }
