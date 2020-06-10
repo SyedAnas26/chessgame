@@ -7,4 +7,10 @@ public enum PieceType {
     KING("K"),
     QUEEN("Q"),
     PAWN("P");
+
+    String Stringformat;
+
+    PieceType(String Stringformat) {
+        this.Stringformat = Stringformat;
+    }
 }

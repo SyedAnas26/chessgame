@@ -1,4 +1,10 @@
 package GameLogic;
 
-public class King {
+import java.util.List;
+
+public class King extends Piece{
+
+    public List<Position> getPossiblePositions() {
+        return null;
+    }
 }

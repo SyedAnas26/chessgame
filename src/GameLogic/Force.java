@@ -2,14 +2,18 @@ package GameLogic;
 
 public class Force {
     Pawn pawn;
-    Bishop LeftBishop;
-    Bishop RightBishop;
-    Rook RightRook;
-    Rook LeftRook;
-    Knight LeftKnight = new Knight(Color.Black);
-    Knight RightKnight;
+    Bishop leftBishop;
+    Bishop rightBishop;
+    Rook rightRook;
+    Rook leftRook;
+    Knight leftKnight = new Knight(Color.Black);
+    Knight rightKnight;
     King king;
     Queen queen;
     int Totalpieces=8;
 
 }
+
+
+
+

@@ -1,36 +1,35 @@
 package GameLogic;
 
-public class Cell extends Object{
+public class Cell extends Object {
+    Color pieceColor;
+    String pieceType;
     Position position;
-    Piece piece;
 
-        Cell(int xPosition, int yPosition){
-            this.xPosition=xPosition;
-            this.yPosition=yPosition;
-        }
 
-        Cell(Color pieceColor,String pieceType,int xPosition, int yPosition)
-        {
-            this.xPosition = xPosition;
-            this.yPosition = yPosition;
-            this.pieceType= pieceType;
-            this.pieceColor=pieceColor;
-        }
+    Cell(Color pieceColor, String pieceType, Position position) {
+
+        this.pieceType = pieceType;
+        this.pieceColor = pieceColor;
+        this.position = position;
+    }
 
     public String getPieceType() {
         return pieceType;
     }
-    public String getPieceColor(){
-            return pieceColor.toString();
+
+    public String getPieceColor() {
+        return pieceColor.toString();
     }
+
+
+
 
     @Override
     public String toString() {
         return "Cell{" +
-                "xPosition=" + xPosition +
-                ", yPosition=" + yPosition +
-                ", pieceType='" + pieceType + '\'' +
-                '}';
+                "Position=" + position +
+                ", Color=" + pieceColor+
+                "  " + pieceType +                '}';
     }
 
 
