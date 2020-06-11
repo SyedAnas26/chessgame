@@ -1,5 +1,6 @@
 package GameLogic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends Piece{
@@ -10,7 +11,17 @@ public class Knight extends Piece{
         this.pieceType = PieceType.KNIGHT;
       }
 
-      public List<Position> getPossiblePositions() {
-        return null;
+      public List<Position> getPossiblePositions(Position fromPosition){
+          List<Position> possiblePositions = new ArrayList<>();
+          possiblePositions.add(new Position(fromPosition.x+2,fromPosition.y-1));
+          possiblePositions.add(new Position(fromPosition.x+2,fromPosition.y+1));
+          possiblePositions.add(new Position(fromPosition.x+1,fromPosition.y-2));
+          possiblePositions.add(new Position(fromPosition.x+1,fromPosition.y+2));
+          possiblePositions.add(new Position(fromPosition.x-1,fromPosition.y-2));
+          possiblePositions.add(new Position(fromPosition.x-1,fromPosition.y+2));
+          possiblePositions.add(new Position(fromPosition.x-2,fromPosition.y-1));
+          possiblePositions.add(new Position(fromPosition.x-2,fromPosition.y+1));
+          return possiblePositions;
+
     }
 }

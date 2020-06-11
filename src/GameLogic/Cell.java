@@ -17,8 +17,9 @@ public class Cell extends Object {
         return pieceType;
     }
 
-    public String getPieceColor() {
-        return pieceColor.toString();
+    public Color getPieceColor() {
+
+        return pieceColor;
     }
 
 

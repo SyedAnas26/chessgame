@@ -2,12 +2,14 @@ package GameLogic;
 
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class GameManager {
     int currentPlayer = 0;
     GameStatus gameStatus;
-    String currentPlayerColor;
+    Color currentPlayerColor;
     Board b = new Board();
     String[] gamePlayAsArray;
     String gamePlay="e4 e5 Nf3 Nc6 Bb5 a6 Ba4 Nf6 Be7 Re1 b5";
@@ -30,19 +32,19 @@ public class GameManager {
     }
 
     private void makeGivenStringIntoArray() {
-        gamePlayAsArray=gamePlay.trim().split("//s+");
+        gamePlayAsArray=gamePlay.trim().split(" ");
 
     }
 
 
-    private void conductGame() {
+    private void conductGame() throws Exception {
 
         gameStatus=GameStatus.NotBegan;
-        while (isgamecancontinue()) {
+        while (isGameCanContinue()) {
            currentPlayer += 1;
             updateCurrentPlayerColor(currentPlayer);
-            playGame();
             b.printboard();
+            playGame();
             updateGameStatus();
             getGesture();
 
@@ -62,11 +64,11 @@ public class GameManager {
 
     private void updateCurrentPlayerColor(int currentplayer) {
         if(currentplayer==1){
-            currentPlayerColor ="W";
+            currentPlayerColor =Color.White;
 
         }
         else
-            currentPlayerColor ="B";
+            currentPlayerColor =Color.Black;                    ;
     }
 
     private void printResult(int currentplayer) {
@@ -107,25 +109,21 @@ public class GameManager {
     }
 
 
-    private void movePiece(String currentPlayerColor, String piece, Position fromPosition,Position toPosition) {
+    private void movePiece(Color currentPlayerColor, String piece, Position fromPosition,Position toPosition) {
     if(isValidMove(currentPlayerColor,toPosition))
     {
       b.cell[toPosition.x][toPosition.y] = b.cell[fromPosition.x][fromPosition.y];
-      b.cell[fromPosition.x][fromPosition.y]=new Cell(null,null,fromPosition);
+      b.cell[fromPosition.x][fromPosition.y]=new Cell(Color.Empty," ",fromPosition);
    }
      }
 
-    private boolean isValidMove(String currentPlayerColor,Position toPosition) {
+    private boolean isValidMove(Color currentPlayerColor,Position toPosition) {
         return !isOccupiedByOwnColorPiece(currentPlayerColor, toPosition);
             }
 
-    private boolean isOccupiedByOwnColorPiece(String currentPlayerColor, Position toPosition) {
-        String xyz = b.cell[toPosition.x][toPosition.y].getPieceColor();
-        if(xyz != null && xyz.equals(currentPlayerColor))
-            return false;
-        else
-            return true;
-
+    private boolean isOccupiedByOwnColorPiece(Color currentPlayerColor, Position toPosition) {
+        Color color = b.cell[toPosition.x][toPosition.y].getPieceColor();
+        return !color.equals(currentPlayerColor);
            }
 
     /*void addplayers(String name) throws Exception {
@@ -145,7 +143,7 @@ public class GameManager {
 
     }*/
 
-     boolean isgamecancontinue() {
+     boolean isGameCanContinue() {
         if (gameStatus ==GameStatus.Inprogress) {
             return true;
         }
@@ -155,54 +153,96 @@ public class GameManager {
         return false;
     }
 
-    void playGame()
-    {
-        for(int i=0;i<gamePlayAsArray.length;i++){
-            if(gamePlayAsArray[i].length()==2){
-                String arrayElement=gamePlayAsArray[i];
-                Position toPosition=new Position(0,0);
-                toPosition.x= getNumOf(arrayElement.charAt(0));
-                toPosition.y=Character.getNumericValue(arrayElement.charAt(1))-1;
-                String piece = "P"+toPosition.x;
-                Position fromPosition=getPiecePosition(piece);
-                movePiece(currentPlayerColor,piece,fromPosition,toPosition);
+    void playGame() throws Exception {
+        for (int i = 0; i < gamePlayAsArray.length; i++) {
+            if (gamePlayAsArray[i].length() == 2) {
+                String arrayElement = gamePlayAsArray[i];
+                Position toPosition = new Position(0, 0);
+                toPosition.x = getNumOf(arrayElement.charAt(0));
+                toPosition.y = Character.getNumericValue(arrayElement.charAt(1)) - 1;
+                String piece = "P" + toPosition.x;
+                Position fromPosition = getPiecePosition(currentPlayerColor.Stringformat + piece);
+                movePiece(currentPlayerColor, piece, fromPosition, toPosition);
 
-            }
-            if(gamePlayAsArray[i].length()==3){
-                String arrayElement =gamePlayAsArray[i];
-                Position toPosition=new Position(0,0);
-                char thePiece=arrayElement.charAt(0);
-                String piece=whichPiece(thePiece,toPosition);
-                toPosition.x= getNumOf(arrayElement.charAt(1));
-                toPosition.y=Character.getNumericValue(arrayElement.charAt(2))-1;
-                Position fromPosition=getPiecePosition(piece);
-                movePiece(currentPlayerColor,piece,fromPosition,toPosition);
+            } else if (gamePlayAsArray[i].length() == 3) {
+                String arrayElement = gamePlayAsArray[i];
+                Position toPosition = new Position(0, 0);
+                char thePiece = arrayElement.charAt(0);
+                toPosition.x = getNumOf(arrayElement.charAt(1));
+                toPosition.y = Character.getNumericValue(arrayElement.charAt(2)) - 1;
+                String piece = whichPiece(thePiece, toPosition);
+                Position fromPosition = getPiecePosition(currentPlayerColor.Stringformat + piece);
+                movePiece(currentPlayerColor, piece, fromPosition, toPosition);
 
+            } else if (gamePlayAsArray[i].length() == 4) {
+                String arrayElement = gamePlayAsArray[i];
+                Position toPosition = new Position(0, 0);
+                Position fromPosition = new Position(0, 0);
+                if (isPawn(arrayElement)) {
+                    fromPosition.x = getNumOf(arrayElement.charAt(0));
+                    String piece = "P" + fromPosition.x;
+                    if (arrayElement.charAt(1) == 'x') {
+                        toPosition.x = getNumOf(arrayElement.charAt(2));
+                        toPosition.y = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+
+                    } else {
+                        fromPosition.y = Character.getNumericValue((arrayElement.charAt(1))) - 1;
+                        toPosition.x = getNumOf(arrayElement.charAt(2));
+                        toPosition.y = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+
+                    }
+                    movePiece(currentPlayerColor, piece, fromPosition, toPosition);
+                } else {
+                    char thePiece = arrayElement.charAt(0);
+                    String piece;
+                    if (arrayElement.charAt(1) == 'x') {
+                        toPosition.x = getNumOf(arrayElement.charAt(2));
+                        toPosition.y = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+                        piece = whichPiece(thePiece, toPosition);
+                    } else {
+                        fromPosition.y = Character.getNumericValue((arrayElement.charAt(1))) - 1;
+                        toPosition.x = getNumOf(arrayElement.charAt(2));
+                        toPosition.y = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+                        piece = whichPiece(thePiece, toPosition);
+
+                    }
+                    movePiece(currentPlayerColor,piece, fromPosition, toPosition);
+                }
             }
+
         }
-
     }
 
-    private String whichPiece(char thePiece,Position toPosition) {
+    private boolean isPawn(String arrayElement) {
+        String alphabet = "abcdefghijklmnopqrstuvwxyz";
+        for (int i = 0; i < 26; i++) {
+            if (arrayElement.charAt(0) ==alphabet.charAt(i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private String whichPiece(char thePiece,Position toPosition) throws Exception {
         if(thePiece=='R'){
           return leftOrRight(thePiece,toPosition);
         }
-        if(thePiece=='N'){
+       else if(thePiece=='N'){
             return leftOrRight(thePiece,toPosition);
         }
-        if(thePiece=='B'){
+       else if(thePiece=='B'){
             return leftOrRight(thePiece,toPosition);
         }
-        if(thePiece=='K'){
+       else if(thePiece=='K'){
             return leftOrRight(thePiece,toPosition);
         }
-        if(thePiece=='Q'){
+       else if(thePiece=='Q'){
             return leftOrRight(thePiece,toPosition);
         }
-        return null;
+        throw new Exception();
     }
 
-    private String leftOrRight(char thePiece,Position toPosition) {
+    private String leftOrRight(char thePiece,Position toPosition) throws Exception {
         if(thePiece=='R')
         {
             if(isRightRookCanMove(toPosition)){
@@ -211,31 +251,32 @@ public class GameManager {
             else
                 return "LR";
         }
-        if(thePiece=='N'){
+       else if(thePiece=='N'){
             if(isRightKnightCanMove(toPosition)){
                 return "RN";
             }
             else
                 return "LN";
         }
-        if(thePiece=='B'){
+        else if(thePiece=='B'){
             if(isWhiteOrBlackBishop()){
                 return "RB";
             }
             else
                 return "LB";
         }
-        if(thePiece=='K'){
+       else if(thePiece=='K'){
             if(canTheKingMove(toPosition)){
                 return "K";
             }
         }
-        if(thePiece=='Q'){
+       else if(thePiece=='Q'){
             if (canTheQueenMove()){
                   return "Q";
             }
         }
-        return null;
+
+        throw new Exception();
 
     }
 
@@ -243,118 +284,55 @@ public class GameManager {
         return true;
     }
 
-    private boolean canTheKingMove(Position toPositon) {
-        Position fromPos=getPiecePosition("K");
-        for(int i=fromPos.x -1;i<=fromPos.x+1;i++){
-            for(int j=fromPos.y -1;j<=fromPos.y+1;j++){
-                if(b.cell[i][j].getPieceType().equals("  ")){
-                    Position pos=new Position(i,j);
-                    if(pos.x == toPositon.x ){
-                       if(pos.y==toPositon.y){
-                           return true;
+    private boolean canTheKingMove(Position toPosition) throws Exception {
+        Position fromPos=getPiecePosition(currentPlayerColor.Stringformat+"K");
+        List<Position> possiblePositions;
+        King king=new King(currentPlayerColor);
+        possiblePositions=king.getPossiblePositions(fromPos);
+        for(int i=0;i<=8;i++){
+                if(b.cell[toPosition.x][toPosition.y].getPieceType().equals("  ") && toPosition==possiblePositions.get(i))
+                {
+                                                return true;
                        }
-                    }
-
-
-                }
-            }
-
-        }
+               }
         return false;
             }
 
-    private boolean isWhiteOrBlackBishop() {
+
+
+
+    private boolean isWhiteOrBlackBishop() throws Exception {
         String piece= "RB";
-        Position fromPos = getPiecePosition(piece);
+        Position fromPos = getPiecePosition(currentPlayerColor.Stringformat+piece);
         return b.getCurrentCellColor(fromPos).equals("W");
     }
 
 
-    private boolean isRightKnightCanMove(Position toPosition) {
+    private boolean isRightKnightCanMove(Position toPosition) throws Exception {
         String piece = "RN";
-        Position fromPosition = getPiecePosition(piece);
-        if (b.cell[fromPosition.x + 2][fromPosition.y - 1].getPieceType().equals("  ")) {
-            if(fromPosition.x + 2==toPosition.x && fromPosition.y - 1==toPosition.y){
+        List<Position> possiblePositions;
+        Position fromPosition = getPiecePosition(currentPlayerColor.Stringformat+piece);
+        Knight knight = new Knight(currentPlayerColor);
+        possiblePositions=knight.getPossiblePositions(fromPosition);
+        for(int i=0;i<8;i++){
+            if(b.cell[toPosition.x][toPosition.y].getPieceType().equals("  ") && toPosition==possiblePositions.get(i)){
                 return true;
             }
 
-        }
-        if (b.cell[fromPosition.x + 2][fromPosition.y + 1].getPieceType().equals("  ")) {
-            if(fromPosition.x + 2==toPosition.x && fromPosition.y + 1==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x + 1][fromPosition.y - 2].getPieceType().equals("  ")) {
-            if(fromPosition.x + 1==toPosition.x && fromPosition.y - 2==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x - 1][fromPosition.y + 2].getPieceType().equals("  ")) {
-            if(fromPosition.x - 1==toPosition.x && fromPosition.y + 2==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x - 1][fromPosition.y - 2].getPieceType().equals("  ")) {
-            if(fromPosition.x -1==toPosition.x && fromPosition.y - 2==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x - 1][fromPosition.y + 2].getPieceType().equals("  ")) {
-            if(fromPosition.x - 1==toPosition.x && fromPosition.y +2==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x - 2][fromPosition.y - 1].getPieceType().equals("  ")) {
-            if(fromPosition.x - 2==toPosition.x && fromPosition.y - 1==toPosition.y){
-                return true;
-            }
-        }
-        if (b.cell[fromPosition.x - 2][fromPosition.y + 1].getPieceType().equals("  ")) {
-            if(fromPosition.x - 2==toPosition.x && fromPosition.y + 1==toPosition.y){
-                return true;
-            }
         }
         return false;
-    }
+     }
 
-    private boolean isRightRookCanMove(Position toPosition) {
+
+
+    private boolean isRightRookCanMove(Position toPosition) throws Exception {
 
             String piece = "RR";
-            Position fromPos = getPiecePosition(piece);
-
-        if(toPosition.x==fromPos.x && toPosition.y==fromPos.y)
-        {
-            return false;
-        }
-
-        if (fromPos.x == toPosition.x) {
-            if (fromPos.y < toPosition.y) {
-                for (int i = fromPos.y + 1; i <= toPosition.y; ++i)
-                    if (!"  ".equals(b.cell[fromPos.x][i].getPieceType()))
-                        return false;
-            } else {
-               for (int i = fromPos.y - 1; i >= toPosition.y; --i)
-                    if (!"  ".equals(b.cell[fromPos.x][i].getPieceType()))
-                        return false;
-            }
+            Position fromPos = getPiecePosition(currentPlayerColor.Stringformat+piece);
+            Rook rook=new Rook(currentPlayerColor);
+            return rook.isMovePossible(fromPos, toPosition,b.cell);
 
 
-
-        } else if (fromPos.y == toPosition.y) {
-            if (fromPos.x < toPosition.x) {
-                for (int i = fromPos.x + 1; i <= toPosition.y; ++i)
-                    if (!"  ".equals(b.cell[i][fromPos.y].getPieceType()))
-                        return false;
-            } else {
-                for (int i = fromPos.x - 1; i >= toPosition.y; --i)
-                    if (!"  ".equals(b.cell[i][fromPos.y].getPieceType()))
-                        return false;
-            }
-        } else {
-                       return false;
-        }
-
-        return true;
     }
 
 
@@ -364,7 +342,7 @@ public class GameManager {
     }
 
 
-    public Position getPiecePosition(String piece) {
+    public Position getPiecePosition(String piece) throws Exception {
         for(int i=0;i<8;i++){
             for(int j=0;j<8;j++){
                 if(b.cell[i][j].getPieceType().equals(piece)){
@@ -373,7 +351,7 @@ public class GameManager {
             }
 
         }
-        return null;
+        throw new Exception();
     }
 }
 

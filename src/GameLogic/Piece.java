@@ -8,5 +8,5 @@ public abstract class Piece {
 
 
 
-  abstract List<Position> getPossiblePositions();
+  abstract List<Position> getPossiblePositions(Position toPosition);
 }

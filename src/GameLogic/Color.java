@@ -5,7 +5,8 @@ import javax.swing.plaf.IconUIResource;
 enum Color {
 
     White("W"),
-    Black("B");
+    Black("B"),
+    Empty(" ");
 
     String Stringformat;
 
