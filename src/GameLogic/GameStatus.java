@@ -2,7 +2,7 @@ package GameLogic;
 
 public enum GameStatus {
     NotBegan,
-    Inprogress,
+    InProgress,
     PlayerWon,
     Draw;
 

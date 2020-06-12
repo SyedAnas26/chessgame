@@ -1,17 +1,15 @@
 package GameLogic;
 
-import javax.swing.plaf.IconUIResource;
-
 enum Color {
 
     White("W"),
     Black("B"),
-    Empty(" ");
+    noColor(" ");
 
-    String Stringformat;
+    String stringFormat;
 
-    Color(String Stringformat) {
-        this.Stringformat = Stringformat;
+    Color(String stringFormat) {
+        this.stringFormat = stringFormat;
     }
 };
 

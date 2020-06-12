@@ -23,7 +23,7 @@ public class Board {
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 Position pos=new Position(i,j);
-                temp = new Cell(Color.Empty," ",new Position(i,j));
+                temp = new Cell(Color.noColor,"   ",new Position(i,j));
                 cell[i][j] = temp;
             }
         }
@@ -39,7 +39,7 @@ public class Board {
                     System.out.print("\t|  |");
                 }
                 else {
-                    System.out.printf("\t|%3s|", piece);
+                    System.out.printf("\t|%3s|",piece);
                 }
                 if (j == 7) {
                     System.out.println("\n");
@@ -80,8 +80,8 @@ public class Board {
             cell[7][0] = new Cell(Color.Black,"BLR", new Position(7,0));
             cell[7][1] = new Cell(Color.Black,"BLN", new Position(7,1));
             cell[7][2] = new Cell(Color.Black,"BLB", new Position(7,2));
-            cell[7][3] = new Cell(Color.Black,"BK", new Position(7,3));
-            cell[7][4] = new Cell(Color.Black,"BQ", new Position(7,4));
+            cell[7][3] = new Cell(Color.Black,"BQ", new Position(7,3));
+            cell[7][4] = new Cell(Color.Black,"BK", new Position(7,4));
             cell[7][5] = new Cell(Color.Black,"BRB", new Position(7,5));
             cell[7][6] = new Cell(Color.Black,"BRN", new Position(7,6));
             cell[7][7] = new Cell(Color.Black,"BRR", new Position(7,7));
@@ -97,13 +97,13 @@ public class Board {
 
         }
         cell[0][0] = new Cell(Color.White,"WLR", new Position(0,0));
-        cell[0][1] = new Cell(Color.White,"WN", new Position(0,1));
-        cell[0][2] = new Cell(Color.White,"WB", new Position(0,2));
-        cell[0][3] = new Cell(Color.White,"WK", new Position(0,3));
-        cell[0][4] = new Cell(Color.White,"WQ", new Position(0,4));
-        cell[0][5] = new Cell(Color.White,"WB", new Position(0,5));
-        cell[0][6] = new Cell(Color.White,"WN", new Position(0,6));
-        cell[0][7] = new Cell(Color.White,"WR", new Position(0,7));
+        cell[0][1] = new Cell(Color.White,"WLN", new Position(0,1));
+        cell[0][2] = new Cell(Color.White,"WLB", new Position(0,2));
+        cell[0][3] = new Cell(Color.White,"WQ", new Position(0,3));
+        cell[0][4] = new Cell(Color.White,"WK", new Position(0,4));
+        cell[0][5] = new Cell(Color.White,"WRB", new Position(0,5));
+        cell[0][6] = new Cell(Color.White,"WRN", new Position(0,6));
+        cell[0][7] = new Cell(Color.White,"WRR", new Position(0,7));
 
     }
 }
