@@ -8,6 +8,7 @@ import java.util.Scanner;
 public class GameManager {
     int currentPlayer = 1;
     GameStatus gameStatus;
+    int minusOrPlus;
     Color currentPlayerColor;
     Board b = new Board();
     String[] gamePlayAsArray;
@@ -171,15 +172,8 @@ public class GameManager {
                 Position toPosition = new Position(0, 0);
 
                 if(arrayElement.charAt(0)=='0'){
-                    Position fromPosition=getPiecePosition(currentPlayerColor.stringFormat+"K");
-                    toPosition.x=fromPosition.x;
-                    toPosition.y=fromPosition.y+2;
-                    movePiece(currentPlayerColor,"K",fromPosition,toPosition);
-                    Position fromPosition2=getPiecePosition(currentPlayerColor.stringFormat+"RR");
-                    toPosition.x=fromPosition2.x;
-                    toPosition.y=fromPosition.y+1;
-                    movePiece(currentPlayerColor,"RR",fromPosition2,toPosition);
-                }
+                  KingOrQueencastling(arrayElement);
+                                  }
              else {
                     char thePiece = arrayElement.charAt(0);
                     toPosition.x = Character.getNumericValue(arrayElement.charAt(2)) - 1;
@@ -220,6 +214,47 @@ public class GameManager {
 
 
     }
+
+    private void KingOrQueencastling(String arrayElement) throws Exception {
+         Position toPosition =new Position(0,0);
+         Position toPosition2= new Position(0,0);
+        String thePiece;
+         if(isKingCastle()) {  thePiece="K";
+         }
+         else {thePiece="Q";}
+         Position pos=getPiecePosition(currentPlayerColor.stringFormat+thePiece);
+             String piece=leftOrRight('R',new Position(pos.x,pos.y+minusOrPlus));
+              Position fromPosition = getPiecePosition(currentPlayerColor.stringFormat + thePiece);
+              toPosition.x = fromPosition.x;
+             if (piece.equals("RR")) {
+                 toPosition.y = fromPosition.y + 2;
+                 toPosition2.y = fromPosition.y + 1;
+             }
+               else {  toPosition.y = fromPosition.y-2;
+                 toPosition2.y = fromPosition.y - 1;}
+                 movePiece(currentPlayerColor, thePiece, fromPosition, toPosition);
+                 Position fromPosition2 = getPiecePosition(currentPlayerColor.stringFormat + piece);
+                 toPosition2.x = fromPosition2.x;
+                 movePiece(currentPlayerColor, piece, fromPosition2, toPosition2);
+             }
+
+    private boolean isKingCastle() throws Exception {
+         Position kingPosition=getPiecePosition(currentPlayerColor.stringFormat+"K");
+ if (b.cell[kingPosition.x][kingPosition.y+1].getPieceColor().equals(Color.noColor) && b.cell[kingPosition.x][kingPosition.y+2].getPieceColor().equals(Color.noColor)){
+
+     minusOrPlus=1;
+     return true;
+
+     }
+       if(b.cell[kingPosition.x][kingPosition.y-1].getPieceColor().equals(Color.noColor) && b.cell[kingPosition.x][kingPosition.y-2].getPieceColor().equals(Color.noColor)) {
+            {
+                minusOrPlus=-1;
+                return true;
+            }
+        }
+       return false;
+    }
+
 
     private boolean isPawn(String arrayElement) {
         String alphabet = "abcdefghijklmnopqrstuvwxyz";
