@@ -23,7 +23,7 @@ public class Board {
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 Position pos=new Position(i,j);
-                temp = new Cell(Color.noColor,"   ",new Position(i,j));
+                temp = new Cell(Color.noColor,null,new Position(i,j));
                 cell[i][j] = temp;
             }
         }
@@ -36,7 +36,7 @@ public class Board {
             for (int j = 0; j < dimension; j++) {
                 String piece=cell[i][j].getPieceType();
                 if(piece==null){
-                    System.out.print("\t|  |");
+                    System.out.print("\t|   |");
                 }
                 else {
                     System.out.printf("\t|%3s|",piece);

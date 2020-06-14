@@ -2,6 +2,10 @@ package GameLogic;
 
 
 
+import java.awt.*;
+import java.io.BufferedReader;
+import java.io.*;
+import java.io.FileReader;
 import java.util.List;
 import java.util.Scanner;
 
@@ -10,16 +14,22 @@ public class GameManager {
     GameStatus gameStatus;
     int minusOrPlus;
     Color currentPlayerColor;
+
     Board b = new Board();
     String[] gamePlayAsArray;
-    String gamePlay = "1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 d6 6.Be3 Ng4 7.Bg5 Qb6 8.Bb5 Bd7 " +
+    File file;
+    String gamePlay;/* "1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 d6 6.Be3 Ng4 7.Bg5 Qb6 8.Bb5 Bd7 " +
             "9.O-O Qxd4 10.Bxc6 Qxd1 11.Bxd7+ Kxd7 12.Raxd1 g6 13.h3 Ne5 14.Nd5 Nc6 15.b4 h6 " +
             "16.Bh4 f5 17.f4 Rg8 18.b5 Na5 19.e5 Nc4 20.Rd4 Rc8 21.e6+ Ke8 22.b6 axb6 " +
             "23.Rb1 g5 24.Rb4 b5 25.Rxb5 Bg7 26.Rxc4 Rxc4 27.Rxb7 Bd4+ 28.Bf2 Bxf2+ 29.Kxf2 Kf8 " +
-            "30.Rxe7 Rg7 31.Rd7 Rxc2+ 32.Kf3 Rg6 33.Rd8+ Kg7 34.e7 g4+ 35.hxg4 fxg4+ 36.Kg3 ";
+            "30.Rxe7 Rg7 31.Rd7 Rxc2+ 32.Kf3 Rg6 33.Rd8+ Kg7 34.e7 g4+ 35.hxg4 fxg4+ 36.Kg3 ";*/
 
 
     public GameManager() throws Exception {
+
+        file = new File("C:\\Users\\User\\Desktop\\test.txt");
+        Scanner scanner = new Scanner(file);
+        scanner.next();
 
         System.out.println(" Welcome To The Chess Game");
         b.setBoard();
@@ -477,7 +487,7 @@ public class GameManager {
 
 
     private int getNumOf(char character) {
-        String alphabet ="abcdefghijklmnopqrstuvwxyz";
+        String alphabet ="abcdefgh";
         return alphabet.indexOf(character);
     }
 
