@@ -2,8 +2,11 @@ package GameLogic;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GameManager {
     int currentPlayer = 1;
@@ -11,8 +14,9 @@ public class GameManager {
     int minusOrPlus;
     Color currentPlayerColor;
     Board b = new Board();
-    String[] gamePlayAsArray;
-    String gamePlay = "1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 d6 6.Be3 Ng4 7.Bg5 Qb6 8.Bb5 Bd7 " +
+    List<String> gamePlayAsArray;
+    File file;
+    String gamePlay;/* "1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 d6 6.Be3 Ng4 7.Bg5 Qb6 8.Bb5 Bd7 " +
             "9.O-O Qxd4 10.Bxc6 Qxd1 11.Bxd7+ Kxd7 12.Raxd1 g6 13.h3 Ne5 14.Nd5 Nc6 15.b4 h6 " +
             "16.Bh4 f5 17.f4 Rg8 18.b5 Na5 19.e5 Nc4 20.Rd4 Rc8 21.e6+ Ke8 22.b6 axb6 " +
             "23.Rb1 g5 24.Rb4 b5 25.Rxb5 Bg7 26.Rxc4 Rxc4 27.Rxb7 Bd4+ 28.Bf2 Bxf2+ 29.Kxf2 Kf8 " +
@@ -21,15 +25,20 @@ public class GameManager {
 
     public GameManager() throws Exception {
 
+        gamePlayAsArray = new ArrayList<>();
+
+        file = new File("C:\\Users\\User\\Desktop\\test2.txt");
+        scanner.useDelimiter("\\s");
+        Pattern p = Pattern.compile("(\\d{1,2}\\.)?([KBQNRP]?x?[a-h]?x?[a-h][1-8]\\+?)|(O-O[-O]?)");
+
+        while(scanner.hasNext())
+        {
+            gamePlayAsArray.add(scanner.match().group(1));
+        }
+
         System.out.println(" Welcome To The Chess Game");
         b.setBoard();
-        makeGivenStringIntoArray();
         conductGame();
-
-    }
-
-    private void makeGivenStringIntoArray() {
-        gamePlayAsArray = gamePlay.trim().split(" |\\.");
 
     }
 
@@ -41,8 +50,6 @@ public class GameManager {
         while (isGameCanContinue()) {
             for (String arrayElement : gamePlayAsArray)
             {
-                if (!checkIfNum(arrayElement))
-                {
                     updateCurrentPlayerColor(currentPlayer);
                     b.printboard();
                     playGame(arrayElement);
@@ -50,20 +57,9 @@ public class GameManager {
                     getGesture();
                     currentPlayer = updateCurrentPlayer(currentPlayer);
                     currentPlayer += 1;
-                }
             }
             printResult(currentPlayer);
-
         }
-    }
-
-    private boolean checkIfNum(String arrayElement) {
-        for (int i = 1; i < 100; i++) {
-            if (String.valueOf(i).equals(arrayElement)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     private int updateCurrentPlayer(int currentPlayer) {
