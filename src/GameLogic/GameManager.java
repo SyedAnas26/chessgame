@@ -49,11 +49,10 @@ public class GameManager {
         gameStatus = GameStatus.NotBegan;
 
         while (isGameCanContinue()) {
-            for (int i = 0; i < gamePlayAsArray.length; ) {
-                String arrayElement = gamePlayAsArray[i];
-                if (checkIfNum(arrayElement)) {
-                    i++;
-                } else {
+            for (String arrayElement : gamePlayAsArray)
+            {
+                if (!checkIfNum(arrayElement))
+                {
                     updateCurrentPlayerColor(currentPlayer);
                     b.printboard();
                     playGame(arrayElement);
@@ -61,8 +60,6 @@ public class GameManager {
                     getGesture();
                     currentPlayer = updateCurrentPlayer(currentPlayer);
                     currentPlayer += 1;
-                    i++;
-
                 }
             }
             printResult(currentPlayer);
@@ -408,6 +405,7 @@ public class GameManager {
     }
 
     private boolean canTheQueenMove() {
+        //Todo:
         return true;
     }
 
