@@ -16,11 +16,11 @@ public class Rook extends Piece{
         if (fromPos.x == toPosition.x) {
             if (fromPos.y < toPosition.y) {
                 for (int i = fromPos.y + 1; i <= toPosition.y; ++i)
-                    if (!"   ".equals(cell[fromPos.x][i].getPieceType()))
+                    if (!Color.noColor.equals(cell[fromPos.x][i].getPieceColor()))
                         return false;
             } else {
                 for (int i = fromPos.y - 1; i >= toPosition.y; --i)
-                    if (!"   ".equals(cell[fromPos.x][i].getPieceType()))
+                    if (!Color.noColor.equals(cell[fromPos.x][i].getPieceColor()))
                         return false;
             }
 
@@ -29,11 +29,11 @@ public class Rook extends Piece{
         } else if (fromPos.y == toPosition.y) {
             if (fromPos.x < toPosition.x) {
                 for (int i = fromPos.x + 1; i <= toPosition.y; ++i)
-                    if (!"   ".equals(cell[i][fromPos.y].getPieceType()))
+                    if (!Color.noColor.equals(cell[i][fromPos.y].getPieceColor()))
                         return false;
             } else {
                 for (int i = fromPos.x - 1; i >= toPosition.y; --i)
-                    if (!"   ".equals(cell[i][fromPos.y].getPieceType()))
+                    if (!Color.noColor.equals(cell[i][fromPos.y].getPieceColor()))
                         return false;
             }
         } else {

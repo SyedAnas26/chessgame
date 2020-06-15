@@ -1,6 +1,6 @@
 package GameLogic;
 
-public class Cell extends Object {
+ public class Cell extends Object {
     Color pieceColor;
     String pieceType;
     Position position;
@@ -30,7 +30,7 @@ public class Cell extends Object {
         return "Cell{" +
                 "Position=" + position +
                 ", Color=" + pieceColor+
-                "  " + pieceType +                '}';
+                "  " + pieceType +  '}';
     }
 
 

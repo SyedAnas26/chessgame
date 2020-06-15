@@ -1,6 +1,6 @@
 package GameLogic;
 
-public enum GameStatus {
+public  enum GameStatus {
     NotBegan,
     InProgress,
     PlayerWon,

@@ -1,6 +1,6 @@
 package GameLogic;
 
-enum Color {
+public enum Color {
 
     White("W"),
     Black("B"),

@@ -5,7 +5,7 @@ import java.util.List;
 
 public class Board {
     static final int dimension = 8;
-    Cell cell[][];
+    public Cell cell[][];
     List<Player> players;
     Cell temp;
    Force blackforce;
@@ -23,27 +23,8 @@ public class Board {
         for (int i = 0; i < dimension; i++) {
             for (int j = 0; j < dimension; j++) {
                 Position pos=new Position(i,j);
-                temp = new Cell(Color.noColor,"   ",new Position(i,j));
+                temp = new Cell(Color.noColor," ",new Position(i,j));
                 cell[i][j] = temp;
-            }
-        }
-    }
-
-    public void printboard() {
-
-
-        for (int i = 0; i < dimension; i++) {
-            for (int j = 0; j < dimension; j++) {
-                String piece=cell[i][j].getPieceType();
-                if(piece==null){
-                    System.out.print("\t|  |");
-                }
-                else {
-                    System.out.printf("\t|%3s|",piece);
-                }
-                if (j == 7) {
-                    System.out.println("\n");
-                }
             }
         }
     }
