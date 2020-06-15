@@ -64,6 +64,8 @@ public class ConsoleUi {
                     System.out.print("\n \n");
                 }
             }
+
+            
         }
 
     }
