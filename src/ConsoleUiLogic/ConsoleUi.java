@@ -20,11 +20,11 @@ public class ConsoleUi {
             if(i==gameManager.gamePlayAsArray.length-3)
             {
                 if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(1) == '/') {
-                    System.out.println("\n \t \t \t Player 2 Won the Match (Black)\t \t \t \n");
+                    System.out.println("\n \t \t \t Match Draw !!!\t \t \t \n");
                 } else if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(0) == '0') {
-                    System.out.println("\n \t \t \t Player 2 Won the Match (Black)\t \t \t \n");
+                    System.out.println("\n \t \t \t Player 2 Won the Match (Black) !!!\t \t \t \n");
                 } else
-                    System.out.println("\n \t \t \t Player 1 Won the Match (White)\t \t \t \n");
+                    System.out.println("\n \t \t \t Player 1 Won the Match (White) !!!\t \t \t \n");
 
             }
 
@@ -65,7 +65,7 @@ public class ConsoleUi {
                 }
             }
 
-            
+
         }
 
     }

@@ -1,6 +1,6 @@
 package GameLogic;
 
- public class Cell extends Object {
+public class Cell extends Object {
     Color pieceColor;
     String pieceType;
     Position position;
@@ -22,38 +22,12 @@ package GameLogic;
         return pieceColor;
     }
 
-
-
-
     @Override
     public String toString() {
         return "Cell{" +
                 "Position=" + position +
-                ", Color=" + pieceColor+
-                "  " + pieceType +  '}';
+                ", Color=" + pieceColor +
+                "  " + pieceType + '}';
     }
-
-
-        /*       String getPieceRepresentation()
-        {
-            return  getCharByColor() + pieceType + xPosition + yPosition;
-        }
-
-
-        String getCharByColor()
-        {
-            return  color == true? "B" : "W";
-        }
-
-       String getCellColor()
-        {
-            return  color == true? "B" : "W";
-        }
-*/
-
-
-
-
-
 
 }

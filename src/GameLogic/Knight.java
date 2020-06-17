@@ -22,6 +22,5 @@ public class Knight extends Piece{
           possiblePositions.add(new Position(fromPosition.x-2,fromPosition.y-1));
           possiblePositions.add(new Position(fromPosition.x-2,fromPosition.y+1));
           return possiblePositions;
-
     }
 }

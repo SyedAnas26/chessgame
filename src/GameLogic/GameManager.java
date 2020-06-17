@@ -1,15 +1,16 @@
 package GameLogic;
 
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class GameManager {
     int currentPlayer = 1;
     GameStatus gameStatus;
-    int minusOrPlus;
     Color currentPlayerColor;
     public Board b = new Board();
-   public String[] gamePlayAsArray;
+    public String[] gamePlayAsArray;
 
     public GameManager(String gamePlay) throws Exception {
 
@@ -19,7 +20,11 @@ public class GameManager {
     }
 
     private void makeGivenStringIntoArray(String gamePlay) {
-        gamePlayAsArray = gamePlay.trim().split(" |\\.");
+        String[] clean = gamePlay.trim().split("\\s+|\\.");
+        gamePlayAsArray = Arrays.stream(clean)
+                .map(String::trim)
+                .filter(Predicate.isEqual("").negate())
+                .toArray(String[]::new);
 
     }
 
@@ -42,7 +47,7 @@ public class GameManager {
     }
 
     private boolean checkIfNum(String arrayElement) {
-        for (int i = 1; i < 100; i++) {
+        for (int i = 1; i < 200; i++) {
             if (String.valueOf(i).equals(arrayElement)) {
                 return true;
             }
@@ -106,33 +111,6 @@ public class GameManager {
         return b.cell[toPosition.x][toPosition.y].getPieceColor().stringFormat.equals(currentPlayerColor.stringFormat);
     }
 
-    /*void addplayers(String name) throws Exception {
-        b.players.add(new Player(name));
-
-    }
-
-
-    void getUserdetails() throws Exception {
-        for (int i = 1; i <= 2; i++) {
-            System.out.println("Enter Player" + i + " Name : ");
-            Scanner scan = new Scanner(System.in);
-            String name = scan.nextLine();
-            addplayers(name);
-
-        }
-
-    }*/
-
- /*   boolean isGameCanContinue() {
-        if (gameStatus == GameStatus.InProgress) {
-            return true;
-        }
-        if (gameStatus == GameStatus.NotBegan) {
-            return true;
-        }
-        return false;
-    }*/
-
     void playGame(String arrayElement) throws Exception {
 
         if (arrayElement.length() == 2) {
@@ -141,17 +119,19 @@ public class GameManager {
             if (arrayElement.charAt(2) == '+') {
                 arrayElement = arrayElement.substring(0, 2);
                 for2elements(arrayElement);
-                System.out.println("\n \tIt is a Check\t \n ");
+                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
 
             } else {
                 for3elements(arrayElement);
             }
         } else if (arrayElement.length() == 4) {
-            if (arrayElement.charAt(3) == '+') {
+            if (arrayElement.charAt(2) == '=') {
+                pawnPromotion(arrayElement);
+            } else if (arrayElement.charAt(3) == '+') {
                 arrayElement = arrayElement.substring(0, 3);
 
                 for3elements(arrayElement);
-                System.out.println("\n \tIt is a Check\t \n");
+                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
                 for4elements(arrayElement);
             }
@@ -159,20 +139,48 @@ public class GameManager {
 
             if (arrayElement.charAt(4) == '+') {
                 arrayElement = arrayElement.substring(0, 4);
-
-                for4elements(arrayElement);
-                System.out.println("\n \tIt is a Check\t \n");
+                if (arrayElement.charAt(2) == '=') {
+                    pawnPromotion(arrayElement);
+                } else {
+                    for4elements(arrayElement);
+                }
+                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
+                for5elements(arrayElement);
+            }
+        } else if (arrayElement.length() == 6) {
+            if (arrayElement.charAt(5) == '+') {
+                arrayElement = arrayElement.substring(0, 5);
                 for5elements(arrayElement);
             }
         }
 
+    }
 
+    private void pawnPromotion(String arrayElement) throws Exception {
+        char thePiece = arrayElement.charAt(3);
+        String newPiece = null;
+        Position toPosition = new Position(0, 0);
+        toPosition.x = Character.getNumericValue(arrayElement.charAt(1)) - 1;
+        toPosition.y = getNumOf(arrayElement.charAt(0));
+        String piece = currentPlayerColor.stringFormat + whichPawn(arrayElement, 'P', toPosition);
+        Position fromPosition = getPiecePosition(piece);
+        if (thePiece == 'Q') {
+            newPiece = "NQ";
+        } else if (thePiece == 'N') {
+            newPiece = "NN";
+        } else if (thePiece == 'R') {
+            newPiece = "NR";
+        } else if (thePiece == 'B') {
+            newPiece = "NR";
+        }
+        b.cell[toPosition.x][toPosition.y] = new Cell(currentPlayerColor, currentPlayerColor.stringFormat + newPiece, toPosition);
+        b.cell[fromPosition.x][fromPosition.y] = new Cell(Color.noColor, " ", fromPosition);
     }
 
     private void for5elements(String arrayElement) throws Exception {
         if (arrayElement.charAt(0) == 'O') {
-            KingOrQueenCastling("Q", arrayElement);
+            KingCastling("K", arrayElement);
         } else {
             char thePiece = arrayElement.charAt(0);
             String piece = "";
@@ -184,17 +192,15 @@ public class GameManager {
                 fromPosition.y = getNumOf((arrayElement.charAt(1)));
                 fromPosition.x = Character.getNumericValue(arrayElement.charAt(2));
             } else {
-                if(arrayElement.charAt(1) != '1' & arrayElement.charAt(1)!='2' & arrayElement.charAt(1)!='3' & arrayElement.charAt(1)!='4' & arrayElement.charAt(1)!='5' & arrayElement.charAt(1)!='6' & arrayElement.charAt(1)!='7' & arrayElement.charAt(1)!='8') {
+                if (arrayElement.charAt(1) != '1' & arrayElement.charAt(1) != '2' & arrayElement.charAt(1) != '3' & arrayElement.charAt(1) != '4' & arrayElement.charAt(1) != '5' & arrayElement.charAt(1) != '6' & arrayElement.charAt(1) != '7' & arrayElement.charAt(1) != '8') {
                     fromPosition.y = getNumOf((arrayElement.charAt(1)));
                     for (int i = 0; i < 8; i++) {
                         if (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + "L" + thePiece) || (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + "R" + thePiece)) || (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + thePiece))) {
                             fromPosition.x = i;
                         }
                     }
-                }
-                else
-                {
-                    fromPosition.x = Character.getNumericValue((arrayElement.charAt(1)))-1;
+                } else {
+                    fromPosition.x = Character.getNumericValue((arrayElement.charAt(1))) - 1;
                     for (int i = 0; i < 8; i++) {
                         if (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + "L" + thePiece) || (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + "R" + thePiece)) || (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + thePiece))) {
                             fromPosition.y = i;
@@ -213,13 +219,13 @@ public class GameManager {
         Position fromPosition = new Position(0, 0);
         if (isPawn(arrayElement)) {
             fromPosition.y = getNumOf(arrayElement.charAt(0));
-            String piece = currentPlayerColor.stringFormat + "P" + fromPosition.y;
+
             if (arrayElement.charAt(1) != 'x') {
                 fromPosition.x = Character.getNumericValue((arrayElement.charAt(1))) - 1;
-
             }
             toPosition.y = getNumOf(arrayElement.charAt(2));
             toPosition.x = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+            String piece = whichPiece(arrayElement, 'P', toPosition);
             fromPosition = getPiecePosition(piece);
             movePiece(currentPlayerColor, piece, fromPosition, toPosition);
         } else {
@@ -228,17 +234,15 @@ public class GameManager {
             toPosition.y = getNumOf(arrayElement.charAt(2));
             toPosition.x = Character.getNumericValue((arrayElement.charAt(3))) - 1;
             if (arrayElement.charAt(1) != 'x') {
-                if(arrayElement.charAt(1) != '1' & arrayElement.charAt(1)!='2' & arrayElement.charAt(1)!='3' & arrayElement.charAt(1)!='4' & arrayElement.charAt(1)!='5' & arrayElement.charAt(1)!='6' & arrayElement.charAt(1)!='7' & arrayElement.charAt(1)!='8') {
+                if (arrayElement.charAt(1) != '1' & arrayElement.charAt(1) != '2' & arrayElement.charAt(1) != '3' & arrayElement.charAt(1) != '4' & arrayElement.charAt(1) != '5' & arrayElement.charAt(1) != '6' & arrayElement.charAt(1) != '7' & arrayElement.charAt(1) != '8') {
                     fromPosition.y = getNumOf((arrayElement.charAt(1)));
                     for (int i = 0; i < 8; i++) {
                         if (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + "L" + thePiece) || (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + "R" + thePiece)) || (b.cell[i][fromPosition.y].getPieceType().equals(currentPlayerColor.stringFormat + thePiece))) {
                             fromPosition.x = i;
                         }
                     }
-                }
-                else
-                {
-                    fromPosition.x = Character.getNumericValue((arrayElement.charAt(1)))-1;
+                } else {
+                    fromPosition.x = Character.getNumericValue((arrayElement.charAt(1))) - 1;
                     for (int i = 0; i < 8; i++) {
                         if (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + "L" + thePiece) || (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + "R" + thePiece)) || (b.cell[fromPosition.x][i].getPieceType().equals(currentPlayerColor.stringFormat + thePiece))) {
                             fromPosition.y = i;
@@ -260,7 +264,7 @@ public class GameManager {
         Position fromPosition;
 
         if (arrayElement.charAt(0) == 'O') {
-            KingOrQueenCastling("K", arrayElement);
+            KingCastling("K", arrayElement);
         } else {
             char thePiece = arrayElement.charAt(0);
             toPosition.x = Character.getNumericValue(arrayElement.charAt(2)) - 1;
@@ -275,17 +279,17 @@ public class GameManager {
         Position toPosition = new Position(0, 0);
         toPosition.x = Character.getNumericValue(arrayElement.charAt(1)) - 1;
         toPosition.y = getNumOf(arrayElement.charAt(0));
-        String piece = currentPlayerColor.stringFormat + "P" + getNumOf(arrayElement.charAt(0));
+        String piece = whichPiece(arrayElement, 'P', toPosition);
         Position fromPosition = getPiecePosition(piece);
         movePiece(currentPlayerColor, piece, fromPosition, toPosition);
     }
 
-    private void KingOrQueenCastling(String thePiece, String arrayElement) throws Exception {
+    private void KingCastling(String thePiece, String arrayElement) throws Exception {
         Position toPosition = new Position(0, 0);
         Position toPosition2 = new Position(0, 0);
-        whichSideCastle(thePiece);
+        int minusOrPlus = whichSideCastle(arrayElement,thePiece);
         Position pos = getPiecePosition(currentPlayerColor.stringFormat + thePiece);
-        String piece = leftOrRight(arrayElement, 'R', new Position(pos.x, pos.y + minusOrPlus));
+        String piece = leftOrRightOrNew(arrayElement, 'R', new Position(pos.x, pos.y + minusOrPlus));
         Position fromPosition = getPiecePosition(currentPlayerColor.stringFormat + thePiece);
         toPosition.x = fromPosition.x;
         if (piece.equals("RR")) {
@@ -301,16 +305,18 @@ public class GameManager {
         movePiece(currentPlayerColor, piece, fromPosition2, toPosition2);
     }
 
-    private void whichSideCastle(String thePiece) throws Exception {
-        Position kingPosition = getPiecePosition(currentPlayerColor.stringFormat + thePiece);
-        if (b.cell[kingPosition.x][kingPosition.y + 1].getPieceColor().equals(Color.noColor) && b.cell[kingPosition.x][kingPosition.y + 2].getPieceColor().equals(Color.noColor)) {
-            minusOrPlus = 1;
-        }
-        if (b.cell[kingPosition.x][kingPosition.y - 1].getPieceColor().equals(Color.noColor) && b.cell[kingPosition.x][kingPosition.y - 2].getPieceColor().equals(Color.noColor)) {
-            {
-                minusOrPlus = -1;
+    private int whichSideCastle(String arrayElement,String thePiece) throws Exception {
+        Position kingOrQueenPosition = getPiecePosition(currentPlayerColor.stringFormat + thePiece);
+        if(arrayElement.length()==3)
+        {if (b.cell[kingOrQueenPosition.x][kingOrQueenPosition.y + 1].getPieceColor().equals(Color.noColor) && b.cell[kingOrQueenPosition.x][kingOrQueenPosition.y + 2].getPieceColor().equals(Color.noColor)) {
+            return 1;}
+        } else if(arrayElement.length()==5) {
+            if (b.cell[kingOrQueenPosition.x][kingOrQueenPosition.y - 1].getPieceColor().equals(Color.noColor) && b.cell[kingOrQueenPosition.x][kingOrQueenPosition.y - 2].getPieceColor().equals(Color.noColor)) {
+                return -1;
+
             }
         }
+        return 0;
     }
 
 
@@ -325,43 +331,102 @@ public class GameManager {
     }
 
     private String whichPiece(String arrayElement, char thePiece, Position toPosition) throws Exception {
-        if (thePiece == 'R') {
-            return leftOrRight(arrayElement, thePiece, toPosition);
+        if (thePiece == 'P') {
+            if (arrayElement.length() == 4 || arrayElement.length() == 5) {
+                if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x') {
+                    String piece;
+                    if (currentPlayerColor == Color.White) {
+                        piece = b.cell[toPosition.x - 1][getNumOf(arrayElement.charAt(0))].getPieceType();
+                        if (piece != null && !piece.equals(" ") && piece.length() != 2 && piece.charAt(0) != 'B') {
+                            if (!b.cell[toPosition.x][toPosition.y].getPieceColor().equals(Color.White) && (checkIfNum(piece.substring(2, 3)) || piece.charAt(2) == '0')) {
+                                return piece;
+                            }
+                        }
+                    } else if (currentPlayerColor == Color.Black) {
+                        piece = b.cell[toPosition.x + 1][getNumOf(arrayElement.charAt(0))].getPieceType();
+                        if (piece != null && !piece.equals(" ") && piece.length() != 2 && piece.charAt(0) != 'W') {
+                            if (!b.cell[toPosition.x][toPosition.y].getPieceColor().equals(Color.Black) && (checkIfNum(piece.substring(2, 3)) || piece.charAt(2) == '0')) {
+                                return piece;
+                            }
+                        }
+                    }
+                }
+            } else {
+                return currentPlayerColor.stringFormat + whichPawn(arrayElement, thePiece, toPosition);
+            }
+        } else if (thePiece == 'R') {
+            return leftOrRightOrNew(arrayElement, thePiece, toPosition);
         } else if (thePiece == 'N') {
-            return leftOrRight(arrayElement, thePiece, toPosition);
+            return leftOrRightOrNew(arrayElement, thePiece, toPosition);
         } else if (thePiece == 'B') {
-            return leftOrRight(arrayElement, thePiece, toPosition);
+            return leftOrRightOrNew(arrayElement, thePiece, toPosition);
         } else if (thePiece == 'K') {
-            return leftOrRight(arrayElement, thePiece, toPosition);
+            return leftOrRightOrNew(arrayElement, thePiece, toPosition);
         } else if (thePiece == 'Q') {
-            return leftOrRight(arrayElement, thePiece, toPosition);
+            return leftOrRightOrNew(arrayElement, thePiece, toPosition);
         }
         throw new Exception("Invalid Piece");
     }
 
-    private String leftOrRight(String arrayElement, char thePiece, Position toPosition) throws Exception {
+    private String whichPawn(String arrayElement, char thePiece, Position toPosition) throws Exception {
+        List<Position> possiblePositions;
+        for (int j = 0; j < 8; j++) {
+            String piece = Character.toString(thePiece) + j;
+            Position fromPosition = getPiecePosition(currentPlayerColor.stringFormat + piece);
+            Pawn pawn = new Pawn();
+            possiblePositions = pawn.getPossiblePositions(fromPosition);
+            if (currentPlayerColor == Color.White) {
+                if (toPosition.x == possiblePositions.get(0).x && toPosition.y == possiblePositions.get(0).y && b.cell[toPosition.x][toPosition.y].getPieceColor().equals(Color.noColor)) {
+                    return piece;
+                } else if (toPosition.x == possiblePositions.get(1).x && toPosition.y == possiblePositions.get(1).y && b.cell[toPosition.x - 1][toPosition.y].getPieceColor().equals(Color.noColor)) {
+                    return piece;
+                }
+
+            } else if (currentPlayerColor == Color.Black) {
+                if (toPosition.x == possiblePositions.get(2).x && toPosition.y == possiblePositions.get(2).y && b.cell[toPosition.x][toPosition.y].getPieceColor().equals(Color.noColor)) {
+                    return piece;
+                } else if (toPosition.x == possiblePositions.get(3).x && toPosition.y == possiblePositions.get(3).y && b.cell[toPosition.x + 1][toPosition.y].getPieceColor().equals(Color.noColor)) {
+                    return piece;
+                }
+            }
+        }
+        throw new Exception("pawn not found");
+    }
+
+    private String leftOrRightOrNew(String arrayElement, char thePiece, Position toPosition) throws Exception {
         if (thePiece == 'R') {
-            if (isRightRookCanMove(arrayElement, toPosition)) {
+            if (isRookCanMove(arrayElement, toPosition, "RR")) {
                 return "RR";
-            } else
+            } else if (isRookCanMove(arrayElement, toPosition, "LR")) {
                 return "LR";
+            } else if (isRookCanMove(arrayElement, toPosition, "NR")) {
+                return "NR";
+            }
         } else if (thePiece == 'N') {
-            if (isRightKnightCanMove(arrayElement, toPosition)) {
+            if (isKnightCanMove(arrayElement, toPosition, "RN")) {
                 return "RN";
-            } else
+            } else if (isKnightCanMove(arrayElement, toPosition, "LN")) {
                 return "LN";
+            } else if (isKnightCanMove(arrayElement, toPosition, "NN")) {
+                return "NN";
+            }
         } else if (thePiece == 'B') {
-            if (isRightBishopCanMove(arrayElement, toPosition)) {
+            if (isBishopCanMove(arrayElement, toPosition, "RB")) {
                 return "RB";
-            } else
+            } else if (isBishopCanMove(arrayElement, toPosition, "LB")) {
                 return "LB";
+            } else if (isBishopCanMove(arrayElement, toPosition, "NN")) {
+                return "NN";
+            }
         } else if (thePiece == 'K') {
             if (canTheKingMove(arrayElement, toPosition)) {
                 return "K";
             }
         } else if (thePiece == 'Q') {
-            if (canTheQueenMove(arrayElement, toPosition)) {
+            if (canTheQueenMove(arrayElement, toPosition, "Q")) {
                 return "Q";
+            } else if (canTheQueenMove(arrayElement, toPosition, "NQ")) {
+                return "NQ";
             }
         }
 
@@ -369,8 +434,8 @@ public class GameManager {
 
     }
 
-    private boolean isRightBishopCanMove(String arrayElement, Position toPosition) throws Exception {
-        String piece = "RB";
+    private boolean isBishopCanMove(String arrayElement, Position toPosition, String piece) throws Exception {
+
         Position fromPos = getPiecePosition(currentPlayerColor.stringFormat + piece);
         if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x') {
             b.cell[toPosition.x][toPosition.y].pieceColor = Color.noColor;
@@ -379,16 +444,11 @@ public class GameManager {
             return false;
         } else {
             Bishop bishop = new Bishop();
-            if (bishop.isMovePossible(fromPos, toPosition, b.cell)) {
-                return true;
-            } else
-                return false;
+            return bishop.isMovePossible(fromPos, toPosition);
         }
-
     }
 
-    private boolean canTheQueenMove(String arrayElement, Position toPosition) throws Exception {
-        String piece = "Q";
+    private boolean canTheQueenMove(String arrayElement, Position toPosition, String piece) throws Exception {
         Position fromPos = getPiecePosition(currentPlayerColor.stringFormat + piece);
         if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x') {
             b.cell[toPosition.x][toPosition.y].pieceColor = Color.noColor;
@@ -398,7 +458,7 @@ public class GameManager {
         } else {
             Bishop bishop = new Bishop();
             Rook rook = new Rook(currentPlayerColor);
-            if (bishop.isMovePossible(fromPos, toPosition, b.cell) || rook.isMovePossible(fromPos, toPosition, b.cell)) {
+            if (bishop.isMovePossible(fromPos, toPosition) || rook.isMovePossible(fromPos, toPosition, b.cell)) {
                 return true;
             }
         }
@@ -408,7 +468,7 @@ public class GameManager {
     private boolean canTheKingMove(String arrayElement, Position toPosition) throws Exception {
         String piece = "K";
         List<Position> possiblePositions;
-        Position fromPos=getPiecePosition(currentPlayerColor.stringFormat+piece);
+        Position fromPos = getPiecePosition(currentPlayerColor.stringFormat + piece);
         King king = new King(currentPlayerColor);
         possiblePositions = king.getPossiblePositions(fromPos);
         for (int i = 0; i <= 8; i++) {
@@ -429,9 +489,7 @@ public class GameManager {
     }
 
 
-
-    private boolean isRightKnightCanMove(String arrayElement, Position toPosition) throws Exception {
-        String piece = "RN";
+    private boolean isKnightCanMove(String arrayElement, Position toPosition, String piece) throws Exception {
         List<Position> possiblePositions;
         Position fromPosition = getPiecePosition(currentPlayerColor.stringFormat + piece);
         if (fromPosition.x == 9 && fromPosition.y == 9) {
@@ -458,13 +516,8 @@ public class GameManager {
     }
 
 
-    private boolean isRightRookCanMove(String arrayElement, Position toPosition) throws Exception {
-
-        String piece = "RR";
+    private boolean isRookCanMove(String arrayElement, Position toPosition, String piece) throws Exception {
         Position fromPos = getPiecePosition(currentPlayerColor.stringFormat + piece);
-        if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x') {
-            b.cell[toPosition.x][toPosition.y].pieceColor = Color.noColor;
-        }
         if (fromPos.x == 9 && fromPos.y == 9) {
             return false;
         } else {

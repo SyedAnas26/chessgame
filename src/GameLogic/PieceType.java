@@ -8,9 +8,8 @@ public enum PieceType {
     QUEEN("Q"),
     PAWN("P");
 
-    String Stringformat;
-
-    PieceType(String Stringformat) {
-        this.Stringformat = Stringformat;
+    String StringFormat;
+    PieceType(String StringFormat) {
+        this.StringFormat = StringFormat;
     }
 }

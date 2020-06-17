@@ -5,5 +5,4 @@ public  enum GameStatus {
     InProgress,
     PlayerWon,
     Draw;
-
 }
