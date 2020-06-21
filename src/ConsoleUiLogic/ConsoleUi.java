@@ -14,9 +14,7 @@ public class ConsoleUi {
         for (int i = 0; i < gameManager.gamePlayAsArray.length - 2; i++) {
             getGesture();
             gameManager.conductGame(step);
-            if (!isMultipleOf3(step)) {
-                printBoard(gameManager);
-            }
+            printBoard(gameManager);
             if(i==gameManager.gamePlayAsArray.length-3)
             {
                 if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(1) == '/') {
@@ -27,8 +25,6 @@ public class ConsoleUi {
                     System.out.println("\n \t \t \t Player 1 Won the Match (White) !!!\t \t \t \n");
 
             }
-
-
         }
     }
 

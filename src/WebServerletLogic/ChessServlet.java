@@ -44,13 +44,27 @@ public class ChessServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+<<<<<<< Updated upstream
+=======
+        //Object gamePlay = req.getParameter("Next");
+        String responseStep = null;
+>>>>>>> Stashed changes
         try {
             manager.conductGame(step);
+            responseStep =manager.getLastMovementAsString(step);
             step++;
             printBoardInClient(manager,resp,step);
         } catch (Exception e) {
             e.printStackTrace();
         }
+<<<<<<< Updated upstream
+=======
+
+        PrintWriter out = resp.getWriter();
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        out.print(responseStep);
+>>>>>>> Stashed changes
     }
 
     void printBoardInClient(GameManager manager, HttpServletResponse response,int step) throws IOException {

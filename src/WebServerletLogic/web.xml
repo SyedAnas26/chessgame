@@ -30,12 +30,7 @@
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
-    <!-- Define the Manager Servlet
-         Change servlet-class to: org.apache.catalina.servlets.HTMLManagerServlet
-         to get a Servlet with a more intuitive HTML interface, don't change if you
-         have software that is expected to parse the output from ManagerServlet
-         since they're not compatible.
-     &ndash;&gt;-->
+    
     <servlet>
         <servlet-name>ChessApplication</servlet-name>
         <servlet-class>WebServerletLogic.ChessServlet</servlet-class>
@@ -46,5 +41,4 @@
         <servlet-name>ChessApplication</servlet-name>
         <url-pattern>/nextstep</url-pattern>
     </servlet-mapping>
-
 </web-app>

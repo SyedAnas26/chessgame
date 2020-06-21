@@ -35,16 +35,16 @@ public class GameManager {
 
 
         {
-
             updateCurrentPlayerColor(currentPlayer);
-           if (!checkIfNum(gamePlayAsArray[step])) {
-            playGame(gamePlayAsArray[step]);
-                updateGameStatus();
-                currentPlayer = updateCurrentPlayer(currentPlayer);
-                currentPlayer += 1;
-           }
+            playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
+            System.out.println("Step="+step);
+            updateGameStatus();
+            currentPlayer = updateCurrentPlayer(currentPlayer);
+            currentPlayer += 1;
+
         }
     }
+
 
     private boolean checkIfNum(String arrayElement) {
         for (int i = 1; i < 200; i++) {
@@ -112,6 +112,7 @@ public class GameManager {
     }
 
     void playGame(String arrayElement) throws Exception {
+        System.out.println("element=="+arrayElement);
 
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
@@ -561,6 +562,11 @@ public class GameManager {
             return false;
 
 
+    }
+
+    public String getLastMovementAsString(int step) {
+      //TODO: To implement
+        return  "{ from_pos : e4, to_pos : e5 }";
     }
 }
 
