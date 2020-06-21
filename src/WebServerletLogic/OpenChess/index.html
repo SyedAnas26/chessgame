@@ -3,8 +3,9 @@
 
 <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
 
+<script type="text/javascript" src="lib/jquery.min-3.5.js"></script>
 <script type="text/javascript" src="lib/jquery-ui.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"/>
+
 
 <script type="text/javascript" src="Util/Move/MoveCode.js" ></script>
 <script type="text/javascript" src="Util/Move/Move.js" ></script>
@@ -298,13 +299,21 @@ $("#chess_board").ready(function() {
 	 	 console.log("Some successful response for clicking");		 
 	});
 
-});
+    $(document).ready(function(){
+        $("#next_step").click(function(){
+            $.ajax({
+                url: "http://localhost:8080/nextstep",
+                type: 'POST',
+                success: function(response) {
+                    // var response ='{"from_pos": "e2", "to_pos" : "e4"}';
+                    //var result = JSON.parse(response);
+                    uiManager.cellClickedAt(response.from_pos);
+                    uiManager.cellClickedAt(response.to_pos);
+                }
+            });
+        });
+    });
 
-$(document).ready(function(){
-	$("#next_step").click(function(){
-		$.ajax({url: "http://localhost:8080/nextstep", type: 'POST', success: function(result){
-			}});
-	});
 });
 
 </script>

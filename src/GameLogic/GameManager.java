@@ -11,6 +11,8 @@ public class GameManager {
     Color currentPlayerColor;
     public Board b = new Board();
     public String[] gamePlayAsArray;
+    Position fromPositionOrg;
+    Position toPositionOrg;
 
     public GameManager(String gamePlay) throws Exception {
 
@@ -97,11 +99,17 @@ public class GameManager {
 
     private void movePiece(Color currentPlayerColor, String piece, Position fromPosition, Position toPosition) {
         if (isValidMove(currentPlayerColor, toPosition)) {
+        fromPositionOrg =new Position(-1,-1);
+        toPositionOrg =new Position(-1,-1);
+        fromPositionOrg =fromPosition;
+        toPositionOrg =toPosition;
             b.cell[toPosition.x][toPosition.y] = b.cell[fromPosition.x][fromPosition.y];
             b.cell[fromPosition.x][fromPosition.y] = new Cell(Color.noColor, " ", fromPosition);
         }
 
     }
+
+
 
     private boolean isValidMove(Color currentPlayerColor, Position toPosition) {
         return !isOccupiedByOwnColorPiece(currentPlayerColor, toPosition);
@@ -556,17 +564,13 @@ public class GameManager {
     }
 
     private boolean IsBothOddorEven(Position position) {
-        if (position.x % 2 == 0 && position.y % 2 == 0 || position.x % 2 != 0 && position.y % 2 != 0) {
-            return true;
-        } else
-            return false;
+        return position.x % 2 == 0 && position.y % 2 == 0 || position.x % 2 != 0 && position.y % 2 != 0;
 
 
     }
 
     public String getLastMovementAsString(int step) {
-      //TODO: To implement
-        return  "{ from_pos : e4, to_pos : e5 }";
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\"}";
     }
 }
 

@@ -7,4 +7,12 @@ public class Position {
         this.x=x;
         this.y=y;
     }
-}
+
+    String getPositionInOriginalFormat()
+    {
+
+        String alphabet = "abcdefgh";
+        return  alphabet.charAt(this.y) + Integer.toString(this.x+1);
+    }
+    }
+
