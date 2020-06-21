@@ -37,12 +37,12 @@ public class GameManager {
         {
 
             updateCurrentPlayerColor(currentPlayer);
-            if (!checkIfNum(gamePlayAsArray[step])) {
-                playGame(gamePlayAsArray[step]);
+           if (!checkIfNum(gamePlayAsArray[step])) {
+            playGame(gamePlayAsArray[step]);
                 updateGameStatus();
                 currentPlayer = updateCurrentPlayer(currentPlayer);
                 currentPlayer += 1;
-            }
+           }
         }
     }
 
@@ -543,6 +543,23 @@ public class GameManager {
 
         }
         return new Position(9, 9);
+
+    }
+    public String GetCurrentCellColor(Position position) {
+
+        if (IsBothOddorEven(position))
+            return "white";
+        else
+            return "black";
+
+    }
+
+    private boolean IsBothOddorEven(Position position) {
+        if (position.x % 2 == 0 && position.y % 2 == 0 || position.x % 2 != 0 && position.y % 2 != 0) {
+            return true;
+        } else
+            return false;
+
 
     }
 }

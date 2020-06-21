@@ -1,13 +1,13 @@
 package WebServerletLogic;
 
 import GameLogic.GameManager;
+import GameLogic.Position;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class ChessServlet extends HttpServlet {
 
@@ -18,69 +18,175 @@ public class ChessServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        String gamePlay = "1.e4 c5 2.Nf3 Nc6 3.d4 cxd4 4.Nxd4 Nf6 5.Nc3 d6 6.Be3 Ng4 7.Bg5 Qb6 8.Bb5 Bd7 " +
-                "9.O-O Qxd4 10.Bxc6 Qxd1 11.Bxd7 Kxd7 12.Raxd1 g6 13.h3 Ne5 14.Nd5 Nc6 15.b4 h6 " +
-                "16.Bh4 f5 17.f4 Rg8 18.b5 Na5 19.e5 Nc4 20.Rd4 Rc8 21.e6 Ke8 22.b6 axb6 " +
-                "23.Rb1 g5 24.Rb4 b5 25.Rxb5 Bg7 26.Rxc4 Rxc4 27.Rxb7 Bd4 28.Bf2 Bxf2 29.Kxf2 Kf8 " +
-                "30.Rxe7 Rg7 31.Rd7 Rxc2 32.Kf3 Rg6 33.Rd8 Kg7 34.e7 g4 35.hxg4 fxg4 36.Kg3 ";
+        File file = new File("C:\\Users\\User\\Desktop\\ChessPgn.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = br.readLine();
+        StringBuilder sb = new StringBuilder();
+        String gamePlay = null;
+        while (line != null) {
+            sb.append(line).append("\n");
+            line = br.readLine();
+            gamePlay =sb.toString();
+        }
 
-        //gamePlay = req.getParameter("game_play");
+        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
 
+        String Restart = req.getParameter("restart_game");
         try {
-
-            if(manager == null || Boolean.valueOf(req.getParameter("restart_game")))
-            {
-                manager = new GameManager(gamePlay);
-                step = 0;
-            }
-
-
-
-            manager.conductGame(step);
-            step++;
-
-            printBoardInClient(manager, resp);
+            manager = new GameManager(gamePlay);
+            printBoardInClient(manager, resp,step);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Object gamePlay = req.getParameter("Next");
 
-        Object gamePlay = req.getParameter("game_play");
-        System.out.println("Hello world Done" + gamePlay);
+        try {
+            manager.conductGame(step);
+            step++;
+            printBoardInClient(manager,resp,step);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        // System.out.println("Hello world Done" + gamePlay);
     }
 
-    void printBoardInClient(GameManager manager, HttpServletResponse response) throws IOException {
-       System.out.println("Im in printboard");
+    void printBoardInClient(GameManager manager, HttpServletResponse response,int step) throws IOException {
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<head>");
-        out.println("<title>Chess State!</title>");
-        out.println("</head>");
-        out.println("<body>");
+        if (step == manager.gamePlayAsArray.length - 3) {
+            if (manager.gamePlayAsArray[manager.gamePlayAsArray.length - 1].charAt(1) == '/') {
+                out.println("<h1 style=\"text-align:center\"> Match Draw !!!</h1>");
+            } else if (manager.gamePlayAsArray[manager.gamePlayAsArray.length - 1].charAt(0) == '0') {
+                out.println("<h1 style=\"text-align:center\"> Player 2 Won The Match (Black) !!!</h1>");
+            } else
+                out.println("<h1 style=\"text-align:center\"> Player 1 Won The Match(White) !!!</h1>");
 
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
-                String piece=manager.b.cell[i][j].getPieceType();
-                if(piece==null){
-                    out.printf("\t|   |");
+        } else {
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<meta charset=\"UTF-8\"> ");
+            out.println("<title>Chess Game</title>");
+            out.println("<body>");
+            out.println("<h1>Welcome To Chess Game</h1>");
+            out.println("<style type=\"text/css\">");
+            out.println("input { background-color: red;\n" +
+                    "        color: white;\n" +
+                    "        padding: 15px 25px;);\n" +
+                    "       text-align: center;\n" +
+                    "        text-decoration: none;\n" +
+                    "        display: inline-block;\n" +
+                    "            float:right;\n" +
+                    "            margin:auto;\n" +
+                    "        } ");
+
+            out.println("input:hover, input:active {\n" +
+                    "            background-color: red;\n" +
+                    "        }");
+            out.println(".chessboard {\n" +
+                    "            width: 640px;\n" +
+                    "            height: 640px;\n" +
+                    "            margin: auto;\n" +
+                    "            font-size:50px;\n" +
+                    "            border: 5px solid #333;\n" +
+                    "        }");
+            out.println(".black {\n" +
+                    "            float:left;\n" +
+                    "            width: 80px;\n" +
+                    "            height: 80px;\n" +
+                    "            background-color: #999;\n" +
+                    "            font-size:50px;\n" +
+                    "            text-align:center;\n" +
+                    "            display: table-cell;\n" +
+                    "            vertical-align:middle;\n" +
+                    "        }");
+            out.println(".white {\n" +
+                    "            float:left;\n" +
+                    "            width: 80px;\n" +
+                    "            height: 80px;\n" +
+                    "            background-color: #fff;\n" +
+                    "            font-size:50px;\n" +
+                    "            text-align:center;\n" +
+                    "            display: table-cell;\n" +
+                    "            vertical-align:middle;\n" +
+                    "        }");
+            out.println("</style>");
+            out.println("</head>");
+            out.println("<body>");
+            out.println("<div class=\"chessboard\">");
+
+
+            for (int i = 0; i < 8; i++) {
+                for (int j = 0; j < 8; j++) {
+                    String piece = manager.b.cell[i][j].getPieceType();
+                    String htmlPiece = getHtmlPiece(piece);
+                    Position pos = new Position(i, j);
+                    String cellColor = manager.GetCurrentCellColor(pos);
+                    out.printf("<div class=\"%s\">%s</div>", cellColor, htmlPiece);
                 }
-                else {
-                    out.printf("\t|%3s|",piece);
-                }
-                if (j == 7) {
-                    out.printf("<br>");
-                }
+            }
+            out.println("</div>");
+            out.println(" <form action=\"\" method=\"post\">");
+            out.println("<input type=\"submit\" name=\"Next\" value=\"Next\">");
+            out.println("</form>");
+            out.println("</body>");
+            out.println("</html>");
+        }
+    }
+
+    private String getHtmlPiece(String piece) {
+        for(int i=0;i<8;i++){
+            if(piece.equals("BP"+i)){
+                return "&#9823;";
+            }
+            if(piece.equals("WP"+i)){
+                return "&#9817;";
             }
         }
 
-        out.println("</body>");
-        out.println("</html>");
+        switch (piece) {
+            case "BRR":
+            case "BLR":
+            case "BNR":
+                return "&#9820;";
+            case "BRN":
+            case "BLN":
+            case "BNN":
+                return "&#9822;";
+            case "BRB":
+            case "BLB":
+            case "BNB":
+                return "&#9821;";
+            case "BK":
+                return "&#9818;";
+            case "BQ":
+            case "BNQ":
+                return "&#9819;";
+            case "WRR":
+            case "WLR":
+            case "WNR":
+                return "&#9814;";
+            case "WRN":
+            case "WLN":
+            case "WNN":
+                return "&#9816;";
+            case "WRB":
+            case "WLB":
+            case "WNB":
+                return "&#9815;";
+            case "WK":
+                return "&#9812;";
+            case "WQ":
+            case "WNQ":
+                return "&#9813;";
+            default:
+                return " ";
+        }
     }
-
-
 }

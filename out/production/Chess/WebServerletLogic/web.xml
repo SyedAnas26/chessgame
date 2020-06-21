@@ -21,7 +21,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
 
-    <display-name>Chess Application
+    <display-name>Chess Application</display-name>
     <description>
        Web based chess app.
     </description>
@@ -41,5 +41,9 @@
     <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
         <url-pattern>/chess</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/game_play</url-pattern>
     </servlet-mapping>
 </web-app>
