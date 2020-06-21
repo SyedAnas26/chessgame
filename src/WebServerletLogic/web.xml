@@ -35,21 +35,16 @@
          to get a Servlet with a more intuitive HTML interface, don't change if you
          have software that is expected to parse the output from ManagerServlet
          since they're not compatible.
-<!--     &ndash;&gt;-->
-<!--    <servlet>-->
-<!--        <servlet-name>ChessApplication</servlet-name>-->
-<!--        <servlet-class>WebServerletLogic.ChessServlet</servlet-class>-->
-<!--    </servlet>-->
+     &ndash;&gt;-->
+    <servlet>
+        <servlet-name>ChessApplication</servlet-name>
+        <servlet-class>WebServerletLogic.ChessServlet</servlet-class>
+    </servlet>
 
-<!--    &lt;!&ndash; Define the Manager Servlet Mapping &ndash;&gt;-->
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>ChessApplication</servlet-name>-->
-<!--        <url-pattern>/chess</url-pattern>-->
-<!--    </servlet-mapping>-->
+    <!-- Define the Manager Servlet Mapping -->
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/nextstep</url-pattern>
+    </servlet-mapping>
 
-
-<!--    <servlet-mapping>-->
-<!--        <servlet-name>ChessApplication</servlet-name>-->
-<!--        <url-pattern>/game_play</url-pattern>-->
-<!--    </servlet-mapping>-->
 </web-app>

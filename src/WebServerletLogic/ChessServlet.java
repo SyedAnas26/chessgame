@@ -44,8 +44,6 @@ public class ChessServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        Object gamePlay = req.getParameter("Next");
-
         try {
             manager.conductGame(step);
             step++;
@@ -53,8 +51,6 @@ public class ChessServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        // System.out.println("Hello world Done" + gamePlay);
     }
 
     void printBoardInClient(GameManager manager, HttpServletResponse response,int step) throws IOException {
