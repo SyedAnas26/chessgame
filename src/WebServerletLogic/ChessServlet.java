@@ -12,59 +12,38 @@ import java.io.*;
 public class ChessServlet extends HttpServlet {
 
     GameManager manager= null;
-    int step = 0;
+    int step = 1;
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        File file = new File("C:\\Users\\User\\Desktop\\ChessPgn.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine();
-        StringBuilder sb = new StringBuilder();
-        String gamePlay = null;
-        while (line != null) {
-            sb.append(line).append("\n");
-            line = br.readLine();
-            gamePlay =sb.toString();
-        }
-
-        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
-
-        String Restart = req.getParameter("restart_game");
-        try {
-            manager = new GameManager(gamePlay);
-            printBoardInClient(manager, resp,step);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-<<<<<<< Updated upstream
-=======
+
         //Object gamePlay = req.getParameter("Next");
         String responseStep = null;
->>>>>>> Stashed changes
+
         try {
+            initManager();
             manager.conductGame(step);
             responseStep =manager.getLastMovementAsString(step);
             step++;
-            printBoardInClient(manager,resp,step);
+            //printBoardInClient(manager,resp,step);
+            System.out.println("responseStep: " + responseStep);
+            PrintWriter out = resp.getWriter();
+            resp.setContentType("application/json");
+            resp.setCharacterEncoding("UTF-8");
+            out.print(responseStep);
         } catch (Exception e) {
             e.printStackTrace();
         }
-<<<<<<< Updated upstream
-=======
 
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        out.print(responseStep);
->>>>>>> Stashed changes
+
+
+
     }
 
     void printBoardInClient(GameManager manager, HttpServletResponse response,int step) throws IOException {
@@ -198,5 +177,26 @@ public class ChessServlet extends HttpServlet {
             default:
                 return " ";
         }
+    }
+
+    void initManager() throws Exception {
+        if (manager != null) {
+            return;
+        }
+
+        File file = new File("C:\\Users\\User\\Desktop\\ChessPgn.txt");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line = br.readLine();
+        StringBuilder sb = new StringBuilder();
+        String gamePlay = null;
+        while (line != null) {
+            sb.append(line).append("\n");
+            line = br.readLine();
+            gamePlay =sb.toString();
+        }
+
+        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
+
+        manager= new GameManager(gamePlay);
     }
 }
