@@ -33,7 +33,6 @@ public class FileUpload extends HttpServlet {
                 for(FileItem item : multiparts){
                     if(!item.isFormField()){
                          FileName = new File(item.getName()).getName();
-                         request.setAttribute("filename",FileName);
                         File file = new File(UPLOAD_DIRECTORY + File.separator + FileName);
                         item.write(file);
 

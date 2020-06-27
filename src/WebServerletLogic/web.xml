@@ -27,7 +27,7 @@
     </description>
 
     <welcome-file-list>
-        <welcome-file>/FileUpload.html</welcome-file>
+        <welcome-file>/index.html</welcome-file>
     </welcome-file-list>
 
     <servlet>
@@ -39,8 +39,16 @@
    <servlet-class>WebServerletLogic.FileUpload</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>WebServerletLogic.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>StartPlay</servlet-name>
         <jsp-file>/PlayGame.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <jsp-file>/FileUpload.html</jsp-file>
     </servlet>
     <!-- Define the Manager Servlet Mapping -->
     <servlet-mapping>
@@ -54,5 +62,13 @@
     <servlet-mapping>
         <servlet-name>StartPlay</servlet-name>
         <url-pattern>/Play</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <url-pattern>/load</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
     </servlet-mapping>
 </web-app>
