@@ -11,11 +11,11 @@ public class ConsoleUi {
 
     public ConsoleUi(String gamePlay) throws Exception {
         GameManager gameManager = new GameManager(gamePlay);
-        for (int i = 0; i < gameManager.gamePlayAsArray.length - 2; i++) {
+        for (int i = 0; i <=gameManager.gamePlayAsArray.length-1; i++) {
             getGesture();
             gameManager.conductGame(step);
             printBoard(gameManager);
-            if(i==gameManager.gamePlayAsArray.length-3)
+            if(i==gameManager.gamePlayAsArray.length -1)
             {
                 if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(1) == '/') {
                     System.out.println("\n \t \t \t Match Draw !!!\t \t \t \n");

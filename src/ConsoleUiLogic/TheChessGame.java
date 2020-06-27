@@ -6,7 +6,7 @@ public class TheChessGame {
 
     public static void main(String[] args) throws Exception {
 
-        File file = new File("C:\\Users\\User\\Desktop\\ChessPgn.txt");
+        File file = new File("src/ConsoleUiLogic/ChessPgn.txt");
       BufferedReader br = new BufferedReader(new FileReader(file));
         String line = br.readLine();
         StringBuilder sb = new StringBuilder();

@@ -26,24 +26,33 @@
        Web based chess app.
     </description>
 
-    <!-- Define the Manager Servlet
-         Change servlet-class to: org.apache.catalina.servlets.HTMLManagerServlet
-         to get a Servlet with a more intuitive HTML interface, don't change if you
-         have software that is expected to parse the output from ManagerServlet
-         since they're not compatible.
-     -->
+    <welcome-file-list>
+        <welcome-file>/FileUpload.html</welcome-file>
+    </welcome-file-list>
+
     <servlet>
         <servlet-name>ChessApplication</servlet-name>
         <servlet-class>WebServerletLogic.ChessServlet</servlet-class>
     </servlet>
-
+    <servlet>
+        <servlet-name>Fileupload</servlet-name>
+   <servlet-class>WebServerletLogic.FileUpload</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>StartPlay</servlet-name>
+        <jsp-file>/PlayGame.html</jsp-file>
+    </servlet>
     <!-- Define the Manager Servlet Mapping -->
     <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/chess</url-pattern>
+        <url-pattern>/nextstep</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/game_play</url-pattern>
+        <servlet-name>Fileupload</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>StartPlay</servlet-name>
+        <url-pattern>/Play</url-pattern>
     </servlet-mapping>
 </web-app>

@@ -308,10 +308,11 @@ public class GameManager {
             toPosition.y = fromPosition.y - 2;
             toPosition2.y = fromPosition.y - 1;
         }
-        movePiece(currentPlayerColor, thePiece, fromPosition, toPosition);
+
         Position fromPosition2 = getPiecePosition(currentPlayerColor.stringFormat + piece);
         toPosition2.x = fromPosition2.x;
         movePiece(currentPlayerColor, piece, fromPosition2, toPosition2);
+        movePiece(currentPlayerColor, thePiece, fromPosition, toPosition);
     }
 
     private int whichSideCastle(String arrayElement,String thePiece) throws Exception {
@@ -481,7 +482,7 @@ public class GameManager {
         King king = new King(currentPlayerColor);
         possiblePositions = king.getPossiblePositions(fromPos);
         for (int i = 0; i <= 8; i++) {
-            if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x') {
+            if (arrayElement.charAt(1) == 'x' || arrayElement.charAt(2) == 'x' ){
                 if (toPosition.x == possiblePositions.get(i).x && toPosition.y == possiblePositions.get(i).y) {
                     return true;
                 }

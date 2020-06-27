@@ -3,14 +3,15 @@ package WebServerletLogic;
 import GameLogic.GameManager;
 import GameLogic.Position;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
 
 public class ChessServlet extends HttpServlet {
-
     GameManager manager= null;
     int step = 1;
 
@@ -27,7 +28,9 @@ public class ChessServlet extends HttpServlet {
         String responseStep = null;
 
         try {
-            initManager();
+            HttpSession session = req.getSession();
+            String FileName = (String) session.getAttribute("filename");
+            initManager(FileName);
             manager.conductGame(step);
             responseStep =manager.getLastMovementAsString(step);
             step++;
@@ -179,13 +182,16 @@ public class ChessServlet extends HttpServlet {
         }
     }
 
-    void initManager() throws Exception {
+    void initManager(String FileName) throws Exception {
         if (manager != null) {
             return;
         }
-
-        File file = new File("C:\\Users\\User\\Desktop\\ChessPgn.txt");
-        BufferedReader br = new BufferedReader(new FileReader(file));
+        FileUpload fu=new FileUpload();
+        String File="/FileUploads/"+FileName;
+        ServletContext context=getServletContext();
+        InputStream is = context.getResourceAsStream(File);
+        InputStreamReader isr =new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
         String line = br.readLine();
         StringBuilder sb = new StringBuilder();
         String gamePlay = null;
