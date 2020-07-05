@@ -1,40 +1,44 @@
  <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
+<head>
+	<script>
+		history.forward();
+	</script>
+</head>
 <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
 
-<script type="text/javascript" src="lib/jquery.min-3.5.js"></script>
-<script type="text/javascript" src="lib/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../lib/jquery.min-3.5.js"></script>
+<script type="text/javascript" src="../lib/jquery-ui.min.js"></script>
 
+<script type="text/javascript" src="../Util/Move/MoveCode.js" ></script>
+<script type="text/javascript" src="../Util/Move/Move.js" ></script>
+<link rel="stylesheet" type="text/css" href="../Util/Theme/Default.css">
 
-<script type="text/javascript" src="Util/Move/MoveCode.js" ></script>
-<script type="text/javascript" src="Util/Move/Move.js" ></script>
-<link rel="stylesheet" type="text/css" href="Util/Theme/Default.css">
+<script type="text/javascript" src="../Util/Position.js" ></script>
+<script type="text/javascript" src="../Util/InitPos.js" ></script>
+<script type="text/javascript" src="../Util/Copy.js" ></script>
 
-<script type="text/javascript" src="Util/Position.js" ></script>
-<script type="text/javascript" src="Util/InitPos.js" ></script>
-<script type="text/javascript" src="Util/Copy.js" ></script>
+<script type="text/javascript" src="../Pieces/Piece.js" ></script>
 
-<script type="text/javascript" src="Pieces/Piece.js" ></script>
+<script type="text/javascript" src="../Pieces/Pawn.js" ></script>
+<script type="text/javascript" src="../Pieces/Rook.js" ></script>
+<script type="text/javascript" src="../Pieces/Knight.js" ></script>
+<script type="text/javascript" src="../Pieces/Bishop.js" ></script>
+<script type="text/javascript" src="../Pieces/Queen.js" ></script>
+<script type="text/javascript" src="../Pieces/King.js" ></script>
 
-<script type="text/javascript" src="Pieces/Pawn.js" ></script>
-<script type="text/javascript" src="Pieces/Rook.js" ></script>
-<script type="text/javascript" src="Pieces/Knight.js" ></script>
-<script type="text/javascript" src="Pieces/Bishop.js" ></script>
-<script type="text/javascript" src="Pieces/Queen.js" ></script>
-<script type="text/javascript" src="Pieces/King.js" ></script>
+<script type="text/javascript" src="../Pieces/Team.js" ></script>
 
-<script type="text/javascript" src="Pieces/Team.js" ></script>
-
-<script type="text/javascript" src="Control/Cell.js" ></script>
-<script type="text/javascript" src="Control/Board.js" ></script>
-<script type="text/javascript" src="Control/Timer.js" ></script>
-<script type="text/javascript" src="Control/GameManager.js" ></script>
+<script type="text/javascript" src="../Control/Cell.js" ></script>
+<script type="text/javascript" src="../Control/Board.js" ></script>
+<script type="text/javascript" src="../Control/Timer.js" ></script>
+<script type="text/javascript" src="../Control/GameManager.js" ></script>
 
 
 
 
 <script type="text/javascript">
+
 
 function UI_Manager(){
 	
@@ -45,7 +49,7 @@ function UI_Manager(){
    	var lastClickAttrId = null;
 	var lastButOneClickAttrId = null;
 	var currentClickAttrId = null;
-	
+	var nextOrPrev='n';
 	/*
 	 * MoveCycle -> A complete cycle of picking and placing a piece from one position to another position.
 	 * The cycle may contain steps like picking*,placing. picking?->any n no of picking, where n > 0
@@ -58,9 +62,9 @@ function UI_Manager(){
 	var hasMoveCycleCompleted = false;
 	   
 	//Function definitions starts here...
-	
+
 	this.cellClickedAt = function(currAttrId){
-		
+
 		if(hasMoveCycleCompleted){
 	    	removeHighlight(lastButOneClickAttrId);
     		removeHighlight(lastClickAttrId);
@@ -81,7 +85,8 @@ function UI_Manager(){
 	*/
 	function getAttrID(pos){
 		return pos.toString();
-	};
+	}
+
 		
 	/**
 	*  Dynamically generates element Id, based on the user selection.
@@ -307,12 +312,30 @@ $("#chess_board").ready(function() {
                 success: function(response) {
                     // var response ='{"from_pos": "e2", "to_pos" : "e4"}';
                     //var result = JSON.parse(response);
+					uiManager.nextOrPrev='n';
                     uiManager.cellClickedAt(response.from_pos);
                     uiManager.cellClickedAt(response.to_pos);
-                }
+
+				}
             });
         });
     });
+	$(document).ready(function(){
+		$("#previous_step").click(function(){
+			$.ajax({
+				url: "http://localhost:8080/previous_step",
+				type: 'POST',
+				success: function(response) {
+					// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
+					//var result = JSON.parse(response);
+					uiManager.nextOrPrev='n';
+					uiManager.cellClickedAt(response.to_pos);
+					uiManager.cellClickedAt(response.from_pos);
+				}
+			});
+		});
+	});
+
 
 });
 </script>
@@ -361,40 +384,40 @@ a {
 <div style="display: none" id="chess_pieces">
 
 	<div id="queen_white">
-		<a href="#"><img src="Util/PieceImages/queen_white.png"/></a>
+		<a href="#"><img src="../Util/PieceImages/queen_white.png"/></a>
 	</div>
 	<div id="king_white">
-		<a href="#"><img src="Util/PieceImages/king_white.png"/></a>
+		<a href="#"><img src="../Util/PieceImages/king_white.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="rook_white"><img src="Util/PieceImages/rook_white.png"/></a>
+		<a href="#" id="rook_white"><img src="../Util/PieceImages/rook_white.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="bishop_white"><img src="Util/PieceImages/bishop_white.png"/></a>
+		<a href="#" id="bishop_white"><img src="../Util/PieceImages/bishop_white.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="knight_white"><img src="Util/PieceImages/knight_white.png"/></a>
+		<a href="#" id="knight_white"><img src="../Util/PieceImages/knight_white.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="pawn_white"><img src="Util/PieceImages/pawn_white.png"/></a>
+		<a href="#" id="pawn_white"><img src="../Util/PieceImages/pawn_white.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="queen_black"><img src="Util/PieceImages/queen_black.png"/></a>
+		<a href="#" id="queen_black"><img src="../Util/PieceImages/queen_black.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="king_black"><img src="Util/PieceImages/king_black.png"/></a>
+		<a href="#" id="king_black"><img src="../Util/PieceImages/king_black.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="rook_black"><img src="Util/PieceImages/rook_black.png"/></a>
+		<a href="#" id="rook_black"><img src="../Util/PieceImages/rook_black.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="bishop_black"><img src="Util/PieceImages/bishop_black.png"/></a>
+		<a href="#" id="bishop_black"><img src="../Util/PieceImages/bishop_black.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="knight_black"><img src="Util/PieceImages/knight_black.png"/></a>
+		<a href="#" id="knight_black"><img src="../Util/PieceImages/knight_black.png"/></a>
 	</div>
 	<div>
-		<a href="#" id="pawn_black"><img src="Util/PieceImages/pawn_black.png"/></a>
+		<a href="#" id="pawn_black"><img src="../Util/PieceImages/pawn_black.png"/></a>
 	</div>
 
 </div>
@@ -446,7 +469,14 @@ a {
 </table>
 
 <input type="button" id="next_step" value="Next Step" cellpadding="0" cellspacing="0"/>
-
+<br>
+<br>
+<input type="button" id="previous_step" value="Previous Step" cellpadding="0" cellspacing="0"/>
+<br>
+<br>
+<form action="/homepage" method="post" align="center" >
+	<input type="submit" value="Go Back to Home Page"/>
+</form>
 </body>
 </html>
  

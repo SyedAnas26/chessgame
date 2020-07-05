@@ -570,7 +570,7 @@ public class GameManager {
 
     }
 
-    public String getLastMovementAsString(int step) {
+    public String getLastMovementAsString() {
         return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\"}";
     }
 }

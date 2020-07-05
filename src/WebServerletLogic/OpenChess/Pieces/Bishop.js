@@ -7,9 +7,9 @@ Bishop = function(initialPos,teamColor,pieceArg)
 	
 	
 	//Always The move code is normal. No special moves are there for Bishop.
-	
-	var piece = pieceArg || new Piece(initialPos,teamColor,Piece.Bishop); 
-    
+
+	var piece = pieceArg || new Piece(initialPos,teamColor,Piece.Bishop);
+
 	this.getPossibleMovements = function(cells,teams){
 		
 		var possibleMovements = new Array();
@@ -89,7 +89,7 @@ Bishop = function(initialPos,teamColor,pieceArg)
 		function addPossibleLeftDiagonalMovements(){
 			var x = piece.getPosition().getX();
 			var y = piece.getPosition().getY();
-			
+			console.log("Currentpos"+x+y);
 			var currentPos = piece.getPosition();
 					 	
 			var xIter = -1;

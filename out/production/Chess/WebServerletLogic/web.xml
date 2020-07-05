@@ -27,23 +27,50 @@
     </description>
 
     <welcome-file-list>
-        <welcome-file>/FileUpload.html</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
     <servlet>
+        <servlet-name>LoginPage</servlet-name>
+        <jsp-file>/html_files/LoginPage.html</jsp-file>
+    </servlet>
+
+    <servlet>
         <servlet-name>ChessApplication</servlet-name>
-        <servlet-class>WebServerletLogic.ChessServlet</servlet-class>
+        <servlet-class>WebServerletLogic.Servlets.ChessServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>Fileupload</servlet-name>
-   <servlet-class>WebServerletLogic.FileUpload</servlet-class>
+   <servlet-class>WebServerletLogic.Servlets.FileUpload</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
         <servlet-name>StartPlay</servlet-name>
-        <jsp-file>/PlayGame.html</jsp-file>
+        <jsp-file>/html_files/PlayGame.html</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <jsp-file>/html_files/FileUpload.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>Register</servlet-name>
+        <jsp-file>/html_files/Register.html</jsp-file>
+    </servlet>
+
     <!-- Define the Manager Servlet Mapping -->
-    <servlet-mapping>
+
+   <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
         <url-pattern>/nextstep</url-pattern>
     </servlet-mapping>
@@ -55,4 +82,30 @@
         <servlet-name>StartPlay</servlet-name>
         <url-pattern>/Play</url-pattern>
     </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <url-pattern>/load</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Register</servlet-name>
+        <url-pattern>/Register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/RegisterServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginPage</servlet-name>
+        <url-pattern>/loginpage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+
+
 </web-app>

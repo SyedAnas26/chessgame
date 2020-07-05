@@ -1,18 +1,17 @@
 
 	this.GameManager = function()
 	{
-	    var playingTeam = Team.White; //initially its a white's turn.	    
+	    var playingTeam = Team.White; //initially its a white's turn.
 	    
 		var timer;
 		var lastMove = null;
 		var isPiecePicked; /* All the three variables are connected to each other, */ 
 		var pickedPosition;   /* pickedPosition and possibleMovements will have a value only if isPiecePicked is true */		
-		var possibleMovements; 
-		
+		var possibleMovements;
+
 		console.log("I am here");
 		var board = new Board();
 		board.assignPiecesToInitialBoard();
-		
 		timer = new Timer();
 		 
 		/**
@@ -78,7 +77,7 @@
 			var movesLogForUI = new Array();
 			var x = clickedId[0];
 			var y = clickedId[1];
-		
+
 			/**
 			 * Used to add a new piece to the chess board.
 			 * @param Position contains position where piece is to be added. </br> 
@@ -89,11 +88,13 @@
 			this.addPiece = function(pos,pieceType){
 				board.addPiece(pos,pieceType,playingTeam); /*!turn -> Because the pawn up-gradation will be of previous team move.*/
 			};
+
+
 			
 			/**
 			 * Will be called by UI_Manager to trigger the turn change. */
 			function togglePlayingTeam(){
-				playingTeam = playingTeam == Team.White? Team.Black : Team.White; 				
+				playingTeam = playingTeam==Team.White? Team.Black: Team.White;
 			};
 						
 			/** Used to get the current team that is playing.
@@ -272,7 +273,7 @@
 						  
 						  
 					      resetPicking(); //On successful move, the board is made ready for next move.
-						  togglePlayingTeam(); 
+						  togglePlayingTeam();
 						  return [1,movesLogForUI];
 						  
 					  }

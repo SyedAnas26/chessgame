@@ -2,6 +2,8 @@
   <library name="lib">
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../../apache-tomcat-9.0.36/lib" />
+      <root url="jar://$APPLICATION_CONFIG_DIR$/jdbc-drivers/MySQL Connector/J 8/8.0.15/mysql-connector-java-8.0.15.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../../../mysql-connector-java-8.0.20.jar!/" />
     </CLASSES>
     <JAVADOC>
       <root url="jar://$USER_HOME$/Downloads/commons-io-2.7-bin.zip!/commons-io-2.7/docs" />

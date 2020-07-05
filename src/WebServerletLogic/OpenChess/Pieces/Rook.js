@@ -4,11 +4,10 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 	/*
 	 * Caution : InitialPos will be always same as the initial position of the piece in the board. use piece.getPosition() to get the current position of the piece.
 	 * */
-	
 	var piece =  pieceArg || new Piece(initialPos,teamColor,Piece.Rook);
 	var hasMoved = hasMovedArg === undefined? false : hasMovedArg;
-    
-	Rook.prototype.getPossibleMovements = function(cells,teams){
+
+	this.getPossibleMovements = function(cells,teams){
 		//Always The move code is normal. No special moves are there for rook.
 		var possibleMovements = new Array();
 		
@@ -25,7 +24,7 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 		   * 						0,+1 	 
 		   * ....		-1, 0		0, 0	 +1, 0	....
 		   * 						0,-1
-		   * 						0,+1
+		   * 						0,-2
 		   * 
 		   *						....  		
 		   * */
@@ -41,11 +40,11 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 		
 
 		function addPossibleTopDownMovements(){
-			
+
 			 	var x = piece.getPosition().getX();
 			 	var y = piece.getPosition().getY();
 			 	var currentPos = new Position(x,y);
-			 		
+                console.log("currentPos"+x+y);
 			 	var yIter = 1;
 			 	while(Position.isValidPosition(x,y+yIter)){
 			 		if( !cells[x][y+yIter].hasPiece() ){
@@ -55,10 +54,10 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 			 		else{
 			 			if ( Team.getPieceByID( cells[x][y + yIter].getPieceID(), teams).getTeamColor() != teamColor )
 			 				possibleMovements.push(new Move( currentPos,  new Position(x,y+yIter),MoveCode.Normal));
-			 			    break;
+			 			break;
 			 		}
 			 	}
-			 	
+
 			 	var yIter = -1;
 			 	while(Position.isValidPosition(x,y+yIter)){
 			 		if( !cells[x][y+yIter].hasPiece() ){
@@ -71,7 +70,7 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 			 			break;
 			 		}
 			 	}
-			 	
+
 		 }
 		 
 		 /**
@@ -82,11 +81,11 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 			 * @returns nothing	
 			 * */
 		 function addPossibleLeftRightMovements(){
-			 
+
 			 	var x = piece.getPosition().getX();
 			 	var y = piece.getPosition().getY();
 			 	var currentPos = new Position(x,y);
-				
+
 			 	var xIter = 1;
 			 	while(Position.isValidPosition(x+xIter,y)){
 			 		if( !cells[x+xIter][y].hasPiece() ){
@@ -94,13 +93,13 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 			 			xIter++;
 			 		}
 			 		else{
+			 			console.log("cell="+x+xIter+y)
 			 			if ( Team.getPieceByID( cells[x + xIter][y].getPieceID(), teams).getTeamColor() != teamColor )
 			 				possibleMovements.push(new Move( currentPos,  new Position(x+xIter,y),MoveCode.Normal));
-			 			    break;
+			 			break;
 			 		}
 			 	}
-			 	
-			 	var xIter = -1;
+			 	var xIter=-1;
 			 	while(Position.isValidPosition(x+xIter,y)){
 			 		if( !cells[x+xIter][y].hasPiece() ){
 			 			possibleMovements.push(new Move( currentPos, new Position(x+xIter,y),MoveCode.Normal));
@@ -113,8 +112,8 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 			 		}
 			 	}
 		 }
-		 
-		 
+
+
 		 return possibleMovements;
 	};
 	
@@ -135,7 +134,7 @@ Rook = function(initialPos,teamColor,pieceArg,hasMovedArg)
 	 *          null if not.
 	 * */
 
-	Rook.prototype.couldMoveTo = function(toPos,cells,teams){
+	this.couldMoveTo = function(toPos,cells,teams){
 		
 		var fromPos = piece.getPosition();
 		

@@ -165,7 +165,7 @@
 		 * @caution It wont check whether it is a valid move or invalid move, the user have to check the move validity before calling the function. 
 		 * */
 		this.movePiece = function(reqMove){
-			console.log("I am inside move, I goona move" + reqMove + reqMove.toString());
+			console.log("I am inside move, I gonna move" + reqMove + reqMove.toString());
 			var fromPos = reqMove.get_fromPos();
 			var toPos = reqMove.get_toPos();
 			
@@ -556,7 +556,6 @@
 				return  piece.getPossibleMovements(cells,teams,isLeftCastlingPossible.call(this,piece),isRightCastlingPossible.call(this,piece)) ;
 			else //for other pieces..
 				return piece.getPossibleMovements(cells,teams,lastMove);
-			
 		};
 		
 		/**

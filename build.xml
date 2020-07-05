@@ -76,6 +76,7 @@
     <property name="dist.src"       value="chess.jar"/>
     <property name="dist.war"       value="chess.war"/>
 
+
     <!-- The "prepare" target is used to construct the deployment home
          directory structure (if necessary), and to copy in static files
          as required.  In the example below, Ant is instructed to create
@@ -106,6 +107,10 @@
         <delete dir="${deploy.home}"/>
     </target>
 
+    <target name="tomcat-restart">
+        <antcall target="tomcat-stop" />
+        <antcall target="tomcat-start" />
+    </target>
 
     <!-- The "compile" target is used to compile (or recompile) the Java classes
          that make up this web application.  The recommended source code directory
@@ -145,14 +150,27 @@
             <classpath refid="compile.classpath"/>
         </javac>
     </target>
+    <target name="tomcat-start">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
+            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${catalina.home}"/>
+        </java>
+    </target>
 
+    <target name="tomcat-stop">
+        <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
+            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar" />
+            <jvmarg value="-Dcatalina.home=${catalina.home}"/>
+            <arg line="stop"/>
+        </java>
+    </target>
 
     <!-- The "all" target rebuilds everything by executing the "clean"
          target first, which forces the "compile" target to compile all
          source code instead of just the files that have been changed.
     -->
 
-    <target name="all" depends="clean,prepare,compile"/>
+    <target name="all" depends="clean,prepare,compile,tomcat-restart"/>
 
 
     <!-- The "dist" target builds the distribution Web ARchive (WAR) file

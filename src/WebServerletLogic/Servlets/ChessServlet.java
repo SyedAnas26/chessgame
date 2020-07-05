@@ -1,4 +1,4 @@
-package WebServerletLogic;
+package WebServerletLogic.Servlets;
 
 import GameLogic.GameManager;
 import GameLogic.Position;
@@ -11,30 +11,42 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
 
-public class ChessServlet extends HttpServlet {
+public class ChessServlet extends HttpServlet { 
     GameManager manager= null;
-    int step = 1;
+    int step = 0;
+    boolean nextcalled=true;
+
 
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
+        HttpSession session = req.getSession();
+        String FileName = (String) session.getAttribute("filename");
+        try {
+            initManager(FileName);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        step = 0;
     }
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-        //Object gamePlay = req.getParameter("Next");
         String responseStep = null;
+        HttpSession session = req.getSession();
+        String FileName = (String) session.getAttribute("filename");
 
+        String servletPath = req.getServletPath();
         try {
-            HttpSession session = req.getSession();
-            String FileName = (String) session.getAttribute("filename");
-            initManager(FileName);
-            manager.conductGame(step);
-            responseStep =manager.getLastMovementAsString(step);
-            step++;
-            //printBoardInClient(manager,resp,step);
+
+            isNew(req);
+           updateStep(servletPath);
+           initManager(FileName);
+            for(int i=1;i<=step;i++){
+                manager.conductGame(i);
+            }
+            responseStep =manager.getLastMovementAsString();
             System.out.println("responseStep: " + responseStep);
             PrintWriter out = resp.getWriter();
             resp.setContentType("application/json");
@@ -43,10 +55,41 @@ public class ChessServlet extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
 
+    private void updateStep(String servletPath) {
+        if(servletPath.equals("/nextstep"))
+        {
+            step++;
+            nextcalled=true;
 
+        }
+        else if(servletPath.equals("/previous_step")){
+            if(!nextcalled){
+                if(step>0) {
+                    --step;
+                }
+                else {
+                    System.out.println("Play next first");
+                }
+            }
+            else if(nextcalled){
+                nextcalled=false;
+                step=step;
+            }
 
+        }
 
+    }
+
+    private void isNew(HttpServletRequest req) {
+        HttpSession session = req.getSession();
+        String NewOrOld = (String) session.getAttribute("NewOrOld");
+        if(NewOrOld.equals("New")) {
+            manager=null;
+            step=0;
+            session.setAttribute("NewOrOld", "Old");
+        }
     }
 
     void printBoardInClient(GameManager manager, HttpServletResponse response,int step) throws IOException {
@@ -183,10 +226,7 @@ public class ChessServlet extends HttpServlet {
     }
 
     void initManager(String FileName) throws Exception {
-        if (manager != null) {
-            return;
-        }
-        FileUpload fu=new FileUpload();
+
         String File="/FileUploads/"+FileName;
         ServletContext context=getServletContext();
         InputStream is = context.getResourceAsStream(File);
