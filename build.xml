@@ -180,12 +180,12 @@
          that separately.
     -->
 
-<!--    <target name="dist" depends="prepare,compile">
+  <target name="dist" depends="prepare,compile">
         <jar jarfile="${dist.home}/${dist.src}"
-             basedir="."/>
+             basedir="${deploy.home}"/>
         <jar jarfile="${dist.home}/${dist.war}"
              basedir="${deploy.home}"/>
-    </target>-->
+    </target>
 
 
 </project>

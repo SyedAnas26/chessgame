@@ -17,7 +17,7 @@ import java.util.List;
 
 
 public class FileUpload extends HttpServlet {
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36\\webapps\\ROOT\\FileUploads";
+    private final String UPLOAD_DIRECTORY = "/root/apache-tomcat-9.0.36/webapps/ROOT/FileUploads";
     String FileName;
 
     @Override

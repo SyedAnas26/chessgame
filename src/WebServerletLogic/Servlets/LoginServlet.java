@@ -70,27 +70,16 @@ public class LoginServlet extends HttpServlet
             Class.forName("com.mysql.jdbc.Driver");
             con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
             stmt = con.createStatement();
-            String q ="SELECT username,fullname,password,email_id FROM login";
-            res = stmt.executeQuery(q);
             String thisname=request.getParameter("user_id");
             String thispwd=request.getParameter("password");
+            String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd +"'";
+            System.out.println(q);
+            res = stmt.executeQuery(q);
 
-            while(res.next())
-            {
-
-                if ((thisname.equals(res.getString("username"))) && (thispwd.equals(res.getString("password"))))
-                {
-                    name=res.getString("fullname");
-                    success = true;
-                }
-                else if((thisname.equals(res.getString("username"))) && (!thispwd.equals(res.getString("password")))){
-                    out.println("<script type=\"text/javascript\">");
-                    out.println("alert('Incorrect User id or Password');");
-                    out.println("location='/loginpage';");
-                    out.println("</script>");
-                }
+            if(res.next()) {
+                name = res.getString("fullname");
+                success = true;
             }
-
         }
 
         catch (SQLException e)
