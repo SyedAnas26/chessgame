@@ -5,6 +5,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.util.List;
 
 
 public class FileUpload extends HttpServlet {
-    private final String UPLOAD_DIRECTORY = "C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36\\webapps\\ROOT\\FileUploads";
+    private final String UPLOAD_DIRECTORY = "FileUploads";
     String FileName;
 
     @Override
@@ -29,7 +30,8 @@ public class FileUpload extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        File Folder = new File(UPLOAD_DIRECTORY);
+        String tomcatPath = request.getServletContext().getRealPath("");
+        File Folder = new File(tomcatPath + UPLOAD_DIRECTORY);
         FileUtils.deleteDirectory(Folder);
         createFolder(Folder);
         HttpSession session = request.getSession();
@@ -43,7 +45,7 @@ public class FileUpload extends HttpServlet {
                 for (FileItem item : multiparts) {
                     if (!item.isFormField()) {
                         FileName = new File(item.getName()).getName();
-                        File file = new File(UPLOAD_DIRECTORY + File.separator + FileName);
+                        File file = new File(tomcatPath + UPLOAD_DIRECTORY + File.separator + FileName);
                         item.write(file);
                     }
                 }
