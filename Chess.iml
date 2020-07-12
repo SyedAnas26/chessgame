@@ -21,6 +21,9 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="mysql-connector-java-8.0.15" level="project" />
-    <orderEntry type="library" name="mysql-connector-java-8.0.20" level="project" />
+    <orderEntry type="library" name="commons-fileupload-1.4" level="project" />
+    <orderEntry type="library" name="docs" level="project" />
+    <orderEntry type="library" name="commons-io-2.7-javadoc" level="project" />
+    <orderEntry type="library" name="javax.servlet-api-3.0.1" level="project" />
   </component>
 </module>
