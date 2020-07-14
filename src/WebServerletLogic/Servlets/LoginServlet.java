@@ -23,7 +23,6 @@ public class LoginServlet extends HttpServlet
         out.println("javascript:window.history.forward(1)");
         out.println("</script>");
         out.println("<body>");
-
         HttpSession session = request.getSession(false);
         try
         {
@@ -53,8 +52,7 @@ public class LoginServlet extends HttpServlet
         out.println("<html>");
         out.println("<body>");
 
-        Connection con = null;
-        Statement stmt = null;
+
         ResultSet res = null;
         String name=null;
 
@@ -67,14 +65,13 @@ public class LoginServlet extends HttpServlet
         {
 
 
-            Class.forName("com.mysql.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
-            stmt = con.createStatement();
-            String thisname=request.getParameter("user_id");
+            DBclass db=new DBclass();
+            db.callDB();
+            String thisname=request.getParameter("username");
             String thispwd=request.getParameter("password");
             String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd +"'";
             System.out.println(q);
-            res = stmt.executeQuery(q);
+            res = db.stmt.executeQuery(q);
 
             if(res.next()) {
                 name = res.getString("fullname");
@@ -87,10 +84,6 @@ public class LoginServlet extends HttpServlet
             throw new ServletException("Servlet Could not display records.", e);
         }
 
-        catch (ClassNotFoundException e)
-        {
-            throw new ServletException("JDBC Driver not found.", e);
-        }
 
         catch (Exception e)
         {
@@ -100,7 +93,7 @@ public class LoginServlet extends HttpServlet
         if(success==true)
         {
 
-            session.setAttribute("username", request.getParameter("user_id"));
+            session.setAttribute("username", request.getParameter("username"));
             session.setAttribute("sessname", name);
             response.sendRedirect("/homepage");
         }
