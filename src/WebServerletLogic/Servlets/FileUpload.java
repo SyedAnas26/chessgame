@@ -18,7 +18,8 @@ import java.util.List;
 
 
 public class FileUpload extends HttpServlet {
-    private final String UPLOAD_DIRECTORY = "FileUploads";
+  
+    private final String UPLOAD_DIRECTORY = "\\FileUploads";
     String FileName;
 
     @Override
@@ -30,8 +31,8 @@ public class FileUpload extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String tomcatPath = request.getServletContext().getRealPath("");
-        File Folder = new File(tomcatPath + UPLOAD_DIRECTORY);
+        String tomPath = request.getServletContext().getRealPath("");
+        File Folder = new File(tomPath+UPLOAD_DIRECTORY);
         FileUtils.deleteDirectory(Folder);
         createFolder(Folder);
         HttpSession session = request.getSession();
@@ -45,7 +46,7 @@ public class FileUpload extends HttpServlet {
                 for (FileItem item : multiparts) {
                     if (!item.isFormField()) {
                         FileName = new File(item.getName()).getName();
-                        File file = new File(tomcatPath + UPLOAD_DIRECTORY + File.separator + FileName);
+                        File file = new File(tomPath+UPLOAD_DIRECTORY + File.separator + FileName);
                         item.write(file);
                     }
                 }

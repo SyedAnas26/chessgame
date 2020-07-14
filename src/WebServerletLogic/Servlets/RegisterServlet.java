@@ -7,11 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Optional;
 
 public class RegisterServlet extends HttpServlet {
 
@@ -55,9 +52,6 @@ public class RegisterServlet extends HttpServlet {
             out.println("<html>");
             out.println("<body>");
 
-            Connection con = null;
-            Statement stmt = null;
-
             boolean success=false;
 
             HttpSession session = request.getSession(true);
@@ -65,18 +59,21 @@ public class RegisterServlet extends HttpServlet {
             try
             {
 
-                Class.forName("com.mysql.jdbc.Driver");
-                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "");
-                stmt = con.createStatement();
-                String username=request.getParameter("user_id");
+                DBclass db1=new DBclass();
+                db1.callDB();
+                String username=request.getParameter("username");
                 String fullname=request.getParameter("name");
                 String password=request.getParameter("password");
                 String gender = request.getParameter("gender");
                 String email_id=request.getParameter("email");
-                stmt.executeUpdate("insert into login values('"+username+"','"+fullname+"','"+password+"','"+email_id+"','"+gender+"')");
-                stmt = con.createStatement();
+                String q = "SELECT * FROM login WHERE username='" + username+"'";
+                System.out.println(q);
+                ResultSet res = db1.stmt.executeQuery(q);
+                if(!res.next()){
+                db1.stmt.executeUpdate("insert into login(username,fullname,password,email_id,gender) values('"+username+"','"+fullname+"','"+password+"','"+email_id+"','"+gender+"')");
                 out.println("<br /><br /><h2 align=\"center\"><font family=\"Times New Roman\">Registered Successfully!</font></h2>");
                 success = true;
+                }
 
             }
 
@@ -84,15 +81,10 @@ public class RegisterServlet extends HttpServlet {
 
                 out.print("<br /><h3 align=\"center\"><font color=\"red\">User Name Already Exist!</font></h3>");
                 out.println("<form action=\"/Register\" align= \"center\" method=\"post\">");
-                out.println("<input type=\"submit\" value=\"Try again\">");                         
+                out.println("<input type=\"submit\" value=\"Try again\">");
+                System.out.println(e);
 
             }
-
-            catch (ClassNotFoundException e)
-            {
-                throw new ServletException("JDBC Driver not found.", e);
-            }
-
             catch (Exception e)
             {
                 throw new ServletException("Exception.", e);
@@ -123,6 +115,9 @@ public class RegisterServlet extends HttpServlet {
 
             else if(success==false)
             {
+                out.print("<br /><h3 align=\"center\"><font color=\"red\">User Name Already Exist!</font></h3>");
+                out.println("<form action=\"/Register\" align= \"center\" method=\"post\">");
+                out.println("<input type=\"submit\" value=\"Try again\">");
                 session.invalidate();
             }
 

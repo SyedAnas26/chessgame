@@ -14,7 +14,7 @@ public class LogoutServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession(true);
-        session.setAttribute("user_id", null);
+        session.setAttribute("username", null);
         session.invalidate();
         out.println("<script type=\"text/javascript\">");
         out.println("alert('Logout Successful');");
@@ -27,7 +27,7 @@ public class LogoutServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession(true);
-        session.setAttribute("user_id", null);
+        session.setAttribute("username", null);
         session.invalidate();
         out.println("<script type=\"text/javascript\">");
         out.println("alert('Logout Successful');");
