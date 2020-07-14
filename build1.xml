@@ -22,7 +22,7 @@
 -->
 
 
-<project name="My Project - Syed" default="compile" basedir=".">
+<project name="My Project - Muthu" default="compile" basedir=".">
 
 
     <!-- Property Definitions
@@ -69,22 +69,22 @@
            http://localhost:8080/myapp
     -->
 
-    <property name="app.name"       value="chessgame"/>
-    <property name="deploy.home"    value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36\\webapps\\ROOT\\"/>
-    <property name="catalina.home"  value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36"/>
-    <property name="dist.home"      value="C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame"/>
+	<property name="app.name"       value="chessgame"/>
+    <property name="deploy.home"    value="/usr/local/opt/tomcat/libexec/webapps/ROOT"/>
+    <property name="catalina.home"  value="/usr/local/opt/tomcat/libexec"/>
+    <property name="dist.home"      value="/Users/muthu-1987/git/chessgame"/>
     <property name="dist.src"       value="chess.jar"/>
     <property name="dist.war"       value="chess.war"/>
 
 
-    <!-- The "prepare" target is used to construct the deployment home
-         directory structure (if necessary), and to copy in static files
-         as required.  In the example below, Ant is instructed to create
-         the deployment directory, copy the contents of the "web/" source
-         hierarchy, and set up the WEB-INF subdirectory appropriately.
-    -->
+	<!-- The "prepare" target is used to construct the deployment home
+		 directory structure (if necessary), and to copy in static files
+		 as required.  In the example below, Ant is instructed to create
+		 the deployment directory, copy the contents of the "web/" source
+		 hierarchy, and set up the WEB-INF subdirectory appropriately.
+	-->
 
-    <target name="prepare">
+	<target name="prepare">
         <mkdir  dir="${deploy.home}"/>
         <copy todir="${deploy.home}">
             <fileset dir="src/WebServerletLogic/OpenChess"/>
@@ -94,16 +94,23 @@
         </copy>
         <mkdir  dir="${deploy.home}/WEB-INF"/>
         <copy  file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
+
+
+
+        <mkdir  dir="${deploy.home}/WEB-INF/lib"/>
+        <copy todir="${deploy.home}/WEB-INF/lib">
+            <fileset dir="${dist.home}/jars"/>
+        </copy>
         <mkdir  dir="${deploy.home}/WEB-INF/classes"/>
     </target>
 
 
-    <!-- The "clean" target removes the deployment home directory structure,
-         so that the next time the "compile" target is requested, it will need
-         to compile everything from scratch.
-    -->
+	<!-- The "clean" target removes the deployment home directory structure,
+		 so that the next time the "compile" target is requested, it will need
+		 to compile everything from scratch.
+	-->
 
-    <target name="clean">
+	<target name="clean">
         <delete dir="${deploy.home}"/>
     </target>
 
@@ -112,32 +119,35 @@
         <antcall target="tomcat-start" />
     </target>
 
-    <!-- The "compile" target is used to compile (or recompile) the Java classes
-         that make up this web application.  The recommended source code directory
-         structure makes this very easy because the <javac> task automatically
-         works its way down a source code hierarchy and compiles any class that
-         has not yet been compiled, or where the source file is newer than the
-         class file.
+	<!-- The "compile" target is used to compile (or recompile) the Java classes
+		 that make up this web application.  The recommended source code directory
+		 structure makes this very easy because the <javac> task automatically
+		 works its way down a source code hierarchy and compiles any class that
+		 has not yet been compiled, or where the source file is newer than the
+		 class file.
 
-         Feel free to adjust the compilation option parameters (debug,
-         optimize, and deprecation) to suit your requirements.  It is also
-         possible to base them on properties, so that you can adjust this
-         behavior at runtime.
+		 Feel free to adjust the compilation option parameters (debug,
+		 optimize, and deprecation) to suit your requirements.  It is also
+		 possible to base them on properties, so that you can adjust this
+		 behavior at runtime.
 
-         The "compile" task depends on the "prepare" task, so the deployment
-         home directory structure will be created if needed the first time.
-    -->
-    <path id="compile.classpath">
+		 The "compile" task depends on the "prepare" task, so the deployment
+		 home directory structure will be created if needed the first time.
+	-->
+	<path id="compile.classpath">
 
         <!-- Include all JAR files that will be included in /WEB-INF/lib -->
-        <!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
-        <!--
-            <pathelement location="${foo.jar}"/>
-        -->
+		<!-- *** CUSTOMIZE HERE AS REQUIRED BY YOUR APPLICATION *** -->
+		<!--
+			<pathelement location="${foo.jar}"/>
+		-->
 
-        <!-- Include all elements that Tomcat exposes to applications -->
-        <pathelement location="${catalina.home}/classes"/>
+		<!-- Include all elements that Tomcat exposes to applications -->
+		<pathelement location="${catalina.home}/classes"/>
         <fileset dir="${catalina.home}/lib">
+            <include name="*.jar"/>
+        </fileset>
+        <fileset dir="${deploy.home}/WEB-INF/lib">
             <include name="*.jar"/>
         </fileset>
         <fileset dir="${dist.home}/jars">
@@ -168,27 +178,27 @@
         </java>
     </target>
 
-    <!-- The "all" target rebuilds everything by executing the "clean"
-         target first, which forces the "compile" target to compile all
-         source code instead of just the files that have been changed.
-    -->
+	<!-- The "all" target rebuilds everything by executing the "clean"
+		 target first, which forces the "compile" target to compile all
+		 source code instead of just the files that have been changed.
+	-->
 
-    <target name="all" depends="clean,prepare,compile,tomcat-restart"/>
+	<target name="all" depends="clean,prepare,compile,tomcat-restart"/>
 
 
-    <!-- The "dist" target builds the distribution Web ARchive (WAR) file
-         for this application, suitable for distribution to sites that wish
-         to install your application.  It also creates a JAR file containing
-         the source code for this application, if you wish to distribute
-         that separately.
-    -->
+	<!-- The "dist" target builds the distribution Web ARchive (WAR) file
+		 for this application, suitable for distribution to sites that wish
+		 to install your application.  It also creates a JAR file containing
+		 the source code for this application, if you wish to distribute
+		 that separately.
+	-->
 
-<!--    <target name="dist" depends="prepare,compile">
-        <jar jarfile="${dist.home}/${dist.src}"
-             basedir="."/>
-        <jar jarfile="${dist.home}/${dist.war}"
-             basedir="${deploy.home}"/>
-    </target>-->
+    <target name="dist" depends="prepare,compile">
+			<jar jarfile="${dist.home}/${dist.src}"
+				 basedir="."/>
+			<jar jarfile="${dist.home}/${dist.war}"
+				 basedir="${deploy.home}"/>
+		</target>
 
 
 </project>

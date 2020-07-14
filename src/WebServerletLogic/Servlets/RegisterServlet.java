@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Optional;
 
 public class RegisterServlet extends HttpServlet {
 
@@ -65,7 +66,7 @@ public class RegisterServlet extends HttpServlet {
             {
 
                 Class.forName("com.mysql.jdbc.Driver");
-                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
+                con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "");
                 stmt = con.createStatement();
                 String username=request.getParameter("user_id");
                 String fullname=request.getParameter("name");
@@ -95,6 +96,19 @@ public class RegisterServlet extends HttpServlet {
             catch (Exception e)
             {
                 throw new ServletException("Exception.", e);
+            }
+            finally
+            {
+                Optional.ofNullable(con).ifPresent(x -> {
+                    try
+                    {
+                        x.close();
+                    }
+                    catch(SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                });
             }
 
             if(success==true)
