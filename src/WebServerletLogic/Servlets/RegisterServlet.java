@@ -89,6 +89,19 @@ public class RegisterServlet extends HttpServlet {
             {
                 throw new ServletException("Exception.", e);
             }
+            finally
+            {
+                Optional.ofNullable(con).ifPresent(x -> {
+                    try
+                    {
+                        x.close();
+                    }
+                    catch(SQLException e)
+                    {
+                        e.printStackTrace();
+                    }
+                });
+            }
 
             if(success==true)
             {

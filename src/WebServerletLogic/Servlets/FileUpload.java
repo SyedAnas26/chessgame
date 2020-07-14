@@ -5,6 +5,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.FileUtils;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -17,7 +18,7 @@ import java.util.List;
 
 
 public class FileUpload extends HttpServlet {
-
+  
     private final String UPLOAD_DIRECTORY = "\\FileUploads";
     String FileName;
 
@@ -29,6 +30,7 @@ public class FileUpload extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String tomPath = request.getServletContext().getRealPath("");
         File Folder = new File(tomPath+UPLOAD_DIRECTORY);
         FileUtils.deleteDirectory(Folder);
