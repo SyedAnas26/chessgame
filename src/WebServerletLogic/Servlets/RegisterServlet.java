@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 public class RegisterServlet extends HttpServlet {
 
@@ -53,14 +54,19 @@ public class RegisterServlet extends HttpServlet {
             out.println("<body>");
 
             boolean success=false;
+            DBclass db1=new DBclass();
+            try {
+                db1.callDB();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
 
             HttpSession session = request.getSession(true);
 
             try
             {
 
-                DBclass db1=new DBclass();
-                db1.callDB();
                 String username=request.getParameter("username");
                 String fullname=request.getParameter("name");
                 String password=request.getParameter("password");
@@ -75,7 +81,9 @@ public class RegisterServlet extends HttpServlet {
                 success = true;
                 }
 
+
             }
+
 
             catch (SQLException e) {
 
@@ -89,19 +97,17 @@ public class RegisterServlet extends HttpServlet {
             {
                 throw new ServletException("Exception.", e);
             }
-            finally
-            {
-                Optional.ofNullable(con).ifPresent(x -> {
-                    try
-                    {
+            finally {
+                Optional.ofNullable(db1.con).ifPresent(x -> {
+                    try {
                         x.close();
-                    }
-                    catch(SQLException e)
-                    {
+                    } catch (SQLException e) {
                         e.printStackTrace();
                     }
                 });
             }
+
+
 
             if(success==true)
             {

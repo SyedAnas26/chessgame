@@ -94,6 +94,10 @@
         </copy>
         <mkdir  dir="${deploy.home}/WEB-INF"/>
         <copy  file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
+        <mkdir  dir="${deploy.home}/WEB-INF/lib"/>
+        <copy todir="${deploy.home}/WEB-INF/lib">
+            <fileset dir="${dist.home}/jars"/>
+        </copy>
         <mkdir  dir="${deploy.home}/WEB-INF/classes"/>
     </target>
 
@@ -140,10 +144,12 @@
         <fileset dir="${catalina.home}/lib">
             <include name="*.jar"/>
         </fileset>
+        <fileset dir="${deploy.home}/WEB-INF/lib">
+            <include name="*.jar"/>
+        </fileset>
         <fileset dir="${dist.home}/jars">
             <include name="*.jar"/>
         </fileset>
-
     </path>
 
 
@@ -189,6 +195,4 @@
         <jar jarfile="${dist.home}/${dist.war}"
              basedir="${deploy.home}"/>
     </target>
-
-
 </project>

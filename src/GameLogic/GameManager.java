@@ -37,6 +37,8 @@ public class GameManager {
 
 
         {
+
+            System.out.println(gamePlayAsArray.length);
             updateCurrentPlayerColor(currentPlayer);
             playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
             System.out.println("Step="+step);
@@ -571,7 +573,7 @@ public class GameManager {
     }
 
     public String getLastMovementAsString() {
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\"}";
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"}";
     }
 }
 

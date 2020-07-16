@@ -57,7 +57,7 @@
     </servlet>
     <servlet>
         <servlet-name>StartPlay</servlet-name>
-        <jsp-file>/html_files/PlayGame.html</jsp-file>
+        <jsp-file>/html_files/PlayGame.jsp</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>LoadFileUpload</servlet-name>

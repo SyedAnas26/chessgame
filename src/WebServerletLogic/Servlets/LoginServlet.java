@@ -32,7 +32,6 @@ public class LoginServlet extends HttpServlet
             out.println("<br />");
             out.println("<input type=\"submit\" alt=\"submit\" value=\"Login Again!\"/>");
             out.println("</form>");
-
             out.println("</body>");
             out.println("</html>");
         }
@@ -70,7 +69,6 @@ public class LoginServlet extends HttpServlet
             String thisname=request.getParameter("username");
             String thispwd=request.getParameter("password");
             String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd +"'";
-            System.out.println(q);
             res = db.stmt.executeQuery(q);
 
             if(res.next()) {

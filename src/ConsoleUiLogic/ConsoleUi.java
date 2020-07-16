@@ -7,24 +7,42 @@ import java.util.Scanner;
 
 public class ConsoleUi {
   int step;
+    int totalsteps;
+    int add;
 
 
     public ConsoleUi(String gamePlay) throws Exception {
         GameManager gameManager = new GameManager(gamePlay);
-        for (int i = 0; i <=gameManager.gamePlayAsArray.length-1; i++) {
+        try
+        {
+            totalsteps=Integer.parseInt(gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length-3]);
+            System.out.println(totalsteps);
+            add=0;
+        }
+        catch (NumberFormatException e)
+        {
+            totalsteps=Integer.parseInt(gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length-4]);
+            System.out.println(totalsteps);
+            add=1;
+        }
+        for (int i = 0; i <=totalsteps*2+1; i++) {
             getGesture();
+            if(step==(totalsteps*2)+1)
+            {
+                if (gameManager.gamePlayAsArray[(totalsteps*3)-1+add].equals("1/2-1/2")){
+                    System.out.println("\n \t \t \t Match Draw !!!\t \t \t \n");
+                } else if (gameManager.gamePlayAsArray[(totalsteps*3)-1+add].equals("0-1")) {
+                    System.out.println("\n \t \t \t Player 2 Won the Match (Black) !!!\t \t \t \n");
+                } else if (gameManager.gamePlayAsArray[(totalsteps*3)-1+add].equals("1-0"))
+                    System.out.println("\n \t \t \t Player 1 Won the Match (White) !!!\t \t \t \n");
+                else {
+                    System.out.println("error");
+                }
+                break;
+            }
             gameManager.conductGame(step);
             printBoard(gameManager);
-            if(i==gameManager.gamePlayAsArray.length -1)
-            {
-                if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(1) == '/') {
-                    System.out.println("\n \t \t \t Match Draw !!!\t \t \t \n");
-                } else if (gameManager.gamePlayAsArray[gameManager.gamePlayAsArray.length - 1].charAt(0) == '0') {
-                    System.out.println("\n \t \t \t Player 2 Won the Match (Black) !!!\t \t \t \n");
-                } else
-                    System.out.println("\n \t \t \t Player 1 Won the Match (White) !!!\t \t \t \n");
 
-            }
         }
     }
 
