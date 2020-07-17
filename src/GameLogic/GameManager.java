@@ -539,7 +539,7 @@ public class GameManager {
     }
 
 
-    private int getNumOf(char character) {
+     int getNumOf(char character) {
         String alphabet = "abcdefgh";
         return alphabet.indexOf(character);
     }

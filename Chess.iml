@@ -21,8 +21,8 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lib" level="project" />
     <orderEntry type="library" name="mysql-connector-java-8.0.15" level="project" />
-    <orderEntry type="library" exported="" name="trireme.0.9.1" level="project" />
     <orderEntry type="library" name="javax.servlet-api-4.0.1" level="project" />
     <orderEntry type="library" name="commons-fileupload-1.4" level="project" />
+    <orderEntry type="library" name="trireme.0.9.1" level="project" />
   </component>
 </module>

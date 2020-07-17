@@ -56,6 +56,10 @@
         <servlet-class>WebServerletLogic.Servlets.LogoutServlet</servlet-class>
     </servlet>
     <servlet>
+        <servlet-name>AiConverter</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.AiConverter</servlet-class>
+    </servlet>
+    <servlet>
         <servlet-name>StartPlay</servlet-name>
         <jsp-file>/html_files/PlayGame.jsp</jsp-file>
     </servlet>
@@ -66,6 +70,14 @@
     <servlet>
         <servlet-name>Register</servlet-name>
         <jsp-file>/html_files/Register.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>Difficulty</servlet-name>
+        <jsp-file>/html_files/Difficulty.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>VsComputer</servlet-name>
+        <jsp-file>/html_files/VsComputer.jsp</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>HomePage</servlet-name>
@@ -117,5 +129,17 @@
     <servlet-mapping>
         <servlet-name>HomePage</servlet-name>
         <url-pattern>/homepage</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Difficulty</servlet-name>
+        <url-pattern>/difficulty</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>VsComputer</servlet-name>
+        <url-pattern>/vscomputer</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/moves</url-pattern>
     </servlet-mapping>
 </web-app>
