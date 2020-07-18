@@ -24,8 +24,10 @@
 		function pickThePiece(pos,turn){
 			return board.isCurrentTeamPieceExistsAt(pos,turn);
 		};
-		
-	/*
+
+		this.getCurrentTeam=function () {
+			return playingTeam;
+		};/*
 		/**
 		 * Called when white to move
 		 * Return  : The status of check-mate, if mated returns 1, else 0

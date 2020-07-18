@@ -39,18 +39,7 @@
 
 
 <script type="text/javascript">
-<%
- try{
-     Class.forName("com.mysql.jdbc.Driver");
 
-    Connection con=DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
-    Statement stmt=con.createStatement();
-
-    }catch (ClassNotFoundException | SQLException e) {
-    e.printStackTrace();
-}
-
-%>
 
     function UI_Manager(){
 
@@ -61,7 +50,7 @@
         var lastClickAttrId = null;
         var lastButOneClickAttrId = null;
         var currentClickAttrId = null;
-        var playingTeam=gameManager.playingTeam;
+        var playingTeam=gameManager.getCurrentTeam;
         /*
          * MoveCycle -> A complete cycle of picking and placing a piece from one position to another position.
          * The cycle may contain steps like picking*,placing. picking?->any n no of picking, where n > 0
@@ -74,6 +63,10 @@
         var hasMoveCycleCompleted = false;
 
         //Function definitions starts here...
+        this.getPlayingTeam=function () {
+            return playingTeam;
+
+        };
 
         this.cellClickedAt = function(currAttrId){
 
@@ -173,7 +166,7 @@
                 console.log(getAttrID( moveList[i].get_fromPos())+getAttrID( moveList[i].get_toPos() ))
 
                        $.ajax({
-                           url: "http://localhost:8080/moves",
+                           url: "http://localhost:8080/usermoves",
                            type: 'POST',
                            data: {"fromMove": getAttrID( moveList[i].get_fromPos()), "toMove": getAttrID( moveList[i].get_toPos() )},
                            success: function () {
@@ -317,18 +310,54 @@
     $("#chess_board").ready(function() {
 
         var uiManager = new UI_Manager;
+        var PlayingTeam=Team.White;
         /**
          *	 This jquery call, ill dynamically add chess grids to chess board @link UI_Manager.cellGridHtmlGenerator.
          */
         $("#chess_board").html(UI_Manager.cellGridHtmlGenerator());
         assignIconsToCellGrids();
+        if(PlayingTeam===Team.Black){
+            console.log("Inside ai Player");
+            var Callai =new CallAi;
+            Callai.moveAi;
+            $.ajax({
+                url: "http://localhost:8080/aiMove",
+                type: 'POST',
+                success: function(response) {
+                    uiManager.cellClickedAt(response.from_pos);
+                    uiManager.cellClickedAt(response.to_pos);
+                    PlayingTeam=Team.White;
+                }
+            });
+        }
 
-        $(".chess_squares").click(function() {
 
-            uiManager.cellClickedAt($(this).attr('id'));
-            console.log("Some successful response for clicking");
+            $(".chess_squares").click(function () {
+                uiManager.cellClickedAt($(this).attr('id'));
+                console.log("Some successful response for clicking");
+                PlayingTeam=Team.Black;
+            });
+
+
+        $(".claimed_draw").click(function(){
+            $.ajax({
+                url: "http://localhost:8080/drawclaim",
+                type: 'POST',
+                data: {"claimDraw":"1"},
+                success: function () {
+                    alert("Match Draw");
+                    window.location='http://localhost:8080/homepage';
+                    console.log('draw ajax success!!');
+                },
+                error: function (jqXHR, exception) {
+                    console.log('draw ajax Error occured!!');
+                }
+            });
         });
+
     });
+
+
 </script>
 
 <head>
@@ -458,8 +487,10 @@
      -->
 
 </table>
-
-<form action="/homepage" method="post" align="center" >
+<br><br>
+<input type="button" class="claimed_draw" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+<br><br>
+<form action="/homepage" class="claimed_draw" method="post" align="center" >
     <input type="submit" value="Go Back to Home Page"/>
 </form>
 </body>

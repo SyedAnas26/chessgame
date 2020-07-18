@@ -6,8 +6,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DBclass {
-    Connection con = null;
-    Statement stmt = null;
+    public Connection con = null;
+    public Statement stmt = null;
     public void callDB() throws Exception {
        try {
            Class.forName("com.mysql.jdbc.Driver");

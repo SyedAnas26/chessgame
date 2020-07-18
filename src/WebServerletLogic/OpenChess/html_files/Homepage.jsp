@@ -1,3 +1,4 @@
+<%@ page import="java.io.PrintWriter" %>
 <html>
 <head>
     <title>
@@ -8,6 +9,7 @@
 </head>
 <body>
 <%
+
     String  userId = (String)session.getAttribute("username");
     if(userId == null) {
         out.println("<script type=\"text/javascript\">");

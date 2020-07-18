@@ -14,6 +14,10 @@ public class GameManager {
     Position fromPositionOrg;
     Position toPositionOrg;
 
+    public GameManager(){
+        b.setBoard();
+    }
+
     public GameManager(String gamePlay) throws Exception {
 
         System.out.println(" Welcome To The Chess Game");
@@ -121,7 +125,7 @@ public class GameManager {
         return b.cell[toPosition.x][toPosition.y].getPieceColor().stringFormat.equals(currentPlayerColor.stringFormat);
     }
 
-    void playGame(String arrayElement) throws Exception {
+    public void playGame(String arrayElement) throws Exception {
         System.out.println("element=="+arrayElement);
 
         if (arrayElement.length() == 2) {

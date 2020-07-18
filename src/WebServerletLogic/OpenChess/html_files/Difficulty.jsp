@@ -1,4 +1,3 @@
-<%@ page import="java.util.Random" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -37,22 +36,21 @@ else if(action==='Hard'){
     diff=20
 }
     sessionStorage.setItem("Difficulty",diff);
-}
+}</script>
+
 <%
 String  userId = (String)session.getAttribute("username");
-Random rand=new Random();
-int random=rand.nextInt(1000000);
-session.setAttribute("moveNo",1);
-session.setAttribute("random",random);
+session.setAttribute("NewOrOldGame","New");
 if(userId == null) {
+    out.println("<script type=\"text/javascript\">");
     out.println("alert('Login first');");
     out.println("location='/loginpage';");
     out.println("</script>");
-    }%>
-    </script>
+    }
+%>
 </head>
 <body><div>
-   <form action="/vscomputer" method="post" align="center" >
+   <form action="vscomputer" method="post" align="center" >
        <br>
        <br>
        <br>
@@ -60,7 +58,6 @@ if(userId == null) {
    <input id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
    <input id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
     </form>
-
 </div>
 </body>
 </html>
