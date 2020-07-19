@@ -9,35 +9,32 @@ public class PgnGenerator {
     public PgnGenerator() {
         board.setBoard();
     }
-
- /*   public static void main(String[] args) throws Exception {
-        PgnGenerator pg = new PgnGenerator();
-        pg.convertToPgn("f2", "f4");
-        pg.convertToPgn("h7", "h5");
-        pg.convertToPgn("e2", "e4");
-        pg.convertToPgn("g8", "f6");
-        pg.convertToPgn("d1", "g4");
-        pg.convertToPgn("b8", "a6");
-        pg.convertToPgn("f1", "c4");
-        pg.convertToPgn("h8", "h6");
-        pg.convertToPgn("e1", "f2");
-        pg.convertToPgn("f6", "g4");
-        pg.convertToPgn("f2", "f3");
-        pg.convertToPgn("h6", "b6");
-        pg.convertToPgn("c4", "f7");
-    }
-*/
+//    public static void main(String[] args) throws Exception {
+//        PgnGenerator pg = new PgnGenerator();
+//        pg.convertToPgn("e2", "e4");
+//        pg.convertToPgn("d7", "d5");
+//        pg.convertToPgn("e4", "d5");
+////        pg.convertToPgn("g8", "f6");
+////        pg.convertToPgn("d1", "g4");
+////        pg.convertToPgn("b8", "a6");
+////        pg.convertToPgn("f1", "c4");
+////        pg.convertToPgn("h8", "h6");
+////        pg.convertToPgn("e1", "f2");
+////        pg.convertToPgn("f6", "g4");
+////        pg.convertToPgn("f2", "f3");
+////        pg.convertToPgn("h6", "b6");
+////        pg.convertToPgn("c4", "f7");
+//    }
     public String convertToPgn(String fromPos, String toPos) throws Exception {
         String piece = "";
         toPosition.y = getNumOf(toPos.charAt(0));
         fromPosition.y = getNumOf(fromPos.charAt(0));
         toPosition.x = Integer.parseInt(toPos.substring(1, 2)) - 1;
         fromPosition.x = Integer.parseInt(fromPos.substring(1, 2)) - 1;
-        if(board.cell[toPosition.x][toPosition.y].getPieceType().equals(" ")){
-            kill="";
-        }
-        else {
-            kill="x";
+        if (board.cell[toPosition.x][toPosition.y].getPieceType().equals(" ")) {
+            kill = "";
+        } else {
+            kill = "x";
         }
         String pieceType = board.cell[fromPosition.x][fromPosition.y].getPieceType();
         board.cell[toPosition.x][toPosition.y] = board.cell[fromPosition.x][fromPosition.y];
@@ -55,8 +52,13 @@ public class PgnGenerator {
         } else if (pieceType.equals("WP") || pieceType.equals("BP")) {
             piece = "";
         }
-        System.out.println(piece + kill + toPos);
-        return "" + piece + kill + toPos;
+
+       // printBoard();
+        if (piece.equals("") && kill.equals("x")) {
+            return "" + fromPos.charAt(0) + kill + toPos;
+        } else {
+            return "" + piece + kill + toPos;
+        }
     }
 
     int getNumOf(char character) {
