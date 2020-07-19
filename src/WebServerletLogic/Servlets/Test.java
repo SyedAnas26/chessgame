@@ -34,6 +34,18 @@ public class Test
 		}
 	}
 
+
+
+
+
+
+
+
+	
+
+
+
+
 	public static ResultSet get(String query) throws Exception
 	{
 		makeConnection();
