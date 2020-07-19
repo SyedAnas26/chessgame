@@ -1,6 +1,7 @@
 package WebServerletLogic.Servlets;
 
 import GameLogic.GameManager;
+import GameLogic.KongAiConnector;
 import GameLogic.PgnGenerator;
 
 import javax.servlet.ServletException;
@@ -13,7 +14,8 @@ import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class AiConverter extends HttpServlet {
@@ -23,8 +25,8 @@ public class AiConverter extends HttpServlet {
     String move;
     int drawClaim;
     int moveNo;
-    int gameId;
-    int random=0;
+    long gameId;
+    long random=0;
     int i=0;
     int time =0;
     String aimove;
@@ -39,12 +41,20 @@ public class AiConverter extends HttpServlet {
 
         try {
             isNew(req);
-            if(req.getServletPath().equals("/aimoves")){
-                aimove=req.getParameter("aimove");
-                gameManager.playGame(aimove);
-                responseStep =gameManager.getLastMovementAsString();
-            }
-           else if(req.getServletPath().equals("/aiMove")){
+            if(req.getServletPath().equals("/aiMove")){
+
+                List<String> arr= getMovesArr(gameId);
+
+                KongAiConnector kongAI = new KongAiConnector();
+                HttpSession httpSession = req.getSession();
+                String difficulty = (String) httpSession.getAttribute("Difficulty");
+                String move = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
+                System.out.println("AIMove" +move);
+
+                gameManager.playGame(move);
+                responseStep = gameManager.getLastMovementAsString();
+                System.out.println("Responsestep" + responseStep);
+
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
@@ -52,7 +62,6 @@ public class AiConverter extends HttpServlet {
             }
            else{
             addMove(req);
-            createMovesArr(req);
            }
         } catch (Exception throwables) {
             throwables.printStackTrace();
@@ -60,23 +69,24 @@ public class AiConverter extends HttpServlet {
 
     }
 
-    private void createMovesArr(HttpServletRequest req) throws SQLException {
-        HttpSession session=req.getSession();
-        String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameId + "'";
+    private List<String> getMovesArr(long gameID) throws Exception
+    {
+        String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "'";
         System.out.println(sql);
-        PreparedStatement pst = db.con.prepareStatement(sql);
+
+        DBclass dbConnector = new DBclass();
+        dbConnector.callDB();
+        PreparedStatement pst = dbConnector.con.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
-        ResultSetMetaData rsmetadata = rs.getMetaData();
-        int columns = rsmetadata.getColumnCount();
-        String[] Moves = new String[columns];
+        List<String> moves = new ArrayList<>();
         int j=0;
         while (rs.next()) {
-            Moves[j] = rs.getString("Moves");
-            System.out.println("moves"+Moves[j]);
+            moves.add(rs.getString("moves"));
+            System.out.println("moves"+moves.get(j));
             j++;
         }
-        String[] Moves1=new String[]{"e4"};
-        session.setAttribute("MovesArr",Moves1);
+
+        return moves;
     }
 
     private void addMove(HttpServletRequest req) {
@@ -92,8 +102,10 @@ public class AiConverter extends HttpServlet {
             }
             else{
                 move=pg.convertToPgn(fromPos,toPos);
+                gameManager.playGame(move);
             }
             gameId= random;
+            System.out.println("GameID" + gameId + "Random" + random);
             db.callDB();
             db.stmt.executeUpdate("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('"+gameId+"','"+moveNo+"','"+move+"','"+time+"','"+drawClaim+"')");
             moveNo++;
@@ -114,7 +126,7 @@ public class AiConverter extends HttpServlet {
             drawClaim=0;
             moveNo=1;
             try {
-                random = CreateNewRandom();
+                gameId = random = System.nanoTime();
             } catch (Exception throwables) {
                 throwables.printStackTrace();
             }

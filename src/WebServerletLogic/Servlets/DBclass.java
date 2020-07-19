@@ -11,7 +11,7 @@ public class DBclass {
     public void callDB() throws Exception {
        try {
            Class.forName("com.mysql.jdbc.Driver");
-           con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
+           con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "");
            stmt = con.createStatement();
        }
        catch (SQLException e)

@@ -20,17 +20,6 @@ create table login
         primary key
 );
 
-create table login
-(
-    username varchar(45)  null,
-    fullname varchar(150) null,
-    password varchar(45)  null,
-    email_id varchar(150) null,
-    gender   varchar(6)   null,
-    UserId   int auto_increment
-        primary key
-);
-
 create table challengetable
 (
     idChallengeTable int         not null
@@ -42,3 +31,6 @@ create table challengetable
     Status           tinyint     null
 );
 
+
+
+//TO change big int GameID

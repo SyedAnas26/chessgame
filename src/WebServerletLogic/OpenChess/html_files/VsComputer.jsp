@@ -61,14 +61,8 @@
          */
 
         var hasMoveCycleCompleted = false;
-
-        //Function definitions starts here...
-        this.getPlayingTeam=function () {
-            return playingTeam;
-
-        };
-
-        this.cellClickedAt = function(currAttrId){
+        var isAITurn = false;
+        this.cellClickedAt = function cellClickedTemp(currAttrId){
 
             if(hasMoveCycleCompleted){
                 removeHighlight(lastButOneClickAttrId);
@@ -83,6 +77,23 @@
             lastButOneClickAttrId = lastClickAttrId;
             lastClickAttrId = currAttrId;
 
+            if(isAITurn)
+            {
+               callAIToPlay();
+            }
+
+	        function callAIToPlay()
+    		{
+    		     console.log("Inside ai Player");
+                    $.ajax({
+                        url: "http://localhost:8080/aiMove",
+                        type: 'POST',
+                        success: function(response) {
+                            cellClickedTemp(response.from_pos);
+                            cellClickedTemp(response.to_pos);
+                        }
+                    });
+    		}
         };
 
         /**
@@ -227,6 +238,7 @@
                     addLightHighlight(currentClickAttrId); // Hightlight with dark color.
                     //changeHightlight(lastClickAttrId); // Changes the highlight from dark to light color.
                     hasMoveCycleCompleted = true;
+                    isAITurn = isAITurn == false? true : false;
                     return;
                 /* The return value of cellClicked will never be other values than -1,0,1 */
             }
@@ -316,26 +328,10 @@
          */
         $("#chess_board").html(UI_Manager.cellGridHtmlGenerator());
         assignIconsToCellGrids();
-        if(PlayingTeam===Team.Black){
-            console.log("Inside ai Player");
-            var Callai =new CallAi;
-            Callai.moveAi;
-            $.ajax({
-                url: "http://localhost:8080/aiMove",
-                type: 'POST',
-                success: function(response) {
-                    uiManager.cellClickedAt(response.from_pos);
-                    uiManager.cellClickedAt(response.to_pos);
-                    PlayingTeam=Team.White;
-                }
-            });
-        }
-
 
             $(".chess_squares").click(function () {
                 uiManager.cellClickedAt($(this).attr('id'));
                 console.log("Some successful response for clicking");
-                PlayingTeam=Team.Black;
             });
 
 
