@@ -34,8 +34,19 @@ public class GameManager {
 
     }
 
+    public void conductGame(String move) throws Exception {
 
-    public void conductGame(int step) throws Exception {
+        gameStatus = GameStatus.NotBegan;
+        updateCurrentPlayerColor(currentPlayer);
+        playGame(move);
+        updateGameStatus();
+        currentPlayer = updateCurrentPlayer(currentPlayer);
+        currentPlayer += 1;
+
+    }
+
+
+    public void conductGameForPgn(int step) throws Exception {
 
         gameStatus = GameStatus.NotBegan;
 

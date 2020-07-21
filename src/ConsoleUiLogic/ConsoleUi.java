@@ -40,7 +40,7 @@ public class ConsoleUi {
                 }
                 break;
             }
-            gameManager.conductGame(step);
+            gameManager.conductGameForPgn(step);
             printBoard(gameManager);
 
         }

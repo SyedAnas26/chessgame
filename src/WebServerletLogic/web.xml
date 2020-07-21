@@ -148,10 +148,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
-        <url-pattern>/aimoves</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>AiConverter</servlet-name>
         <url-pattern>/aiMove</url-pattern>
     </servlet-mapping>
 </web-app>

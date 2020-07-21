@@ -1,27 +1,33 @@
 package ConsoleUiLogic;
 
-import java.io.*;
+import GameLogic.GameManager;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TheChessGame {
 
     public static void main(String[] args) throws Exception {
+        GameManager gm=new GameManager();
+        gm.conductGame("d4");
+        gm.conductGame("Nc6");
 
-        File file = new File("src/ConsoleUiLogic/ChessPgn.txt");
-      BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine();
-        StringBuilder sb = new StringBuilder();
-        String string = null;
-        while (line != null) {
-            sb.append(line).append("\n");
-            line = br.readLine();
-            string =sb.toString();
-        }
-        String gamePlay=regexElimination(string);
-        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
-        new ConsoleUi(gamePlay);
-    }
+        System.out.println(gm.getLastMovementAsString());
+////
+//        File file = new File("src/ConsoleUiLogic/ChessPgn.txt");
+//      BufferedReader br = new BufferedReader(new FileReader(file));
+//        String line = br.readLine();
+//        StringBuilder sb = new StringBuilder();
+//        String string = null;
+//        while (line != null) {
+//            sb.append(line).append("\n");
+//            line = br.readLine();
+//            string =sb.toString();
+//        }
+//        String gamePlay=regexElimination(string);
+//        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
+//        new ConsoleUi(gamePlay);
+ }
 
     static String regexElimination(String string) {
 

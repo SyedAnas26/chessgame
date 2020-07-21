@@ -1,6 +1,7 @@
 package WebServerletLogic.Servlets;
 
 import GameLogic.GameManager;
+import GameLogic.KongAiConnector;
 import GameLogic.PgnGenerator;
 
 import javax.servlet.ServletException;
@@ -12,18 +13,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 public class AiConverter extends HttpServlet {
     PgnGenerator pg=null;
     GameManager gameManager=null;
     DBclass db=new DBclass();
-    String move;
+    String userMove;
     int drawClaim;
     int moveNo;
-    int gameId;
+    long gameId;
     int random=0;
     int i=0;
     int time =0;
@@ -39,20 +41,28 @@ public class AiConverter extends HttpServlet {
 
         try {
             isNew(req);
-            if(req.getServletPath().equals("/aimoves")){
-                aimove=req.getParameter("aimove");
-                gameManager.playGame(aimove);
-                responseStep =gameManager.getLastMovementAsString();
+            if(req.getServletPath().equals("/usermoves") || req.getServletPath().equals("/drawclaim")){
+
+                System.out.println("usermove came first");
+                addMove(req);
             }
-           else if(req.getServletPath().equals("/aiMove")){
+           else if(req.getServletPath().equals("/aiMove")) {
+                System.out.println("ai came first");
+                List<String> arr= getMovesArr(gameId);
+                KongAiConnector kongAI = new KongAiConnector();
+                HttpSession httpSession = req.getSession();
+                String difficulty = (String) httpSession.getAttribute("Difficulty");
+                System.out.println("user move Array"+ (Arrays.toString(arr.toArray())));
+                String move = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
+                System.out.println("AIMove" +move);
+                gameManager.conductGame(move);
+                responseStep = gameManager.getLastMovementAsString();
+                System.out.println("Responsestep" + responseStep);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
                 out.print(responseStep);
-            }
-           else{
-            addMove(req);
-            createMovesArr(req);
+                moveNo++;
            }
         } catch (Exception throwables) {
             throwables.printStackTrace();
@@ -60,23 +70,24 @@ public class AiConverter extends HttpServlet {
 
     }
 
-    private void createMovesArr(HttpServletRequest req) throws SQLException {
-        HttpSession session=req.getSession();
-        String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameId + "'";
-        System.out.println(sql);
+    private List<String> getMovesArr(long gameID) throws Exception {
+
+        System.out.println("gameId inside getMovesArr"+gameID);
+        String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "'";
+        System.out.println("inside getMovesArr"+sql);
+        db.callDB();
         PreparedStatement pst = db.con.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
-        ResultSetMetaData rsmetadata = rs.getMetaData();
-        int columns = rsmetadata.getColumnCount();
-        String[] Moves = new String[columns];
+        List<String> moves = new ArrayList<>();
         int j=0;
         while (rs.next()) {
-            Moves[j] = rs.getString("Moves");
-            System.out.println("moves"+Moves[j]);
+            moves.add(rs.getString("moves"));
+            System.out.println("moves"+moves.get(j));
             j++;
         }
-        String[] Moves1=new String[]{"e4"};
-        session.setAttribute("MovesArr",Moves1);
+
+        return moves;
+
     }
 
     private void addMove(HttpServletRequest req) {
@@ -87,15 +98,16 @@ public class AiConverter extends HttpServlet {
                 String drawclaim = req.getParameter("claimDraw");
                 if (drawclaim != null) {
                     drawClaim = Integer.parseInt(drawclaim);
-                    move ="Draw Claimed";
+                    userMove ="Draw Claimed";
                 }
             }
             else{
-                move=pg.convertToPgn(fromPos,toPos);
+                userMove =pg.convertToPgn(fromPos,toPos);
+                System.out.println("user Move"+userMove);
+                gameManager.conductGame(userMove);
             }
-            gameId= random;
             db.callDB();
-            db.stmt.executeUpdate("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('"+gameId+"','"+moveNo+"','"+move+"','"+time+"','"+drawClaim+"')");
+            db.stmt.executeUpdate("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('"+gameId+"','"+moveNo+"','"+ userMove +"','"+time+"','"+drawClaim+"')");
             moveNo++;
 
         } catch (Exception e) {
@@ -114,7 +126,7 @@ public class AiConverter extends HttpServlet {
             drawClaim=0;
             moveNo=1;
             try {
-                random = CreateNewRandom();
+                gameId = System.nanoTime();
             } catch (Exception throwables) {
                 throwables.printStackTrace();
             }

@@ -50,7 +50,7 @@ public class ChessServlet extends HttpServlet {
                 out.print(winCheck);
             }
             for(int i=1;i<=step;i++){
-                manager.conductGame(i);
+                manager.conductGameForPgn(i);
             }
             responseStep =manager.getLastMovementAsString();
             System.out.println("responseStep: " + responseStep);

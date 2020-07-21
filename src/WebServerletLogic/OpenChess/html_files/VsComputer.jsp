@@ -10,39 +10,26 @@
 
 <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
 <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
-
 <script type="text/javascript" src="../Util/Move/MoveCode.js" ></script>
 <script type="text/javascript" src="../Util/Move/Move.js" ></script>
 <link rel="stylesheet" type="text/css" href="../Util/Theme/Default.css">
-
 <script type="text/javascript" src="../Util/Position.js" ></script>
 <script type="text/javascript" src="../Util/InitPos.js" ></script>
 <script type="text/javascript" src="../Util/Copy.js" ></script>
-
 <script type="text/javascript" src="../Pieces/Piece.js" ></script>
-
 <script type="text/javascript" src="../Pieces/Pawn.js" ></script>
 <script type="text/javascript" src="../Pieces/Rook.js" ></script>
 <script type="text/javascript" src="../Pieces/Knight.js" ></script>
 <script type="text/javascript" src="../Pieces/Bishop.js" ></script>
 <script type="text/javascript" src="../Pieces/Queen.js" ></script>
 <script type="text/javascript" src="../Pieces/King.js" ></script>
-
 <script type="text/javascript" src="../Pieces/Team.js" ></script>
-
 <script type="text/javascript" src="../Control/Cell.js" ></script>
 <script type="text/javascript" src="../Control/Board.js" ></script>
 <script type="text/javascript" src="../Control/Timer.js" ></script>
 <script type="text/javascript" src="../Control/GameManager.js" ></script>
-
-
-
-
 <script type="text/javascript">
-
-
     function UI_Manager(){
-
         var gameManager = new GameManager;
         /*
          * The current clicks and last two clicks are continuously tracked only for highlighting purposes.
@@ -59,49 +46,56 @@
          * then again this variable will remain false, until the second move is successfully finished.
          * Then after second move again the variable is set to true, and this cycle continues for every move.
          */
-
+        var turn=1;
+        var aicalled=false;
         var hasMoveCycleCompleted = false;
-
-        //Function definitions starts here...
-        this.getPlayingTeam=function () {
-            return playingTeam;
-
-        };
-
-        this.cellClickedAt = function(currAttrId){
-
+        var isAITurn = false;
+        this.cellClickedAt = function cellClickedTemp(currAttrId){
             if(hasMoveCycleCompleted){
+
                 removeHighlight(lastButOneClickAttrId);
                 removeHighlight(lastClickAttrId);
                 hasMoveCycleCompleted = false;
             }
+            if(isAITurn)
+            {
+                aicalled=true;
+                callAIToPlay();
 
+            }
             currentClickAttrId = currAttrId;
-
             clickResponseFromGameManager();
-
             lastButOneClickAttrId = lastClickAttrId;
             lastClickAttrId = currAttrId;
 
+            function callAIToPlay()
+            {
+                console.log("Inside ai Player");
+                $.ajax({
+                    url: "http://localhost:8080/aiMove",
+                    type: 'POST',
+                    success: function(response) {
+                        isAITurn=false;
+                        cellClickedTemp(response.from_pos);
+                        cellClickedTemp(response.to_pos);
+                        aicalled=false;
+                    }
+                });
+            }
         };
-
         /**
          * Converts the position to Attribute Id, which could be used at the front end.
          */
         function getAttrID(pos){
             return pos.toString();
         }
-
-
         /**
          *  Dynamically generates element Id, based on the user selection.
          *
          *
          */
         function generatePieceID(pieceType,currentTeam){
-
             var newElement_id;
-
             switch(pieceType){
                 case Piece.Queen:
                     id = "queen";
@@ -116,41 +110,29 @@
                     id = "knight";
                     break;
             }
-
             switch ( currentTeam ){
                 case Team.Black:
                     id += "_black";
                     break;
-
                 case Team.White:
                     id += "_white";
                     break;
-
             }
-
             return id;
         };
-
         function moveIcon(moveList){
-
             for( var i = 0 ; i < moveList.length ; i++){
-
                 if(moveList[i].get_fromPos() == null && moveList[i].get_toPos() == null)
                     throw "Invalid positions for move in User Interface. Both positions are null";
-
                 if(moveList[i].get_fromPos() == null){
                     /*Means request to add a new piece*/
                     //popup();
                     console.log("Hurray!!! I am here at get_fromPos");
                     var pieceType = Piece.Queen;
                     gameManager.addPiece(moveList[i].get_toPos() , pieceType);
-
                     var newPieceID = generatePieceID(pieceType,gameManager.getCurrentTurn());
                     gameManager.triggerChangeTurn();
-
                     $('#' + getAttrID( moveList[i].get_toPos() ) ).html($('#' + newPieceID ).html());
-
-
                 }
                 else if(moveList[i].get_toPos() == null){
                     /*Means a request to remove a piece from FromPos*/
@@ -162,114 +144,95 @@
                     $('#' + getAttrID( moveList[i].get_toPos() ) ).html($('#' + getAttrID( moveList[i].get_fromPos() ) ).html());
                     $('#' + getAttrID( moveList[i].get_fromPos() ) ).html("");
                 }
-
                 console.log(getAttrID( moveList[i].get_fromPos())+getAttrID( moveList[i].get_toPos() ))
-
-                       $.ajax({
-                           url: "http://localhost:8080/usermoves",
-                           type: 'POST',
-                           data: {"fromMove": getAttrID( moveList[i].get_fromPos()), "toMove": getAttrID( moveList[i].get_toPos() )},
-                           success: function () {
-                               console.log('ajax success!!');
-                           },
-                           error: function (jqXHR, exception) {
-                               console.log('Error occured!!');
-                           }
-                       });
-
-                console.log( " fromAttrId , toAttrId  is " +  ( moveList[i].get_fromPos()==null? null : getAttrID( moveList[i].get_fromPos() ) )+ ","+ ( moveList[i].get_toPos()==null? null : getAttrID( moveList[i].get_toPos() ) )) ;
+                if(aicalled===false) {
+                    $.ajax({
+                        url: "http://localhost:8080/usermoves",
+                        type: 'POST',
+                        data: {
+                            "fromMove": getAttrID(moveList[i].get_fromPos()),
+                            "toMove": getAttrID(moveList[i].get_toPos())
+                        },
+                        success: function () {
+                            console.log('ajax success!!');
+                        },
+                        error: function (jqXHR, exception) {
+                            console.log('Error occured!!');
+                        }
+                    });
+                }
+                    console.log(" fromAttrId , toAttrId  is " + (moveList[i].get_fromPos() == null ? null : getAttrID(moveList[i].get_fromPos())) + "," + (moveList[i].get_toPos() == null ? null : getAttrID(moveList[i].get_toPos())));
             }
-
             // $('#d3').html($('#d2').html());
             // $('#d2').html("");
-
         };
-
         function addLightHighlight(attrId){
             $('#' + attrId).addClass("yellowLightHighlight");
         }
-
         function addDarkHighlight(attrId){
             $('#' + attrId).addClass("yellowDarkHighlight");
         }
-
         function removeHighlight(attrId){
             $('#' + attrId).removeClass("yellowDarkHighlight");
             $('#' + attrId).removeClass("yellowLightHighlight");
         }
-
         /*Changes the highlight from dark to light color.*/
         function changeHighlight(attrId){
             $('#' + attrId).removeClass("yellowDarkHighlight");
             $('#' + attrId).addClass("yellowLightHighlight")
         }
-
         function clickResponseFromGameManager(){
             var responseStatus_moveList  = gameManager.cellClicked(currentClickAttrId);
             var responseStatus = responseStatus_moveList[0];
             var moveList =  responseStatus_moveList[1];
-
             switch( responseStatus ){
-
                 case -1: // Remove the highlight of the lastMoveAttrId.
                     console.log(" I am here in UI Manager drop the picked piece, due to invalid move");
                     removeHighlight(lastClickAttrId);
                     return;
-
                 case 0 : //Make hightlight.
                     console.log(" I am here in UI Manager to pick the piece");
                     addDarkHighlight(currentClickAttrId);
                     return;
-
                 case 1 : //Move the piece_icon from lastMoveAttrId to thisClickAttrId, remove icon previously present in thisClickAttrId ( if any ).
                     console.log(" I am here in UI Manager to move");
                     moveIcon(moveList);
                     addLightHighlight(currentClickAttrId); // Hightlight with dark color.
                     //changeHightlight(lastClickAttrId); // Changes the highlight from dark to light color.
                     hasMoveCycleCompleted = true;
+                    turn++;
+                    if(turn%2==0){
+                    isAITurn =true;}
                     return;
                 /* The return value of cellClicked will never be other values than -1,0,1 */
             }
         };
-
-
     }; //End of UI_Manager.
-
     UI_Manager.cellGridHtmlGenerator = function(){
         var cellGridHtml;
-
         for(var i = 8 ; i >= 1 ; i--){
-
             cellGridHtml +=  "<tr>";
-
             //Giving the number infront of the left col*/
             cellGridHtml +=  '<td class="boardNumbering" id=' + i +'>' + i + '</td>'
-
             for(var j = 'a'  ; j != null ; j=Position.getNextChar(j) )
                 cellGridHtml +=  '<td class="chess_squares" id=' + (j + i)  + '></td>';
             cellGridHtml +=  "</tr>";
         }
-
         /*Giving the number below the bottom rank*/
         cellGridHtml +=  "<tr>";
         cellGridHtml +=  '<td class="chess_numbering" id=Number0>WebChess</td>';
-
         for(var j = 'a'  ; j != null ; j=Position.getNextChar(j) )
             cellGridHtml +=  '<td class="chess_numbering" id=Number' + j  + '>' +   j  + '</td>';
         cellGridHtml +=  "</tr>";
-
         return cellGridHtml;
     };
-
     function assignIconsToCellGrids(){
         //The initial Positions are hard cored in the PlayGame.jsp file //Loading the initial positions...
         //This position starts from 11 and ends in 88 since nth-child parameter is in that way....
-
         for(var ch='a'; ch !=null ; ch = Position.getNextChar(ch)){
             $('#' + ch + 2).html($('#pawn_white').html());
             $('#' + ch + 7).html($('#pawn_black').html());
         }
-
         /*
             a8 b8 c8 d8 e8 f8 g8 h8
           a7 b7 c7 d7 e7 f7 g7 h7
@@ -280,12 +243,10 @@
           a2 b2 c2 d2 e2 f2 g2 h2
           a1 b1 c1 d1 e1 f1 g1 h1
         */
-
         /*
         *  RegExp to match any id in any jquery without containing '(' or ')' : \'[^(\.)]*\'
         *  Match for special jquery like  #chess_board tr:nth-child(1)  td:nth-child(7) -->  \'[\(\)||[^(\.)]]*\'
         */
-
         $('#a8').html($('#rook_black').html());
         $('#b8').html($('#knight_black').html());
         $('#c8').html($('#bishop_black').html());
@@ -294,7 +255,6 @@
         $('#f8').html($('#bishop_black').html());
         $('#g8').html($('#knight_black').html());
         $('#h8').html($('#rook_black').html());
-
         $('#a1').html($('#rook_white').html());
         $('#b1').html($('#knight_white').html());
         $('#c1').html($('#bishop_white').html());
@@ -303,12 +263,8 @@
         $('#f1').html($('#bishop_white').html());
         $('#g1').html($('#knight_white').html());
         $('#h1').html($('#rook_white').html());
-
     };
-
-
     $("#chess_board").ready(function() {
-
         var uiManager = new UI_Manager;
         var PlayingTeam=Team.White;
         /**
@@ -316,29 +272,10 @@
          */
         $("#chess_board").html(UI_Manager.cellGridHtmlGenerator());
         assignIconsToCellGrids();
-        if(PlayingTeam===Team.Black){
-            console.log("Inside ai Player");
-            var Callai =new CallAi;
-            Callai.moveAi;
-            $.ajax({
-                url: "http://localhost:8080/aiMove",
-                type: 'POST',
-                success: function(response) {
-                    uiManager.cellClickedAt(response.from_pos);
-                    uiManager.cellClickedAt(response.to_pos);
-                    PlayingTeam=Team.White;
-                }
-            });
-        }
-
-
-            $(".chess_squares").click(function () {
-                uiManager.cellClickedAt($(this).attr('id'));
-                console.log("Some successful response for clicking");
-                PlayingTeam=Team.Black;
-            });
-
-
+        $(".chess_squares").click(function () {
+            uiManager.cellClickedAt($(this).attr('id'));
+            console.log("Some successful response for clicking");
+        });
         $(".claimed_draw").click(function(){
             $.ajax({
                 url: "http://localhost:8080/drawclaim",
@@ -354,10 +291,7 @@
                 }
             });
         });
-
     });
-
-
 </script>
 
 <head>
@@ -372,7 +306,6 @@
             text-shadow:0 1px #fff;
             width:80px;
         }
-
         #chess_board { border:5px solid #333; }
         #chess_board td {
             background:#fff;
@@ -386,7 +319,6 @@
             vertical-align:middle;
             width:80px;
         }
-
         #chess_board tr:nth-child(odd) td:nth-child(even),
         #chess_board tr:nth-child(even) td:nth-child(odd) {
             background:#ccc;
@@ -446,11 +378,8 @@
 
 
     <!--
-
        In the program there are 2 notations are used.
-
        1. The Algebraic Noation...  id of table will be in this format..
-
           a8 b8 c8 d8 e8 f8 g8 h8
         a7 b7 c7 d7 e7 f7 g7 h7
         a6 b6 c6 d6 e6 f6 g6 h6
@@ -459,9 +388,6 @@
         a3 b3 c3 d3 e3 f3 g3 h3
         a2 b2 c2 d2 e2 f2 g2 h2
         a1 b1 c1 d1 e1 f1 g1 h1
-
-
-
         2. Numeric Notation...     cell[i][j] in board will be in this format...
         07 17 27 37 47 57 67 77    But you could use any format by calling getCellAt(new Position('a'),1) or getCellAt(new Position(1,1))
         06 16 26 36 46 56 66 76
@@ -471,7 +397,6 @@
         02 12 22 32 42 52 62 72
         01 11 21 31 41 51 61 71
         00 10 20 30 40 50 60 70
-
         CAUTION :
          The cells will NOT FOLLOW matrix format, rather they will follow the numeric notation as explained above.
            Matrix format :
@@ -483,7 +408,6 @@
            50 51 52 53 54 55 56 57
            60 61 62 63 64 65 66 67
            70 71 72 73 74 75 76 77
-
      -->
 
 </table>
@@ -495,4 +419,3 @@
 </form>
 </body>
 </html>
- 

@@ -35,12 +35,12 @@ else if(action==='Medium'){
 else if(action==='Hard'){
     diff=20
 }
-    sessionStorage.setItem("Difficulty",diff);
 }</script>
 
 <%
 String  userId = (String)session.getAttribute("username");
 session.setAttribute("NewOrOldGame","New");
+session.setAttribute("Difficulty","3");
 if(userId == null) {
     out.println("<script type=\"text/javascript\">");
     out.println("alert('Login first');");
