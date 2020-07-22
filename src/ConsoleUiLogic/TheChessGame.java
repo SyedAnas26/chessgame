@@ -9,12 +9,6 @@ import java.util.regex.Pattern;
 public class TheChessGame {
 
     public static void main(String[] args) throws Exception {
-//        GameManager gm=new GameManager();
-//        gm.conductGame("d4");
-//        gm.conductGame("Nc6");
-//
-//        System.out.println(gm.getLastMovementAsStringForJSON());
-//
         File file = new File("src/ConsoleUiLogic/ChessPgn.txt");
       BufferedReader br = new BufferedReader(new FileReader(file));
         String line = br.readLine();
