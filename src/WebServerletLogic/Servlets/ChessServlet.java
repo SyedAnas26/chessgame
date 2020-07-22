@@ -50,9 +50,9 @@ public class ChessServlet extends HttpServlet {
                 out.print(winCheck);
             }
             for(int i=1;i<=step;i++){
-                manager.conductGameForPgn(i);
+                manager.conductGameForPgnFile(i);
             }
-            responseStep =manager.getLastMovementAsString();
+            responseStep =manager.getLastMovementAsStringForJSON();
             System.out.println("responseStep: " + responseStep);
             out.print(responseStep);
         } catch (Exception e) {

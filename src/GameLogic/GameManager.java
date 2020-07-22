@@ -46,7 +46,7 @@ public class GameManager {
     }
 
 
-    public void conductGameForPgn(int step) throws Exception {
+    public void conductGameForPgnFile(int step) throws Exception {
 
         gameStatus = GameStatus.NotBegan;
 
@@ -587,8 +587,15 @@ public class GameManager {
 
     }
 
-    public String getLastMovementAsString() {
+    public String getLastMovementAsStringForJSON() {
         return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"}";
+    }
+
+    public String getLastFromPosAsString() {
+        return  fromPositionOrg.getPositionInOriginalFormat();
+    }
+    public String getLastToPosAsString() {
+        return  toPositionOrg.getPositionInOriginalFormat();
     }
 }
 

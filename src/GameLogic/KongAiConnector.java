@@ -27,7 +27,7 @@ public class KongAiConnector
             args.addAll(Arrays.asList(String.valueOf(difficulty), String.valueOf(gameId), String.valueOf(moveNo)));
             args.addAll(moveArr);
             script = env.createScript("KongAIConnector.js",
-                    new File("KongAIConnector.js"), args.toArray(new String[0]));
+                    new File("src\\WebServerletLogic\\OpenChess\\html_files\\KongAIConnector.js"), args.toArray(new String[0]));
             //new File("src\\WebServletLogic\\html_files\\KongAIConnector.js"), moveArr.toArray(new String[0]));
 
 
@@ -48,13 +48,11 @@ public class KongAiConnector
     private String getLatestMove(long gameID, int moveNo) throws Exception
     {
         String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "' and MoveNo = '" + moveNo + "'";
-        System.out.println(sql);
         DBclass dbConnector = new DBclass();
         dbConnector.callDB();
         PreparedStatement pst = dbConnector.con.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
         if (rs.next()) {
-            System.out.println(rs.getString("Moves"));
             return rs.getString("Moves");
         }
 

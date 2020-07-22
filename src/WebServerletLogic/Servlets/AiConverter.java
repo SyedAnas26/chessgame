@@ -42,21 +42,18 @@ public class AiConverter extends HttpServlet {
         try {
             isNew(req);
             if(req.getServletPath().equals("/usermoves") || req.getServletPath().equals("/drawclaim")){
-
-                System.out.println("usermove came first");
                 addMove(req);
             }
            else if(req.getServletPath().equals("/aiMove")) {
-                System.out.println("ai came first");
                 List<String> arr= getMovesArr(gameId);
                 KongAiConnector kongAI = new KongAiConnector();
                 HttpSession httpSession = req.getSession();
                 String difficulty = (String) httpSession.getAttribute("Difficulty");
-                System.out.println("user move Array"+ (Arrays.toString(arr.toArray())));
                 String move = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
                 System.out.println("AIMove" +move);
                 gameManager.conductGame(move);
-                responseStep = gameManager.getLastMovementAsString();
+                responseStep = gameManager.getLastMovementAsStringForJSON();
+                pg.convertToPgn(gameManager.getLastFromPosAsString(),gameManager.getLastToPosAsString());
                 System.out.println("Responsestep" + responseStep);
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("application/json");
@@ -72,9 +69,7 @@ public class AiConverter extends HttpServlet {
 
     private List<String> getMovesArr(long gameID) throws Exception {
 
-        System.out.println("gameId inside getMovesArr"+gameID);
         String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "'";
-        System.out.println("inside getMovesArr"+sql);
         db.callDB();
         PreparedStatement pst = db.con.prepareStatement(sql);
         ResultSet rs = pst.executeQuery();
@@ -82,7 +77,6 @@ public class AiConverter extends HttpServlet {
         int j=0;
         while (rs.next()) {
             moves.add(rs.getString("moves"));
-            System.out.println("moves"+moves.get(j));
             j++;
         }
 
@@ -101,7 +95,7 @@ public class AiConverter extends HttpServlet {
                     userMove ="Draw Claimed";
                 }
             }
-            else{
+            else if (req.getServletPath().equals("/usermoves")){
                 userMove =pg.convertToPgn(fromPos,toPos);
                 System.out.println("user Move"+userMove);
                 gameManager.conductGame(userMove);

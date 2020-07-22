@@ -24,16 +24,17 @@
 }
 </style>
     <script type="text/javascript">
+//Todo: Need to do ajax call here...
 function clickResp(action){
     var diff;
 if(action==='Easy'){
-     diff=3
+     diff="3"
 }
 else if(action==='Medium'){
-     diff=6
+     diff="6"
 }
 else if(action==='Hard'){
-    diff=20
+    diff="20"
 }
 }</script>
 
