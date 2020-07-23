@@ -1,0 +1,32 @@
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        history.forward();
+        $.ajax({
+            url: "http://localhost:8080/getUserId",
+            type: 'POST',
+            success: function (response) {
+                if (response.userId==='null') {
+                    alert(' Login First !');
+                    location = '/loginpage';
+                }
+                console.log('difficulty ajax success!!');
+            }
+        });
+    </script>
+</head>
+<body>
+<h1 align="center"style="font-family:verdana;">Upload and Watch the Game By a click of Next</h1>
+<form align="center" action="upload" method="post" enctype="multipart/form-data">
+    Select File:<input type="file" name="file"/><br>
+     <br><input type="submit" value="Upload"/>
+</form>
+<br>
+<form align="center" action="/logout">
+<input type="submit" value="Logout">
+</form>
+</body>
+</html>

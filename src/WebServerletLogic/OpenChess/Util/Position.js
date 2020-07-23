@@ -85,7 +85,7 @@ Position = function(X,Y)
 	if( Position.isValidPosition(X, Y) ) { //Constructor...
 		/**
 		 * Since we are using 2 different formats, for giving compatibility to both formats.
-		 * @see Algrebric noation and Numeric notation comments in <table id="chess_board"..> in PlayGame.jsp
+		 * @see Algrebric noation and Numeric notation comments in <table id="chess_board"..> in PlayGame.html
 		 * */
 		  if($.isNumeric(X)){
 			x = X;

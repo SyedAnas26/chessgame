@@ -41,20 +41,21 @@ public class ChessServlet extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         String servletPath = req.getServletPath();
         try {
-
             isNew(req);
-            initManager(FileName);
-            updateStep(servletPath);
-            String winCheck=checkForStatus(manager,resp);
-            if(winCheck!=null){
-                out.print(winCheck);
+            if(!servletPath.equals("/startagain")) {
+                initManager(FileName);
+                updateStep(servletPath);
+                String winCheck = checkForStatus(manager, resp);
+                if (winCheck != null) {
+                    out.print(winCheck);
+                }
+                for (int i = 1; i <= step; i++) {
+                    manager.conductGameForPgnFile(i);
+                }
+                responseStep = manager.getLastMovementAsStringForJSON();
+                System.out.println("responseStep: " + responseStep);
+                out.print(responseStep);
             }
-            for(int i=1;i<=step;i++){
-                manager.conductGameForPgnFile(i);
-            }
-            responseStep =manager.getLastMovementAsStringForJSON();
-            System.out.println("responseStep: " + responseStep);
-            out.print(responseStep);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -123,7 +124,7 @@ public class ChessServlet extends HttpServlet {
     private void isNew(HttpServletRequest req) {
         HttpSession session = req.getSession();
         String NewOrOld = (String) session.getAttribute("NewOrOld");
-        if(NewOrOld.equals("New")) {
+        if(NewOrOld.equals("New") || req.getServletPath().equals("/startagain")) {
             manager=null;
             step=0;
             session.setAttribute("NewOrOld", "Old");

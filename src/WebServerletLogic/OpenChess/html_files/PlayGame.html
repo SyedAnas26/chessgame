@@ -39,6 +39,17 @@
 
 <script type="text/javascript">
 
+	$.ajax({
+		url: "http://localhost:8080/getUserId",
+		type: 'POST',
+		success: function (response) {
+			if (response.user_id==='null') {
+				alert(' Login First !');
+				location = '/loginpage';
+			}
+			console.log('difficulty ajax success!!');
+		}
+	});
 
 function UI_Manager(){
 	
@@ -244,7 +255,7 @@ UI_Manager.cellGridHtmlGenerator = function(){
 };
 
 function assignIconsToCellGrids(){
-	 //The initial Positions are hard cored in the PlayGame.jsp file //Loading the initial positions...
+	 //The initial Positions are hard cored in the PlayGame.html file //Loading the initial positions...
    //This position starts from 11 and ends in 88 since nth-child parameter is in that way.... 
    
 	 for(var ch='a'; ch !=null ; ch = Position.getNextChar(ch)){
@@ -313,7 +324,6 @@ $("#chess_board").ready(function() {
 					uiManager.nextOrPrev='n';
 					if(response.checkStatus==="Draw"){
 						alert("Match Draw!");
-
 					}
 					else if(response.checkStatus==="Player1"){
 						alert("Player 1 Wins (White)!");
@@ -347,7 +357,14 @@ $("#chess_board").ready(function() {
 
 	$("#start_again").click(function(){
 		window.location.reload();
-	<% request.getSession().setAttribute("NewOrOld","New"); %>
+		$.ajax({
+			url: "http://localhost:8080/startagain",
+			type: 'POST',
+			data:{"StartAgain":"true"},
+			success: function () {
+				console.log('difficulty ajax success!!');
+			}
+		});
 	});
 
 

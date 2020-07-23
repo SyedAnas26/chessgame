@@ -61,11 +61,11 @@
     </servlet>
     <servlet>
         <servlet-name>StartPlay</servlet-name>
-        <jsp-file>/html_files/PlayGame.jsp</jsp-file>
+        <jsp-file>/html_files/PlayGame.html</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>LoadFileUpload</servlet-name>
-        <jsp-file>/html_files/FileUpload.jsp</jsp-file>
+        <jsp-file>/html_files/FileUpload.html</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>Register</servlet-name>
@@ -73,15 +73,15 @@
     </servlet>
     <servlet>
         <servlet-name>Difficulty</servlet-name>
-        <jsp-file>/html_files/Difficulty.jsp</jsp-file>
+        <jsp-file>/html_files/Difficulty.html</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>VsComputer</servlet-name>
-        <jsp-file>/html_files/VsComputer.jsp</jsp-file>
+        <jsp-file>/html_files/VsComputer.html</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>HomePage</servlet-name>
-        <jsp-file>/html_files/Homepage.jsp</jsp-file>
+        <jsp-file>/html_files/Homepage.html</jsp-file>
     </servlet>
 
     <!-- Define the Manager Servlet Mapping -->
@@ -89,6 +89,10 @@
    <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
         <url-pattern>/nextstep</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/startagain</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
@@ -149,5 +153,13 @@
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
         <url-pattern>/aiMove</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/diff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/getUserId</url-pattern>
     </servlet-mapping>
 </web-app>

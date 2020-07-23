@@ -33,19 +33,6 @@ public class Test
 			throw new Exception("JDBC Driver not found.", e);
 		}
 	}
-
-
-
-
-
-
-
-
-	
-
-
-
-
 	public static ResultSet get(String query) throws Exception
 	{
 		makeConnection();

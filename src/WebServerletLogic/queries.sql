@@ -20,6 +20,28 @@ create table login
         primary key
 );
 
+create table gamelog
+(
+    idGameLog   int     not null
+        primary key,
+    GameType    tinyint not null,
+    UserID1     int     null,
+    UserID2     int     null,
+    GameFormat  int     not null,
+    GameStatus  int     not null,
+    MatchResult int     not null,
+    constraint UserID1_FK
+        foreign key (UserID1) references login (UserId),
+    constraint UserID2_FK
+        foreign key (UserID2) references login (UserId)
+);
+
+create index UserID1_FK_idx
+    on gamelog (UserID1);
+
+create index UserID2FK_idx
+    on gamelog (UserID2);
+
 create table challengetable
 (
     idChallengeTable int         not null

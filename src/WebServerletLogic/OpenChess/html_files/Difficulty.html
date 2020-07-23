@@ -1,0 +1,72 @@
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <title>Difficulty</title>
+<style type="text/css">
+#button1{
+ background-color: #1DE3E0;
+ border: 1px;
+ color: #082C2B;
+    padding: 16px 32px;
+}
+#button2{
+    background-color: #E7C718;
+    border: 1px;
+    color: #082C2B;
+    padding: 16px 32px;
+}
+#button3{
+    background-color: #E1351C;
+    border: 1px;
+    color: #082C2B;
+    padding: 16px 32px;
+;
+}
+</style>
+    <script type="text/javascript">
+var userId=null;
+var difficulty=null;
+function clickResp(action) {
+    if (action === 'Easy') {
+        difficulty = "3"
+    } else if (action === 'Medium') {
+        difficulty = "10"
+    } else if (action === 'Hard') {
+        difficulty = "20"
+    }
+    $.ajax({
+        url: "http://localhost:8080/diff",
+        type: 'POST',
+        data: {"difficulty": difficulty},
+        success: function () {
+            console.log('difficulty ajax success!!');
+        }
+    });
+}
+$.ajax({
+    url: "http://localhost:8080/getUserId",
+    type: 'POST',
+    success: function (response) {
+        if (response.user_id==='null') {
+            alert(' Login First !');
+            location = '/loginpage';
+        }
+        console.log('difficulty ajax success!!');
+    }
+});
+</script>
+</head>
+<body><div>
+   <form action="vscomputer" method="post" align="center" >
+       <br>
+       <br>
+       <br>
+   <input id="button1"  type="submit" onclick="clickResp('Easy')" value="Easy" ><br><br>
+   <input id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
+   <input id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
+    </form>
+</div>
+</body>
+</html>

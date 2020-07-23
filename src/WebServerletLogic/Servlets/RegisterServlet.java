@@ -80,10 +80,7 @@ public class RegisterServlet extends HttpServlet {
                 out.println("<br /><br /><h2 align=\"center\"><font family=\"Times New Roman\">Registered Successfully!</font></h2>");
                 success = true;
                 }
-
-
             }
-
 
             catch (SQLException e) {
 

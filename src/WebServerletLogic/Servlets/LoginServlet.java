@@ -42,73 +42,65 @@ public class LoginServlet extends HttpServlet
         }
     }
 
-    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
-    {
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+        if (request.getServletPath().equals("/getUserId")) {
 
-        response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-        out.println("<html>");
-        out.println("<body>");
+            System.out.println("inside login");
+            HttpSession sess = request.getSession();
+            String user="{\"user_id\":\""+sess.getAttribute("username")+"\",\"user_name\":\""+sess.getAttribute("sessname")+"\"}";
+            System.out.println(user);
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            out.print(user);
+
+        } else {
+            response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.println("<html>");
+            out.println("<body>");
+            ResultSet res = null;
+            String name = null;
+            boolean success = false;
+            HttpSession session = request.getSession(true);
+
+            try {
 
 
-        ResultSet res = null;
-        String name=null;
+                DBclass db = new DBclass();
+                db.callDB();
+                String thisname = request.getParameter("user_id");
+                String thispwd = request.getParameter("password");
+                String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd + "'";
+                res = db.stmt.executeQuery(q);
 
-        boolean success=false;
-
-
-        HttpSession session = request.getSession(true);
-
-        try
-        {
-
-
-            DBclass db=new DBclass();
-            db.callDB();
-            String thisname=request.getParameter("username");
-            String thispwd=request.getParameter("password");
-            String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd +"'";
-            res = db.stmt.executeQuery(q);
-
-            if(res.next()) {
-                name = res.getString("fullname");
-                success = true;
+                if (res.next()) {
+                    name = res.getString("fullname");
+                    success = true;
+                }
+            } catch (SQLException e) {
+                throw new ServletException("Servlet Could not display records.", e);
+            } catch (Exception e) {
+                throw new ServletException("Exception.", e);
             }
+
+            if (success == true) {
+
+                session.setAttribute("username", request.getParameter("user_id"));
+                session.setAttribute("sessname", name);
+                response.sendRedirect("/homepage");
+            } else if (success == false) {
+                out.println("<br /><h3 align=\"center\"><font color=\"red\"> Seems you Don't have a account <br>Please Sign up here</font></h3>");
+                out.println("<form action=\"/Register\" align= \"center\" method=\"post\"><br>");
+                out.println("<input type=\"submit\" value=\"Sign Up\"><br></form>");
+                out.println("<br>");
+                out.println("<form action=\"/loginpage\" align= \"center\" method=\"post\">");
+                out.println("<input type=\"submit\" value=\"Try Login Again\"></form>");
+                session.invalidate();
+            }
+            out.println("</body>");
+            out.println("</html>");
         }
-
-        catch (SQLException e)
-        {
-            throw new ServletException("Servlet Could not display records.", e);
-        }
-
-
-        catch (Exception e)
-        {
-            throw new ServletException("Exception.", e);
-        }
-
-        if(success==true)
-        {
-
-            session.setAttribute("username", request.getParameter("username"));
-            session.setAttribute("sessname", name);
-            response.sendRedirect("/homepage");
-        }
-
-        else if(success==false)
-        {
-            out.println("<br /><h3 align=\"center\"><font color=\"red\"> Seems you Don't have a account <br>Please Sign up here</font></h3>");
-            out.println("<form action=\"/Register\" align= \"center\" method=\"post\"><br>");
-            out.println("<input type=\"submit\" value=\"Sign Up\"><br></form>");
-            out.println("<br>");
-            out.println("<form action=\"/loginpage\" align= \"center\" method=\"post\">");
-            out.println("<input type=\"submit\" value=\"Try Login Again\"></form>");
-            session.invalidate();
-        }
-
-        out.println("</body>");
-        out.println("</html>");
     }
-
 }

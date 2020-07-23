@@ -8,7 +8,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.PreparedStatement;
@@ -25,10 +24,8 @@ public class AiConverter extends HttpServlet {
     int drawClaim;
     int moveNo;
     long gameId;
-    int random=0;
-    int i=0;
     int time =0;
-    String aimove;
+    String difficulty;
     String responseStep;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -36,27 +33,31 @@ public class AiConverter extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-
+        String servletPath=req.getServletPath();
+        System.out.println("Servlet Path"+servletPath);
         try {
-            isNew(req);
-            if(req.getServletPath().equals("/usermoves") || req.getServletPath().equals("/drawclaim")){
+
+            if(servletPath.equals("/diff"))
+            {
+                difficulty=req.getParameter("difficulty");
+                newGame();
+            }
+            if(servletPath.equals("/usermoves") || servletPath.equals("/drawclaim")){
                 addMove(req);
             }
-           else if(req.getServletPath().equals("/aiMove")) {
+           else if(servletPath.equals("/aiMove")) {
+
+                PrintWriter out = resp.getWriter();
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
                 List<String> arr= getMovesArr(gameId);
                 KongAiConnector kongAI = new KongAiConnector();
-                HttpSession httpSession = req.getSession();
-                String difficulty = (String) httpSession.getAttribute("Difficulty");
                 String move = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
                 System.out.println("AIMove" +move);
                 gameManager.conductGame(move);
                 responseStep = gameManager.getLastMovementAsStringForJSON();
                 pg.convertToPgn(gameManager.getLastFromPosAsString(),gameManager.getLastToPosAsString());
-                System.out.println("Responsestep" + responseStep);
-                PrintWriter out = resp.getWriter();
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
+                System.out.println("Response step" + responseStep);
                 out.print(responseStep);
                 moveNo++;
            }
@@ -110,10 +111,7 @@ public class AiConverter extends HttpServlet {
     }
 
 
-    private void isNew(HttpServletRequest req) {
-        HttpSession session = req.getSession();
-        String NewOrOld = (String) session.getAttribute("NewOrOldGame");
-        if(NewOrOld.equals("New")) {
+    private void newGame() {
             pg=new PgnGenerator();
             gameManager=new GameManager();
             drawClaim=0;
@@ -123,9 +121,8 @@ public class AiConverter extends HttpServlet {
             } catch (Exception throwables) {
                 throwables.printStackTrace();
             }
-            session.setAttribute("NewOrOldGame", "Old");
         }
-    }
+
     int CreateNewRandom() throws Exception {
         Random rand=new Random();
         int random1=Math.abs(rand.nextInt());
