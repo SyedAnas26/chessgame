@@ -30,7 +30,7 @@ if (err) throw err;
 var sql = "insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('"+gameID+"','"+moveNo+"','"+move+"',0,0)";
 con.query(sql, function (err, result) {
 if (err) throw err;
-console.log(result.affectedRows + " record(s) updated");
+//console.log(result.affectedRows + " record(s) updated (Ai Move)");
 con.end();
 });
 });

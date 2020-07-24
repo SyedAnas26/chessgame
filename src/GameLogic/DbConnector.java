@@ -1,23 +1,19 @@
-package WebServerletLogic.Servlets;
+package GameLogic;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
-public class Test
+public class DbConnector
 {
 	private static Connection con = null;
 
-	private Test()
+	private DbConnector()
 	{
 	}
 
 	private static void makeConnection() throws Exception {
 		try {
 
-			if(con != null)
+			if(con == null)
 			{
 				Class.forName("com.mysql.jdbc.Driver");
 				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
@@ -36,14 +32,15 @@ public class Test
 	public static ResultSet get(String query) throws Exception
 	{
 		makeConnection();
-		Statement stmt = con.createStatement();
-		return stmt.executeQuery(query);
+		PreparedStatement pst = con.prepareStatement(query);
+		return pst.executeQuery(query);
 	}
 
-	public static int update(String query) throws Exception
+	public static void update(String query) throws Exception
 	{
 		makeConnection();
 		Statement stmt = con.createStatement();
-		return stmt.executeUpdate(query);
+		int i=stmt.executeUpdate(query);
+		//System.out.println(i+" record(s) updated (User Move)");
 	}
 }

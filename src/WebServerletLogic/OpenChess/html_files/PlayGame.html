@@ -358,7 +358,7 @@ $("#chess_board").ready(function() {
 	$("#start_again").click(function(){
 		window.location.reload();
 		$.ajax({
-			url: "http://localhost:8080/startagain",
+			url: "http://localhost:8080/startnewgame",
 			type: 'POST',
 			data:{"StartAgain":"true"},
 			success: function () {

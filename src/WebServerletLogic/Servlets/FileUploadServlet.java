@@ -16,8 +16,8 @@ import java.io.PrintWriter;
 import java.util.List;
 
 
-public class FileUpload extends HttpServlet {
-  
+public class FileUploadServlet extends HttpServlet {
+
     private final String UPLOAD_DIRECTORY = "\\FileUploads";
     String FileName;
 
@@ -31,7 +31,7 @@ public class FileUpload extends HttpServlet {
             throws ServletException, IOException {
 
         String tomPath = request.getServletContext().getRealPath("");
-        File Folder = new File(tomPath+UPLOAD_DIRECTORY);
+        File Folder = new File(tomPath + UPLOAD_DIRECTORY);
         FileUtils.deleteDirectory(Folder);
         createFolder(Folder);
         HttpSession session = request.getSession();
@@ -41,37 +41,28 @@ public class FileUpload extends HttpServlet {
             try {
                 List<FileItem> multiparts = new ServletFileUpload(
                         new DiskFileItemFactory()).parseRequest(request);
-
                 for (FileItem item : multiparts) {
                     if (!item.isFormField()) {
                         FileName = new File(item.getName()).getName();
-                        File file = new File(tomPath+UPLOAD_DIRECTORY + File.separator + FileName);
+                        File file = new File(tomPath + UPLOAD_DIRECTORY + File.separator + FileName);
                         item.write(file);
                     }
                 }
-
                 session.setAttribute("filename", FileName);
                 session.setAttribute("NewOrOld", "New");
-                out.print("<html>");
-                out.print("<head>");
-                out.print("</head>");
-                out.print("<body>");
-                out.print("<h1 style=\"font-family:verdana;\" align=\"center\" >Your file successfully uploaded  </h1>");
-                out.print("<form align=\"center\" action=\"Play\" method=\"post\">\n    <input  type=\"submit\" value=\"Click Here to Watch Game\"/>");
-                out.print("</form>");
-                out.println("<br>");
-                out.println("<form align=\"center\"  action=\"/logout\" method=\"post\" >");
-                out.println("<input type=\"submit\" value=\"Logout\">");
-                out.println("</form>");
-                out.print("</body>");
-                out.print("</html>");
-
+                response.sendRedirect("/fileuploadsuccess");
             } catch (Exception ex) {
-                out.printf("File not Uploaded Successfully due to %s", ex);
+                out.println("<script type=\"text/javascript\">");
+                out.println("alert('You Have not uploaded a File !');");
+                out.println("location='/load';");
+                out.println("</script>");
             }
 
         } else {
-            out.println("Sorry this Servlet only handles file upload request");
+            out.println("<script type=\"text/javascript\">");
+            out.println("alert('You Have not uploaded a File !');");
+            out.println("location='/load';");
+            out.println("</script>");
         }
 
     }
@@ -83,6 +74,5 @@ public class FileUpload extends HttpServlet {
         } else {
             System.out.println("Sorry couldn’t create specified directory");
         }
-
     }
 }

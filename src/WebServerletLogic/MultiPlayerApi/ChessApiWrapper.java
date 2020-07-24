@@ -1,4 +1,4 @@
-package WebServerletLogic.Servlets;
+package WebServerletLogic.MultiPlayerApi;
 
 import java.io.IOException;
 import java.io.InputStream;

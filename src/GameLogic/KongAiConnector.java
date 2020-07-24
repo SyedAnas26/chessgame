@@ -1,12 +1,10 @@
 package GameLogic;
 
-import WebServerletLogic.Servlets.DBclass;
 import io.apigee.trireme.core.NodeEnvironment;
 import io.apigee.trireme.core.NodeScript;
 import io.apigee.trireme.core.ScriptStatus;
 
 import java.io.File;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -48,14 +46,10 @@ public class KongAiConnector
     private String getLatestMove(long gameID, int moveNo) throws Exception
     {
         String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "' and MoveNo = '" + moveNo + "'";
-        DBclass dbConnector = new DBclass();
-        dbConnector.callDB();
-        PreparedStatement pst = dbConnector.con.prepareStatement(sql);
-        ResultSet rs = pst.executeQuery();
+        ResultSet rs = DbConnector.get(sql);
         if (rs.next()) {
             return rs.getString("Moves");
         }
-
         System.out.println("Move not found");
         throw new Exception("Move not found!!");
     }

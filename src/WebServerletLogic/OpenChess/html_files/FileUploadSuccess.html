@@ -19,17 +19,26 @@
                 }
             });
         }
+        function createNew() {
+            $.ajax({
+                url: "http://localhost:8080/startnewgame",
+                type: 'POST',
+                data:{"StartAgain":"true"},
+                success: function () {
+                    console.log('difficulty ajax success!!');
+                }
+            });
+        }
     </script>
 </head>
 <body>
-<h1 align="center"style="font-family:verdana;">Upload and Watch the Game By a click of Next</h1>
-<form align="center" action="upload" method="post" enctype="multipart/form-data">
-    Select File:<input type="file" name="file"/><br>
-     <br><input type="submit" value="Upload"/>
-</form>
+<h1 style="font-family:verdana;" align="center" >Your file successfully uploaded  </h1>
+<form align="center" action="PlayPgn" method="post">
+    <input  type="submit" onclick="createNew()" value="Click Here to Watch Game"/>
+    </form>
 <br>
-<form align="center" action="/logout">
-<input type="submit" value="Logout">
-</form>
+<form align="center"  action="/logout" method="post" >
+    <input type="submit" value="Logout">
+    </form>
 </body>
 </html>

@@ -20,7 +20,6 @@ public class GameManager {
 
     public GameManager(String gamePlay) throws Exception {
 
-        System.out.println(" Welcome To The Chess Game");
         b.setBoard();
         makeGivenStringIntoArray(gamePlay);
     }
@@ -52,15 +51,11 @@ public class GameManager {
 
 
         {
-
-            System.out.println(gamePlayAsArray.length);
             updateCurrentPlayerColor(currentPlayer);
             playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
-            System.out.println("Step="+step);
             updateGameStatus();
             currentPlayer = updateCurrentPlayer(currentPlayer);
             currentPlayer += 1;
-
         }
     }
 
@@ -137,7 +132,6 @@ public class GameManager {
     }
 
     public void playGame(String arrayElement) throws Exception {
-        System.out.println("element=="+arrayElement);
 
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);

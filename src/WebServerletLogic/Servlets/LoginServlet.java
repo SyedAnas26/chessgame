@@ -1,6 +1,8 @@
 package WebServerletLogic.Servlets;
 
 
+import GameLogic.DbConnector;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -16,39 +18,13 @@ public class LoginServlet extends HttpServlet
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException
     {
 
-        PrintWriter out = response.getWriter();
-        response.setContentType("text/html");
-        out.println("<html>");
-        out.println("<script>");
-        out.println("javascript:window.history.forward(1)");
-        out.println("</script>");
-        out.println("<body>");
-        HttpSession session = request.getSession(false);
-        try
-        {
-            session.invalidate();
-            out.println("<h3 align=\"center\"><font family=\"Times New Roman\" color=\"purple\">Successfully Logout</font></h3>");
-            out.println("<form align=\"center\" action=\"/loginpage\" method=\"post\">");
-            out.println("<br />");
-            out.println("<input type=\"submit\" alt=\"submit\" value=\"Login Again!\"/>");
-            out.println("</form>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-
-        catch (Exception ee)
-        {
-            out.println(ee);
-        }
     }
 
     public void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         if (request.getServletPath().equals("/getUserId")) {
 
-            System.out.println("inside login");
             HttpSession sess = request.getSession();
-            String user="{\"user_id\":\""+sess.getAttribute("username")+"\",\"user_name\":\""+sess.getAttribute("sessname")+"\"}";
-            System.out.println(user);
+            String user="{\"user_id\":\""+sess.getAttribute("userId")+"\",\"user_name\":\""+sess.getAttribute("userName")+"\"}";
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -58,23 +34,16 @@ public class LoginServlet extends HttpServlet
             response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-            out.println("<html>");
-            out.println("<body>");
             ResultSet res = null;
             String name = null;
             boolean success = false;
             HttpSession session = request.getSession(true);
 
             try {
-
-
-                DBclass db = new DBclass();
-                db.callDB();
                 String thisname = request.getParameter("user_id");
                 String thispwd = request.getParameter("password");
-                String q = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd + "'";
-                res = db.stmt.executeQuery(q);
-
+                String query = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd + "'";
+                res = DbConnector.get(query);
                 if (res.next()) {
                     name = res.getString("fullname");
                     success = true;
@@ -87,20 +56,13 @@ public class LoginServlet extends HttpServlet
 
             if (success == true) {
 
-                session.setAttribute("username", request.getParameter("user_id"));
-                session.setAttribute("sessname", name);
+                session.setAttribute("userId", request.getParameter("user_id"));
+                session.setAttribute("userName", name);
                 response.sendRedirect("/homepage");
             } else if (success == false) {
-                out.println("<br /><h3 align=\"center\"><font color=\"red\"> Seems you Don't have a account <br>Please Sign up here</font></h3>");
-                out.println("<form action=\"/Register\" align= \"center\" method=\"post\"><br>");
-                out.println("<input type=\"submit\" value=\"Sign Up\"><br></form>");
-                out.println("<br>");
-                out.println("<form action=\"/loginpage\" align= \"center\" method=\"post\">");
-                out.println("<input type=\"submit\" value=\"Try Login Again\"></form>");
+                response.sendRedirect("/usernotfound");
                 session.invalidate();
             }
-            out.println("</body>");
-            out.println("</html>");
         }
     }
 }
