@@ -14,25 +14,21 @@ public class LogoutServlet extends HttpServlet {
 
         PrintWriter out = response.getWriter();
         HttpSession session = request.getSession(true);
-        session.setAttribute("username", null);
+        session.setAttribute("userId", null);
         session.invalidate();
-        out.println("<script type=\"text/javascript\">");
-        out.println("alert('Logout Successful');");
-        out.println("location='/loginpage';");
-        out.println("</script>");
 
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         PrintWriter out = response.getWriter();
+        response.setContentType("text/html");
         HttpSession session = request.getSession(true);
-        session.setAttribute("username", null);
+        session.setAttribute("userId", null);
         session.invalidate();
         out.println("<script type=\"text/javascript\">");
         out.println("alert('Logout Successful');");
         out.println("location='/loginpage';");
         out.println("</script>");
-        response.sendRedirect("/loginpage");
     }
 }

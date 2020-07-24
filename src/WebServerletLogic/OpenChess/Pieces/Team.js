@@ -213,13 +213,10 @@ Team.getOpponentTeamColor = function(team){
 
 
 Team.getPieceByID = function(pieceID,teams){
-	console.log("piece id"+pieceID);
 	for(tIndex in teams) {
-		console.log("index of team"+tIndex)
 		var allPieces = teams[tIndex].getListOfPieces();
 		for (pIndex in allPieces) {
 			var pieceid=allPieces[pIndex].getPieceID();
-			console.log("all piece id"+pieceid);
 		if (pieceid === pieceID){
 			return allPieces[pIndex];}
 	}

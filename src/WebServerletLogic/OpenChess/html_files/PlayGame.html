@@ -39,6 +39,17 @@
 
 <script type="text/javascript">
 
+	$.ajax({
+		url: "http://localhost:8080/getUserId",
+		type: 'POST',
+		success: function (response) {
+			if (response.user_id==='null') {
+				alert(' Login First !');
+				location = '/loginpage';
+			}
+			console.log('difficulty ajax success!!');
+		}
+	});
 
 function UI_Manager(){
 	
@@ -310,12 +321,20 @@ $("#chess_board").ready(function() {
                 url: "http://localhost:8080/nextstep",
                 type: 'POST',
                 success: function(response) {
-                    // var response ='{"from_pos": "e2", "to_pos" : "e4"}';
-                    //var result = JSON.parse(response);
 					uiManager.nextOrPrev='n';
-                    uiManager.cellClickedAt(response.from_pos);
-                    uiManager.cellClickedAt(response.to_pos);
-
+					if(response.checkStatus==="Draw"){
+						alert("Match Draw!");
+					}
+					else if(response.checkStatus==="Player1"){
+						alert("Player 1 Wins (White)!");
+					}
+					else if(response.checkStatus==="Player2"){
+						alert("Player 2 Wins (Black)!");
+					}
+							// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
+					else {
+						uiManager.cellClickedAt(response.from_pos);
+						uiManager.cellClickedAt(response.to_pos);}
 				}
             });
         })
@@ -326,13 +345,25 @@ $("#chess_board").ready(function() {
 				url: "http://localhost:8080/previous_step",
 				type: 'POST',
 				success: function(response) {
-					// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
-					//var result = JSON.parse(response);
-					uiManager.nextOrPrev='n';
+
+					uiManager.nextOrPrev='p';
 					uiManager.cellClickedAt(response.to_pos);
 					uiManager.cellClickedAt(response.from_pos);
 				}
+
 			});
+		});
+	});
+
+	$("#start_again").click(function(){
+		window.location.reload();
+		$.ajax({
+			url: "http://localhost:8080/startnewgame",
+			type: 'POST',
+			data:{"StartAgain":"true"},
+			success: function () {
+				console.log('difficulty ajax success!!');
+			}
 		});
 	});
 
@@ -473,6 +504,8 @@ a {
 <br>
 <input type="button" id="previous_step" value="Previous Step" cellpadding="0" cellspacing="0"/>
 <br>
+<br>
+<input type="button" id="start_again" value="Start Again" cellpadding="0" cellspacing="0"/>
 <br>
 <form action="/homepage" method="post" align="center" >
 	<input type="submit" value="Go Back to Home Page"/>

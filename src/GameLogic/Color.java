@@ -11,5 +11,6 @@ public enum Color {
     Color(String stringFormat) {
         this.stringFormat = stringFormat;
     }
+
 }
 

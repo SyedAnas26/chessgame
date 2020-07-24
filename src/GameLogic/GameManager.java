@@ -14,9 +14,12 @@ public class GameManager {
     Position fromPositionOrg;
     Position toPositionOrg;
 
+    public GameManager(){
+        b.setBoard();
+    }
+
     public GameManager(String gamePlay) throws Exception {
 
-        System.out.println(" Welcome To The Chess Game");
         b.setBoard();
         makeGivenStringIntoArray(gamePlay);
     }
@@ -30,8 +33,19 @@ public class GameManager {
 
     }
 
+    public void conductGame(String move) throws Exception {
 
-    public void conductGame(int step) throws Exception {
+        gameStatus = GameStatus.NotBegan;
+        updateCurrentPlayerColor(currentPlayer);
+        playGame(move);
+        updateGameStatus();
+        currentPlayer = updateCurrentPlayer(currentPlayer);
+        currentPlayer += 1;
+
+    }
+
+
+    public void conductGameForPgnFile(int step) throws Exception {
 
         gameStatus = GameStatus.NotBegan;
 
@@ -39,11 +53,9 @@ public class GameManager {
         {
             updateCurrentPlayerColor(currentPlayer);
             playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
-            System.out.println("Step="+step);
             updateGameStatus();
             currentPlayer = updateCurrentPlayer(currentPlayer);
             currentPlayer += 1;
-
         }
     }
 
@@ -119,8 +131,7 @@ public class GameManager {
         return b.cell[toPosition.x][toPosition.y].getPieceColor().stringFormat.equals(currentPlayerColor.stringFormat);
     }
 
-    void playGame(String arrayElement) throws Exception {
-        System.out.println("element=="+arrayElement);
+    public void playGame(String arrayElement) throws Exception {
 
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
@@ -537,7 +548,7 @@ public class GameManager {
     }
 
 
-    private int getNumOf(char character) {
+     int getNumOf(char character) {
         String alphabet = "abcdefgh";
         return alphabet.indexOf(character);
     }
@@ -570,8 +581,15 @@ public class GameManager {
 
     }
 
-    public String getLastMovementAsString() {
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\"}";
+    public String getLastMovementAsStringForJSON() {
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"}";
+    }
+
+    public String getLastFromPosAsString() {
+        return  fromPositionOrg.getPositionInOriginalFormat();
+    }
+    public String getLastToPosAsString() {
+        return  toPositionOrg.getPositionInOriginalFormat();
     }
 }
 

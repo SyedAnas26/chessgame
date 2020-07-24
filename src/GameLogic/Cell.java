@@ -21,6 +21,10 @@ public class Cell extends Object {
 
         return pieceColor;
     }
+    public String getPieceColorStringFormat() {
+        return pieceColor.stringFormat;
+    }
+
 
     @Override
     public String toString() {

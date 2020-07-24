@@ -7,7 +7,7 @@
             var y=document.forms["Login"]["user_id"].value;
             if (y==null || y=="")
             {
-                alert(" Name must be filled out");
+                alert("User id must be filled out");
                 return false;
             }
             var z=document.forms["Login"]["password"].value;
@@ -22,7 +22,6 @@
 
 <body>
 <div align="center">
-
     <form action="LoginServlet" name="Login" align= "center" method="post" onsubmit="return validateForm();">
         <div>
             <div id="login-box">
@@ -33,13 +32,13 @@
                     User id:
                 </div>
                 <div id="login-box-userfield">
-                    <input name="username" title="username" r=""/>
+                    <input name="user_id" title="user_id" value=""/>
                 </div>
                 <div id="login-box-pass">
                     Password:
                 </div>
                 <div id="login-box-field">
-                    <input name="password" type="password" title="Password" value=""  />
+                    <input name="password" type="password" title="Password" value="" />
                 </div>
                 <br>
                 <input type="submit" value="Login"/>

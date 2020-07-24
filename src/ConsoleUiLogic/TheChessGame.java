@@ -1,25 +1,17 @@
 package ConsoleUiLogic;
 
-import java.io.*;
+import GameLogic.PlayPgnFile;
 
 public class TheChessGame {
 
     public static void main(String[] args) throws Exception {
-
-        File file = new File("src/ConsoleUiLogic/ChessPgn.txt");
-      BufferedReader br = new BufferedReader(new FileReader(file));
-        String line = br.readLine();
-        StringBuilder sb = new StringBuilder();
-        String gamePlay = null;
-        while (line != null) {
-            sb.append(line).append("\n");
-            line = br.readLine();
-            gamePlay =sb.toString();
-        }
-
-        gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
+        String file = "src/ConsoleUiLogic/ChessPgn.txt";
+        PlayPgnFile playPgnFile = new PlayPgnFile();
+        String gamePlay = playPgnFile.getGamePlay(file, null);
         new ConsoleUi(gamePlay);
+
     }
 }
+
 
 
