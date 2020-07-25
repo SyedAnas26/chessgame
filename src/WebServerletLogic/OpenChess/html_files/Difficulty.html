@@ -36,8 +36,9 @@ function clickResp(action) {
     } else if (action === 'Hard') {
         difficulty = "20"
     }
+    var x=window.location.origin;
     $.ajax({
-        url: "http://localhost:8080/diff",
+        url: x+"/diff",
         type: 'POST',
         data: {"difficulty": difficulty},
         success: function () {
@@ -45,8 +46,9 @@ function clickResp(action) {
         }
     });
 }
+var x=window.location.origin;
 $.ajax({
-    url: "http://localhost:8080/getUserId",
+    url: x+"/getUserId",
     type: 'POST',
     success: function (response) {
         if (response.user_id==='null') {

@@ -28,9 +28,9 @@
 <script type="text/javascript" src="../Control/Timer.js" ></script>
 <script type="text/javascript" src="../Control/GameManager.js" ></script>
 <script type="text/javascript">
-
+var x=window.location.origin;
     $.ajax({
-        url: "http://localhost:8080/getUserId",
+        url: x+"/getUserId",
         type: 'POST',
         success: function (response) {
             if (response.user_id==='null') {
@@ -82,9 +82,10 @@
 
             function callAIToPlay()
             {
+                var x=window.location.orgin;
                 console.log("Inside ai Player");
                 $.ajax({
-                    url: "http://localhost:8080/aiMove",
+                    url: x+"/aiMove",
                     type: 'POST',
                     success: function(response) {
                         isAITurn=false;
@@ -158,8 +159,9 @@
                 }
                 console.log(getAttrID( moveList[i].get_fromPos())+getAttrID( moveList[i].get_toPos() ))
                 if(aicalled===false) {
+                    var x=window.location.origin;
                     $.ajax({
-                        url: "http://localhost:8080/usermoves",
+                        url: x+"/usermoves",
                         type: 'POST',
                         data: {
                             "fromMove": getAttrID(moveList[i].get_fromPos()),
@@ -289,13 +291,14 @@
             console.log("Some successful response for clicking");
         });
         $(".claimed_draw").click(function(){
+            var x = window.location.origin;
             $.ajax({
-                url: "http://localhost:8080/drawclaim",
+                url: x + "/drawclaim",
                 type: 'POST',
                 data: {"claimDraw":"1"},
                 success: function () {
                     alert("Match Draw");
-                    window.location='http://localhost:8080/homepage';
+                    window.location=x + "/homepage";
                     console.log('draw ajax success!!');
                 },
                 error: function (jqXHR, exception) {

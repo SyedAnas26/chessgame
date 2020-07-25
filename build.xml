@@ -179,7 +179,7 @@
          source code instead of just the files that have been changed.
     -->
 
-    <target name="all" depends="clean,prepare,compile,tomcat-restart"/>
+    <target name="all" depends="clean,prepare,compile,dist,tomcat-restart"/>
 
 
     <!-- The "dist" target builds the distribution Web ARchive (WAR) file
