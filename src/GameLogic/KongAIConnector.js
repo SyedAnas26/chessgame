@@ -21,7 +21,7 @@ var mysql = require('mysql');
 var con = mysql.createConnection({
 host: 'localhost',
 user: 'root',
-password: 'admin123',
+password: '',
 database: 'chessgame_database'
 });
 

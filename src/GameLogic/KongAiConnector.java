@@ -35,7 +35,7 @@ public class KongAiConnector
             return getLatestMove(gameId, moveNo);
 
 
-            
+
         }
         catch(Exception e)
         {
