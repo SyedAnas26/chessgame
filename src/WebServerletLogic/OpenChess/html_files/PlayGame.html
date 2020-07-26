@@ -39,8 +39,9 @@
 
 <script type="text/javascript">
 
+	var x=window.location.origin;
 	$.ajax({
-		url: "http://localhost:8080/getUserId",
+		url: x+"/getUserId",
 		type: 'POST',
 		success: function (response) {
 			if (response.user_id==='null') {
@@ -317,8 +318,9 @@ $("#chess_board").ready(function() {
 
     $(document).ready(function(){
         $("#next_step").click(function(){
-            $.ajax({
-                url: "http://localhost:8080/nextstep",
+			var x=window.location.origin;
+			$.ajax({
+				url: x+"/nextstep",
                 type: 'POST',
                 success: function(response) {
 					uiManager.nextOrPrev='n';
@@ -341,8 +343,9 @@ $("#chess_board").ready(function() {
     });
 	$(document).ready(function(){
 		$("#previous_step").click(function(){
+			var x=window.location.origin;
 			$.ajax({
-				url: "http://localhost:8080/previous_step",
+				url: x+"/previous_step",
 				type: 'POST',
 				success: function(response) {
 
@@ -357,8 +360,9 @@ $("#chess_board").ready(function() {
 
 	$("#start_again").click(function(){
 		window.location.reload();
+		var x=window.location.origin;
 		$.ajax({
-			url: "http://localhost:8080/startnewgame",
+			url: x+"/startnewgame",
 			type: 'POST',
 			data:{"StartAgain":"true"},
 			success: function () {

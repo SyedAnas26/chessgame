@@ -42,9 +42,9 @@ public class LoginServlet extends HttpServlet
             boolean success = false;
             HttpSession session = request.getSession(true);
 
-            String thisname = request.getParameter("user_id");
-            String thispwd = request.getParameter("password");
-            String query = "SELECT * FROM login WHERE username='" + thisname + "' and password='" + thispwd + "'";
+                String thisName = request.getParameter("user_id");
+                String thisPwd = request.getParameter("password");
+                String query = "SELECT * FROM login WHERE username='" + thisName + "' and password='" + thisPwd + "'";
 
             try
             {

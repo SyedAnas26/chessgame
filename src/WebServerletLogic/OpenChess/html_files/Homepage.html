@@ -11,8 +11,9 @@
         var userId= '';
         var userName= '';
         window.onload = function() {
+            var x=window.location.origin;
             $.ajax({
-                url: "http://localhost:8080/getUserId",
+                url: x+"/getUserId",
                 type: 'POST',
                 success: function(response) {
                     userId=response.user_id;

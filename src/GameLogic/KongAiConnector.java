@@ -25,13 +25,13 @@ public class KongAiConnector
             args.addAll(Arrays.asList(String.valueOf(difficulty), String.valueOf(gameId), String.valueOf(moveNo)));
             args.addAll(moveArr);
             script = env.createScript("KongAIConnector.js",
-                    new File("KongAIConnector.js"), args.toArray(new String[0]));
+                    new File("../webapps/ROOT/WEB-INF/classes/GameLogic/KongAIConnector.js"), args.toArray(new String[0]));
             //new File("src\\WebServletLogic\\html_files\\KongAIConnector.js"), moveArr.toArray(new String[0]));
 
 
             // Wait for the script to complete
             ScriptStatus status = script.execute().get();
-
+            System.out.println("Status is" + status);
             return getLatestMove(gameId, moveNo);
 
 
@@ -39,6 +39,7 @@ public class KongAiConnector
         }
         catch(Exception e)
         {
+            System.out.println("There is an exception" + e);
             System.out.println(e.getMessage());
             e.printStackTrace();
         }
