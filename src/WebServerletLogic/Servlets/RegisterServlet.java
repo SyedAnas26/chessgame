@@ -38,11 +38,14 @@ public class RegisterServlet extends HttpServlet {
                 String gender = request.getParameter("gender");
                 String email_id=request.getParameter("email");
                 String q = "SELECT * FROM login WHERE username='" + username+"'";
-                ResultSet res = DbConnector.get(q);
-                if(!res.next()){
-                DbConnector.update("insert into login(username,fullname,password,email_id,gender) values('"+username+"','"+fullname+"','"+password+"','"+email_id+"','"+gender+"')");
-                success = true;
-                }
+                success =  (Boolean) DbConnector.get(q, res -> {
+                    if(!res.next()){
+                        DbConnector.update("insert into login(username,fullname,password,email_id,gender) values('"+username+"','"+fullname+"','"+password+"','"+email_id+"','"+gender+"')");
+                        return true;
+                    }
+                    return false;
+                });
+
             }
 
             catch (SQLException e) {

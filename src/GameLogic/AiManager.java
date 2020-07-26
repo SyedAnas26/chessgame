@@ -1,6 +1,7 @@
 package GameLogic;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,15 +51,18 @@ public class AiManager {
     private List<String> getMovesArr(long gameID) throws Exception {
 
         String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "'";
-        ResultSet rs = DbConnector.get(sql);
         List<String> moves = new ArrayList<>();
-        int j = 0;
-        while (rs.next()) {
-            moves.add(rs.getString("moves"));
-            j++;
-        }
-        return moves;
 
+        DbConnector.get(sql, rs -> {
+            while (rs.next())
+            {
+                moves.add(rs.getString("moves"));
+            }
+
+            return moves;
+        });
+
+        return moves;
     }
 
     public void newGame() {

@@ -1,46 +1,61 @@
 package GameLogic;
 
+import java.io.IOException;
 import java.sql.*;
+
+import javax.servlet.ServletException;
 
 public class DbConnector
 {
-	private static Connection con = null;
-
 	private DbConnector()
 	{
 	}
 
-	private static void makeConnection() throws Exception {
-		try {
+	private static Connection makeConnection() throws Exception {
+		Connection con = null;
 
-			if(con == null)
-			{
-				Class.forName("com.mysql.jdbc.Driver");
-				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
-			}
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
+			return con;
 		}
 		catch (SQLException e)
 		{
-			throw new Exception("Servlet Could not display records.", e);
+			throw new ServletException("Servlet Could not display records.", e);
 		}
-
 		catch (ClassNotFoundException e)
 		{
-			throw new Exception("JDBC Driver not found.", e);
+			throw new ServletException("JDBC Driver not found.", e);
 		}
 	}
-	public static ResultSet get(String query) throws Exception
+
+	public static Object get(String query, DBQueryRunner runner) throws Exception
 	{
-		makeConnection();
-		PreparedStatement pst = con.prepareStatement(query);
-		return pst.executeQuery(query);
+		Connection connection = makeConnection();
+		try
+		{
+			PreparedStatement pst = connection.prepareStatement(query);
+			ResultSet rs = pst.executeQuery(query);
+			return runner.execute(rs);
+		}
+		finally
+		{
+			connection.close();
+		}
 	}
 
 	public static void update(String query) throws Exception
 	{
-		makeConnection();
-		Statement stmt = con.createStatement();
-		int i=stmt.executeUpdate(query);
-		//System.out.println(i+" record(s) updated (User Move)");
+		Connection connection = makeConnection();
+		try
+		{
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate(query);
+		}
+		finally
+		{
+			connection.close();
+		}
 	}
+
 }

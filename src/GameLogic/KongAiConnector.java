@@ -25,7 +25,7 @@ public class KongAiConnector
             args.addAll(Arrays.asList(String.valueOf(difficulty), String.valueOf(gameId), String.valueOf(moveNo)));
             args.addAll(moveArr);
             script = env.createScript("KongAIConnector.js",
-                    new File("src\\GameLogic\\KongAIConnector.js"), args.toArray(new String[0]));
+                    new File("KongAIConnector.js"), args.toArray(new String[0]));
             //new File("src\\WebServletLogic\\html_files\\KongAIConnector.js"), moveArr.toArray(new String[0]));
 
 
@@ -37,6 +37,7 @@ public class KongAiConnector
         }
         catch(Exception e)
         {
+            System.out.println(e.getMessage());
             e.printStackTrace();
         }
 
@@ -46,12 +47,15 @@ public class KongAiConnector
     private String getLatestMove(long gameID, int moveNo) throws Exception
     {
         String sql = "SELECT * FROM gamemoves WHERE GameID='" + gameID + "' and MoveNo = '" + moveNo + "'";
-        ResultSet rs = DbConnector.get(sql);
-        if (rs.next()) {
-            return rs.getString("Moves");
-        }
-        System.out.println("Move not found");
-        throw new Exception("Move not found!!");
+
+       return (String) DbConnector.get(sql, rs -> {
+            if (rs.next()) {
+                return rs.getString("Moves");
+            }
+
+            System.out.println("Move not found");
+            throw new Exception("Move not found!!");
+        });
     }
 
 }
