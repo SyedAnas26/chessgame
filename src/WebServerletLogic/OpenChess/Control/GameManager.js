@@ -122,7 +122,8 @@
 			 * Checks whether the king is in check in the given position. 
 			 * */
 			function isKingInCheck(king){				
-				return board.isInCheckLaneOf(Team.getOpponentTeamColor(king.getTeamColor()),king.getPosition());
+			     return false;
+				//return board.isInCheckLaneOf(Team.getOpponentTeamColor(king.getTeamColor()),king.getPosition());
 			};
 			
 			function isKingInCheckMate(king){
@@ -263,17 +264,17 @@
 					      var currentTeamName     = board.getTeamHandle(getPlayingTeamColor()).toString();
 					      var opponentTeamName    = board.getTeamHandle(getOpponentTeamColor()).toString();
 					      
-						  //Since this is for checking the opponent team king., opposite teamKing is traced from currentTeamKing and it is send to the isKingInCheckMate
-						  if ( isKingInCheckMate(opponentTeamKing))
-							  console.log("Match over. " + currentTeamName + " wins. The king is in checkmate");
-						  
-						  else if ( isKingInCheck(opponentTeamKing))
-						     alert("The " + opponentTeamName + " is in check");
-							  						 
-						  else if( isKingInStaleMate(opponentTeamKing))
-							  console.log("Match drawn. " + opponentTeamName + " king is in statemate");
-						  
-						  
+						  // //Since this is for checking the opponent team king., opposite teamKing is traced from currentTeamKing and it is send to the isKingInCheckMate
+						  // if ( isKingInCheckMate(opponentTeamKing))
+							//   console.log("Match over. " + currentTeamName + " wins. The king is in checkmate");
+						  //
+						  // else if ( isKingInCheck(opponentTeamKing))
+						  //    alert("The " + opponentTeamName + " is in check");
+							//
+						  // else if( isKingInStaleMate(opponentTeamKing))
+							//   console.log("Match drawn. " + opponentTeamName + " king is in statemate");
+						  //
+
 					      resetPicking(); //On successful move, the board is made ready for next move.
 						  togglePlayingTeam();
 						  return [1,movesLogForUI];

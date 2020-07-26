@@ -32,5 +32,6 @@ con.query(sql, function (err, result) {
 if (err) throw err;
 //console.log(result.affectedRows + " record(s) updated (Ai Move)");
 con.end();
+
 });
 });
