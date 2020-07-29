@@ -1,7 +1,5 @@
 package GameLogic;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +7,7 @@ public class AiManager {
     PgnGenerator pg = null;
     GameManager gameManager = null;
     String userMove;
-    int drawClaimStatus=0;
+    int gameStatus =0;
     int moveNo;
     long gameId;
     int time = 0;
@@ -31,17 +29,18 @@ public class AiManager {
     }
 
 
-    public void addMove(String fromPos, String toPos, String drawClaim) throws Exception {
+    public void addMove(String fromPos, String toPos, String status) throws Exception {
         try {
-            if (drawClaim!=null) {
-                drawClaimStatus=1;
-                userMove = "Draw Claimed";
+            if (status!=null) {
+                gameStatus =Integer.parseInt(status);
+                System.out.println(gameStatus);
+                userMove = "Game Ended";
             } else {
                 userMove = pg.convertToPgn(fromPos, toPos);
                 System.out.println("UserMove : " + userMove);
                 gameManager.conductGame(userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + drawClaimStatus + "')");
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
             moveNo++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,10 +67,10 @@ public class AiManager {
     public void newGame() {
         pg = new PgnGenerator();
         gameManager = new GameManager();
-        drawClaimStatus = 0;
+        gameStatus = 0;
         moveNo = 1;
         try {
-            gameId = System.nanoTime();
+            gameId = System.currentTimeMillis();
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }

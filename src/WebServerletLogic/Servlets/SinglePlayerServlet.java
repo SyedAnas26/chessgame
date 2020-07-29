@@ -29,12 +29,12 @@ public class SinglePlayerServlet extends HttpServlet {
                 difficulty = req.getParameter("difficulty");
                 aiManager.newGame();
 
-            } else if (servletPath.equals("/usermoves") || servletPath.equals("/drawclaim")) {
+            } else if (servletPath.equals("/usermoves") || servletPath.equals("/gamestatus")) {
 
                 String fromPos = req.getParameter("fromMove");
                 String toPos = req.getParameter("toMove");
-                String drawClaim = req.getParameter("claimDraw");
-                aiManager.addMove(fromPos, toPos, drawClaim);
+                String gameStatus = req.getParameter("gameStatus");
+                aiManager.addMove(fromPos, toPos, gameStatus);
 
             } else if (servletPath.equals("/aiMove")) {
 
