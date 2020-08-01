@@ -6,6 +6,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -13,6 +14,7 @@ public class SinglePlayerServlet extends HttpServlet {
     String difficulty;
     String responseStep;
     AiManager aiManager = new AiManager();
+    int uniqueId=0;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -21,7 +23,8 @@ public class SinglePlayerServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath = req.getServletPath();
-        //System.out.println("Servlet Path" + servletPath);
+        HttpSession session=req.getSession();
+        uniqueId=(int)session.getAttribute("uniqueId");
         try {
 
             if (servletPath.equals("/diff")) {
@@ -31,10 +34,9 @@ public class SinglePlayerServlet extends HttpServlet {
 
             } else if (servletPath.equals("/usermoves") || servletPath.equals("/gamestatus")) {
 
-                String fromPos = req.getParameter("fromMove");
-                String toPos = req.getParameter("toMove");
+                String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
-                aiManager.addMove(fromPos, toPos, gameStatus);
+                aiManager.addMove(userMove, gameStatus,uniqueId);
 
             } else if (servletPath.equals("/aiMove")) {
 

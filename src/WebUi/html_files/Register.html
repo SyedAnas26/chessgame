@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script>
+        function validateForm()
+        {
+            var u=document.forms["Register"]["username"].value;
+            if (u==null || u=="")
+            {
+                alert("User id must be filled out");
+                return false;
+            }
+            var y=document.forms["Register"]["name"].value;
+            if (y==null || y=="")
+            {
+                alert("Name must be filled out");
+                return false;
+            }
+            var z=document.forms["Register"]["password"].value;
+            if (z==null || z=="")
+            {
+                alert("Password must be filled out");
+                return false;
+            }
+            var x=document.forms["Register"]["email"].value;
+            var atpos=x.indexOf("@");
+            var pos=x.indexOf(".");
+            var dotpos=x.lastIndexOf(".");
+            if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length || (x.charAt(pos+1)=="."))
+            {
+                alert("Not a valid e-mail address");
+                return false;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div align="center">
+
+    <form action="RegisterServlet" method="post" name="Register" onsubmit="return validateForm();">
+        <div>
+            <div id="login-box">
+                <h2>Sign Up</h2>
+                <br>
+                <br>
+                <div id="login-box-username">
+                    User id:
+                </div>
+                <div id="login-box-userfield">
+                    <input name="username" title="User_id" value=""/>
+                </div>
+                <div id="login-box-name">
+                    Name:
+                </div>
+                <div id="login-box-namefield">
+                    <input name="name" title="Name" value=""/>
+                </div>
+                <div id="login-box-pass">
+                    Password:
+                </div>
+                <div id="login-box-passfield">
+                    <input name="password" type="password" title="Password" value=""/>
+                </div>
+                <div id="login-box-mail">
+                    Email:
+                </div>
+                <div id="login-box-mailfield">
+                    <input name="email" type="text" title="email" value=""/>
+                </div>
+                <div id="login-box-gen">
+                    Gender:
+                </div>
+                <div id="login-box-genfield">
+                    <div align="center">
+                        <input type="radio" name="gender" value="male">Male
+                        <input type="radio" name="gender" value="female">Female</div>
+                </div>
+                <br>
+                <input type="submit" value="Sign Up"/>
+            </div>
+        </div>
+    </form>
+    <br>
+    <br>
+    <form action="/loginpage" method="post" align="center" >
+        <input type="submit" value="LoginPage"/>
+    </form>
+</div>
+</body>
+</html>

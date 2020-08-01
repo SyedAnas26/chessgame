@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chess Game</title>
+    <script>
+        function validateForm() {
+            var y=document.forms["Login"]["user_id"].value;
+            if (y==null || y=="")
+            {
+                alert("User id must be filled out");
+                return false;
+            }
+            var z=document.forms["Login"]["password"].value;
+            if (z==null || z=="")
+            {
+                alert("Password must be filled out");
+                return false;
+            }
+        }
+    </script>
+</head>
+
+<body>
+<div align="center">
+    <form action="LoginServlet" name="Login" align= "center" method="post" onsubmit="return validateForm();">
+        <div>
+            <div id="login-box">
+                <H2>Login</H2>
+                <br/>
+                <br/>
+                <div id="login-box-name">
+                    User id:
+                </div>
+                <div id="login-box-userfield">
+                    <input name="user_id" title="user_id" value=""/>
+                </div>
+                <div id="login-box-pass">
+                    Password:
+                </div>
+                <div id="login-box-field">
+                    <input name="password" type="password" title="Password" value="" />
+                </div>
+                <br>
+                <input type="submit" value="Login"/>
+            </div>
+        </div>
+    </form>
+</div>
+<h4 align="center">New user?Sign Up here</h4>
+    <form align ="center" action="/Register" method="post">
+        <input type="submit" value="Sign Up"/>
+    </form>
+</body>
+</html>
