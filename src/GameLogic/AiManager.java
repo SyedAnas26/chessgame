@@ -8,7 +8,7 @@ public class AiManager {
     int gameStatus =0;
     int moveNo;
     long gameId;
-    int time = 0;
+    long time;
     String responseStep;
 
 
@@ -21,16 +21,18 @@ public class AiManager {
         responseStep = "{\"aiMove\":\""+aiMove+"\"}";
         moveNo++;
         return responseStep;
+
     }
 
 
-    public void addMove(String userMove, String status,int uniqueId) throws Exception {
+    public void addMove(String userMove, String status,int uniqueId,String userTime) throws Exception {
         try {
             if (status!=null) {
                 gameStatus =Integer.parseInt(status);
                 userMove = "Game Ended";
                 DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus + "')");
             } else {
+                time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
             }
             DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");

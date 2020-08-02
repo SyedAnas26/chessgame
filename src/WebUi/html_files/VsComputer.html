@@ -14,6 +14,10 @@
         var promotionPiece='';
         var promotionPiece_called=false;
         var statusCalled='0';
+        var c= 0;
+        var timer=0;
+        var t;
+        var timer_is_on = 0;
         var x=window.location.origin;
         $.ajax({
             url: x+"/getUserId",
@@ -53,6 +57,26 @@
             document.getElementById("black_promotion_pieces").style.visibility = "hidden";
             promotionPiece_called=true;
         }
+
+
+        function timedCount() {
+            timer=c;
+            c=c+10;
+            t = setTimeout(timedCount,10);
+        }
+
+        function startCount() {
+            if (!timer_is_on) {
+                timer_is_on = 1;
+                timedCount();
+            }
+        }
+
+        function stopCount() {
+            clearTimeout(t);
+            timer_is_on = 0;
+            c=0;
+        }
     </script>
 </head>
 <body>
@@ -82,18 +106,40 @@
     var $status = $('#status')
     var $fen = $('#fen')
     var $pgn = $('#pgn')
+    var whiteSquareGrey = '#a9a9a9'
+    var blackSquareGrey = '#696969'
+    startCount()
+
+    function removeGreySquares () {
+        $('#myBoard .square-55d63').css('background', '')
+    }
+
+    function greySquare (square) {
+        var $square = $('#myBoard .square-' + square)
+
+        var background = whiteSquareGrey
+        if ($square.hasClass('black-3c85d')) {
+            background = blackSquareGrey
+        }
+
+        $square.css('background', background)
+    }
 
     function onDragStart (source, piece, position, orientation) {
 
         if (game.game_over()) return false
 
-        if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        else if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
             (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
             return false
+
         }
+
     }
 
     function onDrop (source, target, piece, newPos, oldPos, orientation) {
+
+        removeGreySquares()
 
         if(promotionPiece_called===false){
             if(piece==='wP' || piece==='bP'){
@@ -133,10 +179,13 @@
         promotionPiece_called=false;
 
         var x=window.location.origin;
+        stopCount()
+        var userTime=timer;
+        console.log("user Time"+userTime)
         $.ajax({
             url: x+"/usermoves",
             type: 'POST',
-            data: {"userMove":move.san},
+            data: {"userMove":move.san,"timeTaken":userTime},
             async:false,
             success: function () {
                 console.log('ajax success!!');
@@ -149,6 +198,29 @@
         window.setTimeout(makeAiMove, 250)
     }
 
+    function onMouseoverSquare (square, piece) {
+        // get list of possible moves for this square
+        var moves = game.moves({
+            square: square,
+            verbose: true
+        })
+
+        // exit if there are no moves available for this square
+        if (moves.length === 0) return
+
+        // highlight the square they moused over
+        greySquare(square)
+
+        // highlight the possible squares for this piece
+        for (var i = 0; i < moves.length; i++) {
+            greySquare(moves[i].to)
+        }
+    }
+
+    function onMouseoutSquare (square, piece) {
+        removeGreySquares()
+    }
+
 
     function onSnapEnd () {
         board.position(game.fen())
@@ -157,6 +229,7 @@
     function makeAiMove() {
         callAIToPlay()
         updateStatus()
+        startCount()
     }
     function callAIToPlay()
     {
@@ -253,7 +326,9 @@
         position: 'start',
         onDragStart: onDragStart,
         onDrop: onDrop,
-        onSnapEnd: onSnapEnd,
+        onMouseoutSquare: onMouseoutSquare,
+        onMouseoverSquare: onMouseoverSquare,
+        onSnapEnd: onSnapEnd
     }
     board = Chessboard('myBoard', config)
     updateStatus()

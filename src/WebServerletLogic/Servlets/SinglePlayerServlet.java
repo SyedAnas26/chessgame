@@ -33,13 +33,12 @@ public class SinglePlayerServlet extends HttpServlet {
                 aiManager.newGame();
 
             } else if (servletPath.equals("/usermoves") || servletPath.equals("/gamestatus")) {
-
+                String userTimer=req.getParameter("timeTaken");
                 String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
-                aiManager.addMove(userMove, gameStatus,uniqueId);
+                aiManager.addMove(userMove, gameStatus,uniqueId,userTimer);
 
             } else if (servletPath.equals("/aiMove")) {
-
                 PrintWriter out = resp.getWriter();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
