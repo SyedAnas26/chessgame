@@ -1,32 +1,32 @@
- <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
-<head>
-	<script>
-		history.forward();
+	<head>
+		<script>
+			history.forward();
+		</script>
+	</head>
+	<!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
+
+	<script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
+	<script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script><meta charset="utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+	<script type="text/javascript">
+
+		var x=window.location.origin;
+		$.ajax({
+			url: x+"/getUserId",
+			type: 'POST',
+			success: function (response) {
+				if (response.user_id==='null') {
+					alert(' Login First !');
+					location = '/loginpage';
+				}
+				console.log('difficulty ajax success!!');
+			}
+		});
 	</script>
 </head>
-<!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
-
-<script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
-<script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script><meta charset="utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
-<script type="text/javascript">
-
-	var x=window.location.origin;
-	$.ajax({
-		url: x+"/getUserId",
-		type: 'POST',
-		success: function (response) {
-			if (response.user_id==='null') {
-				alert(' Login First !');
-				location = '/loginpage';
-			}
-			console.log('difficulty ajax success!!');
-		}
-	});
-	</script>
- </head>
 <body>
 <div id="myBoard" style="width: 500px"></div>
 <div id="status"></div>
@@ -40,45 +40,57 @@
 
 
 
-       function nextStep() {
-			var x=window.location.origin;
-			$.ajax({
-				url: x+"/nextstep",
-                type: 'POST',
-                success: function(response) {
-					if(response.checkStatus==="Draw"){
-						alert("Match Draw!");
-					}
-					else if(response.checkStatus==="Player1"){
-						alert("Player 1 Wins (White)!");
-					}
-					else if(response.checkStatus==="Player2"){
-						alert("Player 2 Wins (Black)!");
-					}
-							// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
-					else {
-						var from_pos=response.from_pos;
-						var to_pos=response.to_pos;
-						var move2=""+from_pos+"-"+to_pos;
-						board.move(move2)
-					}
+	function nextStep() {
+		var x=window.location.origin;
+		$.ajax({
+			url: x+"/nextstep",
+			type: 'POST',
+			success: function(response) {
+				if(response.checkStatus==="Draw"){
+					alert("Match Draw!");
 				}
-            });
-        }
+				else if(response.checkStatus==="Player1"){
+					alert("Player 1 Wins (White)!");
+				}
+				else if(response.checkStatus==="Player2"){
+					alert("Player 2 Wins (Black)!");
+				}
+				// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
+				else {
+					var from_pos=response.from_pos;
+					var to_pos=response.to_pos;
+					var move2=""+from_pos+"-"+to_pos;
+					board.move(move2)
+				}
+			}
+		});
+	}
 
-		//
-		// $("#previous_step").click(function(){
-		// 	var x=window.location.origin;
-		// 	$.ajax({
-		// 		url: x+"/previous_step",
-		// 		type: 'POST',
-		// 		success: function(response) {
-		// 			uiManager.cellClickedAt(response.to_pos);
-		// 			uiManager.cellClickedAt(response.from_pos);
-		// 		}
-		//
-		// 	});
-		// });
+
+	function prevStep () {
+
+		var x=window.location.origin;
+		$.ajax({
+			url: x+"/previous_step",
+			type: 'POST',
+			success: function(response) {
+				var from_pos=response.to_pos;
+				var to_pos=response.from_pos;
+				var killed_piece=response.killedPiece;
+				var move2=""+from_pos+"-"+to_pos;
+				board.move(move2)
+				var killPos=""+from_pos+"";
+				console.log(from_pos.toString)
+				if(killed_piece!=="Not Killed"){
+					var board_positions=board.position();
+					board_positions[""+from_pos+""]=killed_piece;
+					console.log(board_positions);
+					board.position(board_positions);
+				}
+			}
+
+		});
+	}
 
 	function startNew() {
 
@@ -101,9 +113,9 @@
 <input type="button" onclick="nextStep()" value="Next Step" cellpadding="0" cellspacing="0"/>
 <br>
 <br>
-<!--<input type="button" id="previous_step" value="Previous Step" cellpadding="0" cellspacing="0"/>
+<input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/>
 <br>
-<br>-->
+<br>
 <input type="button" onclick="startNew()" value="Start Again" cellpadding="0" cellspacing="0"/>
 <br>
 <form action="/homepage" method="post" align="center" >

@@ -13,6 +13,7 @@ import java.io.PrintWriter;
 public class PgnGameServlet extends HttpServlet {
 int step=0;
 boolean nextCalled=true;
+boolean prevCalled=false;
 PlayPgnFile playPgnFile=new PlayPgnFile();
 
 @Override
@@ -38,6 +39,7 @@ PlayPgnFile playPgnFile=new PlayPgnFile();
          updateStep(servletPath);
         playPgnFile.playGame(File,step,servletContext);
         responseStep=playPgnFile.getResponseStep(step);
+            System.out.println(responseStep);
         out.print(responseStep);
         }
     }
@@ -48,14 +50,21 @@ PlayPgnFile playPgnFile=new PlayPgnFile();
     private void updateStep(String servletPath) {
         if(servletPath.equals("/nextstep"))
         {
-            step++;
+            if(prevCalled){
+                prevCalled=false;
+            }
+            else {
+                step++;
+            }
             nextCalled=true;
+
 
         }
         else if(servletPath.equals("/previous_step")){
             if(!nextCalled){
                 if(step>0) {
                     --step;
+                    prevCalled=true;
                 }
                 else {
                     System.out.println("Play next first");
@@ -63,6 +72,7 @@ PlayPgnFile playPgnFile=new PlayPgnFile();
             }
             else if(nextCalled){
                 nextCalled=false;
+                prevCalled=true;
                 step=step;
             }
         }
