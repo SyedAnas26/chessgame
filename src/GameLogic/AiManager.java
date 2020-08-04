@@ -35,7 +35,7 @@ public class AiManager {
                 time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
             moveNo++;
         } catch (Exception e) {
             e.printStackTrace();

@@ -33,6 +33,17 @@
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js" integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
 <script type="text/javascript">
+	// 	var board = null
+	var game = new Chess()
+	//     function onDrop (source, target) {
+
+	//   var move = game.move({
+	//     from: source,
+	//     to: target,
+	//     promotion: 'q'
+	//   })
+
+	// }
 	var config = {
 		position: 'start'
 	}
@@ -59,12 +70,77 @@
 				else {
 					var from_pos=response.from_pos;
 					var to_pos=response.to_pos;
-					var move2=""+from_pos+"-"+to_pos;
-					board.move(move2)
+					var castling=response.castling;
+					if(!isCastling(castling))
+					{
+						var move2=""+from_pos+"-"+to_pos;
+						game.move(move2,{ sloppy: true })
+						board.move(move2)
+					}
 				}
 			}
 		});
+
 	}
+	function isPrevCastling(respMove){
+		if(respMove==='O-O'){
+			if(game.turn()==='b'){
+				board.move('g8-e8')
+				board.move('f8-h8')
+
+			}
+			else{
+				board.move('g1-e1')
+				board.move('f1-h1')
+			}
+			return true;
+		}
+		else if(respMove==='O-O-O'){
+			if(game.turn()==='b'){
+				board.move('c8-e8')
+				board.move('d8-a8')
+			}
+			else{
+				board.move('c1-e1')
+				board.move('d1-a1')
+			}
+			return true;
+		}
+		return false;
+
+	}
+
+	function isCastling(respMove){
+		if(respMove==='O-O'){
+			if(game.turn()==='b'){
+				game.move('O-O')
+				board.move('e8-g8')
+				board.move('h8-f8')
+
+			}
+			else{
+				game.move('O-O')
+				board.move('e1-g1')
+				board.move('h1-f1')
+			}
+			return true;
+		}
+		else if(respMove==='O-O-O'){
+			if(game.turn()==='b'){
+				game.move('O-O-O')
+				board.move('e8-c8')
+				board.move('a8-d8')
+			}
+			else{
+				game.move('O-O-O')
+				board.move('e1-c1')
+				board.move('a1-d1')
+			}
+			return true;
+		}
+		return false;
+	}
+
 
 
 	function prevStep () {
@@ -77,15 +153,17 @@
 				var from_pos=response.to_pos;
 				var to_pos=response.from_pos;
 				var killed_piece=response.killedPiece;
+				var castling=response.castling;
 				var move2=""+from_pos+"-"+to_pos;
-				board.move(move2)
-				var killPos=""+from_pos+"";
-				console.log(from_pos.toString)
-				if(killed_piece!=="Not Killed"){
-					var board_positions=board.position();
-					board_positions[""+from_pos+""]=killed_piece;
-					console.log(board_positions);
-					board.position(board_positions);
+				game.undo()
+				if(!isPrevCastling(castling)){
+					board.move(move2)
+					var killPos=""+from_pos+"";
+					if(killed_piece!=="Not Killed"){
+						var board_positions=board.position();
+						board_positions[""+from_pos+""]=killed_piece;
+						board.position(board_positions);
+					}
 				}
 			}
 

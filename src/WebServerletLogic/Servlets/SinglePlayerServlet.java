@@ -15,6 +15,7 @@ public class SinglePlayerServlet extends HttpServlet {
     String responseStep;
     AiManager aiManager = new AiManager();
     int uniqueId=0;
+    int i=0;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {

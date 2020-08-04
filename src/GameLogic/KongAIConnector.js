@@ -51,7 +51,7 @@ database: 'chessgame_database'
 
 con.connect(function(err) {
 if (err) throw err;
-var sql = "insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('"+gameID+"','"+moveNo+"','"+move+"','"+aiTime+"',0)";
+var sql = "insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('"+gameID+"','"+moveNo+"','"+move+"','"+aiTime+"',0)";
 con.query(sql, function (err, result) {
 if (err) throw err;
 //console.log(result.affectedRows + " record(s) updated (Ai Move)");

@@ -14,6 +14,7 @@ public class GameManager {
     Position fromPositionOrg;
     Position toPositionOrg;
     String killedPiece;
+    String castling;
 
     public GameManager(){
         b.setBoard();
@@ -52,6 +53,7 @@ public class GameManager {
 
 
         {
+            castling="false";
             killedPiece="NotKilled";
             updateCurrentPlayerColor(currentPlayer);
             playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
@@ -135,7 +137,6 @@ public class GameManager {
     }
 
     public void playGame(String arrayElement) throws Exception {
-        System.out.println("element"+arrayElement);
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
         } else if (arrayElement.length() == 3) {
@@ -204,6 +205,7 @@ public class GameManager {
     private void for5elements(String arrayElement) throws Exception {
         if (arrayElement.charAt(0) == 'O') {
             KingCastling("K", arrayElement);
+            castling="O-O-O";
         } else {
             char thePiece = arrayElement.charAt(0);
             String piece = "";
@@ -290,6 +292,7 @@ public class GameManager {
         Position fromPosition;
 
         if (arrayElement.charAt(0) == 'O') {
+            castling="O-O";
             KingCastling("K", arrayElement);
         } else {
             char thePiece = arrayElement.charAt(0);
@@ -587,7 +590,7 @@ public class GameManager {
 
     public String getLastMovementAsStringForJSON() {
        String uiKilledPiece= makeUiKilledPiece();
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\" }";
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"castling\":\""+castling+"\"}";
     }
 
     private String makeUiKilledPiece() {

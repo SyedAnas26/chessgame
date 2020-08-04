@@ -11,14 +11,14 @@
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
-        var promotionPiece='';
-        var promotionPiece_called=false;
         var statusCalled='0';
         var c= 0;
         var timer=0;
         var t;
         var timer_is_on = 0;
         var x=window.location.origin;
+        var position_to='';
+        var position_from='';
         $.ajax({
             url: x+"/getUserId",
             type: 'POST',
@@ -51,12 +51,7 @@
                 });
             }
         }
-        function promotePiece(piece){
-            promotionPiece=piece;
-            document.getElementById("white_promotion_pieces").style.visibility = "hidden";
-            document.getElementById("black_promotion_pieces").style.visibility = "hidden";
-            promotionPiece_called=true;
-        }
+
 
 
         function timedCount() {
@@ -81,18 +76,18 @@
 </head>
 <body>
 <div id="white_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen"  data-piece="wQ"  style="width:62px;height:62px;" onclick="promotePiece('q')">
-    <img src="img/chesspieces/wikipedia/wN.png" id="wknight"  data-piece="wN" style="width:62px;height:62px;"  onclick="promotePiece('n')">
-    <img src="img/chesspieces/wikipedia/wB.png" id="wbishop"  data-piece="wB"  style="width:62px;height:62px;" onclick="promotePiece('b')">
-    <img src="img/chesspieces/wikipedia/wR.png" id="wrook"  data-piece="wR"  style="width:62px;height:62px;" onclick="promotePiece('r')">
+    <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen"  data-piece="wQ"  style="width:62px;height:62px;" onclick="promotePiece('Q')">
+    <img src="img/chesspieces/wikipedia/wN.png" id="wknight"  data-piece="wN" style="width:62px;height:62px;"  onclick="promotePiece('N')">
+    <img src="img/chesspieces/wikipedia/wB.png" id="wbishop"  data-piece="wB"  style="width:62px;height:62px;" onclick="promotePiece('B')">
+    <img src="img/chesspieces/wikipedia/wR.png" id="wrook"  data-piece="wR"  style="width:62px;height:62px;" onclick="promotePiece('R')">
 </div>
 <div id="myBoard" style="width: 500px">
 </div>
 <div id="black_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen"  data-piece="bQ" style="width:62px;height:62px;" onclick="promotePiece('q')">
-    <img src="img/chesspieces/wikipedia/bN.png" id="bknight"  data-piece="bN" style="width:62px;height:62px;" onclick="promotePiece('n')">
-    <img src="img/chesspieces/wikipedia/bB.png" id="bbishop"  data-piece="bB" style="width:62px;height:62px;"onclick="promotePiece('b')">
-    <img src="img/chesspieces/wikipedia/bR.png" id="brook"  data-piece="bR" style="width:62px;height:62px;" onclick="promotePiece('r')">
+    <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen"  data-piece="bQ" style="width:62px;height:62px;" onclick="promotePiece('Q')">
+    <img src="img/chesspieces/wikipedia/bN.png" id="bknight"  data-piece="bN" style="width:62px;height:62px;" onclick="promotePiece('N')">
+    <img src="img/chesspieces/wikipedia/bB.png" id="bbishop"  data-piece="bB" style="width:62px;height:62px;"onclick="promotePiece('B')">
+    <img src="img/chesspieces/wikipedia/bR.png" id="brook"  data-piece="bR" style="width:62px;height:62px;" onclick="promotePiece('R')">
 </div>
 
 <label>Status:</label>
@@ -112,6 +107,22 @@
 
     function removeGreySquares () {
         $('#myBoard .square-55d63').css('background', '')
+    }
+
+    function promotePiece(piece){
+        var promMove
+        document.getElementById("white_promotion_pieces").style.visibility = "hidden";
+        document.getElementById("black_promotion_pieces").style.visibility = "hidden";
+        var checkPieceExist=""+position_to;
+        if(game.get(checkPieceExist)===null)
+        {
+            promMove=""+position_to+"="+piece;
+        }
+        else{
+            promMove=""+position_from.charAt(0)+"x"+position_to+"="+piece;
+        }
+        game.move(promMove)
+        board.position(game.fen())
     }
 
     function greySquare (square) {
@@ -141,42 +152,39 @@
 
         removeGreySquares()
 
-        if(promotionPiece_called===false){
-            if(piece==='wP' || piece==='bP'){
-                if(target.charAt(1)==1 || target.charAt(1)==8){
-                    if(orientation==='white'){
-                        if(game.turn()==='w' && target.charAt(1)==8 ){
-                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        }
-                        else if(game.turn()==='b' && target.charAt(1)==1){
-                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
-                        }
+        if(piece==='wP' || piece==='bP'){
+            position_to=target;
+            position_from=source;
+            if(target.charAt(1)==1 || target.charAt(1)==8){
+                if(orientation==='white'){
+                    if(game.turn()==='w' && target.charAt(1)==8 ){
+                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
                     }
-                    else if(orientation==='black'){
-                        if(game.turn()==='w' && target.charAt(1)==1 ){
-                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        }
-                        else if(game.turn()==='b' && target.charAt(1)==8){
-                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
-                        }
-
+                    else if(game.turn()==='b' && target.charAt(1)==1){
+                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                    }
+                }
+                else if(orientation==='black'){
+                    if(game.turn()==='w' && target.charAt(1)==1 ){
+                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                    }
+                    else if(game.turn()==='b' && target.charAt(1)==8){
+                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
                     }
 
                 }
+
             }
         }
+
         // see if the move is legal
         var move = game.move({
             from: source,
             to: target,
-            promotion:promotionPiece
         })
 
         // illegal move
         if (move === null) return 'snapback'
-
-        promotionPiece='';
-        promotionPiece_called=false;
 
         var x=window.location.origin;
         stopCount()
@@ -246,35 +254,9 @@
         });
         //if(!isCastling(respMove)){
         var aiMove = game.move(respMove, { sloppy: true })
-        var move=""+aiMove.from+"-"+aiMove.to;
-        board.move(move)
+        //var move=""+aiMove.from+"-"+aiMove.to;
+        board.position(game.fen())
         //}
-    }
-
-    function isCastling (respMove){
-        if(respMove==='O-O'){
-            if(game.turn()==='b'){
-                game.move({ from: 'e8', to: 'g8' })
-                board.move('e8-g8')
-            }
-            else{
-                game.move({ from: 'e1', to: 'g1' })
-                board.move('e1-g1')
-            }
-            return true;
-        }
-        else if(respMove==='O-O-O'){
-            if(game.turn()==='b'){
-                game.move({ from: 'e8', to: 'c8' })
-                board.move('e8-c8')
-            }
-            else{
-                game.move({ from: 'e1', to: 'c1' })
-                board.move('e1-c1')
-            }
-            return true;
-        }
-        return false;
     }
 
     function updateStatus () {

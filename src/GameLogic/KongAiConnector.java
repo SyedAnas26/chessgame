@@ -30,7 +30,7 @@ public class KongAiConnector
 
             // Wait for the script to complete
             ScriptStatus status = script.execute().get();
-            System.out.println("Status is" + status);
+          //  System.out.println("Status is" + status);
             return getLatestMove(gameId, moveNo);
 
         }
