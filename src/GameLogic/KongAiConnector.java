@@ -33,8 +33,6 @@ public class KongAiConnector
             System.out.println("Status is" + status);
             return getLatestMove(gameId, moveNo);
 
-
-
         }
         catch(Exception e)
         {

@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FileUploadServlet extends HttpServlet {
 
-    private final String UPLOAD_DIRECTORY = "\\FileUploads";
+    private final String UPLOAD_DIRECTORY = "/FileUploads";
     String FileName;
 
     @Override
