@@ -15,6 +15,7 @@ public class GameManager {
     Position toPositionOrg;
     String killedPiece;
     String castling;
+    String pgnElement;
 
     public GameManager(){
         b.setBoard();
@@ -137,6 +138,7 @@ public class GameManager {
     }
 
     public void playGame(String arrayElement) throws Exception {
+        pgnElement=arrayElement;
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
         } else if (arrayElement.length() == 3) {
@@ -590,7 +592,7 @@ public class GameManager {
 
     public String getLastMovementAsStringForJSON() {
        String uiKilledPiece= makeUiKilledPiece();
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"castling\":\""+castling+"\"}";
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"pgn\":\""+pgnElement+"\"}";
     }
 
     private String makeUiKilledPiece() {

@@ -1,188 +1,100 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
-	<head>
-		<script>
-			history.forward();
-		</script>
-	</head>
-	<!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
+    <head>
+        <script>
+            history.forward();
+        </script>
+    </head>
+    <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
 
-	<script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
-	<script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script><meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-	<link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
-	<script type="text/javascript">
+    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+          integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <script type="text/javascript">
 
-		var x=window.location.origin;
-		$.ajax({
-			url: x+"/getUserId",
-			type: 'POST',
-			success: function (response) {
-				if (response.user_id==='null') {
-					alert(' Login First !');
-					location = '/loginpage';
-				}
-				console.log('difficulty ajax success!!');
-			}
-		});
-	</script>
+        var x = window.location.origin;
+        $.ajax({
+            url: x + "/getUserId",
+            type: 'POST',
+            success: function (response) {
+                if (response.user_id === 'null') {
+                    alert(' Login First !');
+                    location = '/loginpage';
+                }
+                console.log('difficulty ajax success!!');
+            }
+        });
+    </script>
 </head>
 <body>
 <div id="myBoard" style="width: 500px"></div>
 <div id="status"></div>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js" integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
+        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
+        crossorigin="anonymous"></script>
 <script type="text/javascript">
-	// 	var board = null
-	var game = new Chess()
-	//     function onDrop (source, target) {
 
-	//   var move = game.move({
-	//     from: source,
-	//     to: target,
-	//     promotion: 'q'
-	//   })
-
-	// }
-	var config = {
-		position: 'start'
-	}
-	var board = Chessboard('myBoard', config)
+    var game = new Chess()
+    var config = {
+        position: 'start'
+    }
+    var board = Chessboard('myBoard', config)
 
 
+    function nextStep() {
+        var x = window.location.origin;
+        $.ajax({
+            url: x + "/nextstep",
+            type: 'POST',
+            success: function (response) {
+                if (response.checkStatus === "Draw") {
+                    alert("Match Draw!");
+                } else if (response.checkStatus === "Player1") {
+                    alert("Player 1 Wins (White)!");
+                } else if (response.checkStatus === "Player2") {
+                    alert("Player 2 Wins (Black)!");
+                } else {
+                    var pgnMove = response.pgn;
+                    game.move(pgnMove)
+                    board.position(game.fen())
+                }
+            }
+        });
 
-	function nextStep() {
-		var x=window.location.origin;
-		$.ajax({
-			url: x+"/nextstep",
-			type: 'POST',
-			success: function(response) {
-				if(response.checkStatus==="Draw"){
-					alert("Match Draw!");
-				}
-				else if(response.checkStatus==="Player1"){
-					alert("Player 1 Wins (White)!");
-				}
-				else if(response.checkStatus==="Player2"){
-					alert("Player 2 Wins (Black)!");
-				}
-				// var response ='{"from_pos": "e2", "to_pos" : "e4"}';
-				else {
-					var from_pos=response.from_pos;
-					var to_pos=response.to_pos;
-					var castling=response.castling;
-					if(!isCastling(castling))
-					{
-						var move2=""+from_pos+"-"+to_pos;
-						game.move(move2,{ sloppy: true })
-						board.move(move2)
-					}
-				}
-			}
-		});
+    }
 
-	}
-	function isPrevCastling(respMove){
-		if(respMove==='O-O'){
-			if(game.turn()==='b'){
-				board.move('g8-e8')
-				board.move('f8-h8')
+    function prevStep() {
 
-			}
-			else{
-				board.move('g1-e1')
-				board.move('f1-h1')
-			}
-			return true;
-		}
-		else if(respMove==='O-O-O'){
-			if(game.turn()==='b'){
-				board.move('c8-e8')
-				board.move('d8-a8')
-			}
-			else{
-				board.move('c1-e1')
-				board.move('d1-a1')
-			}
-			return true;
-		}
-		return false;
+        var x = window.location.origin;
+        $.ajax({
+            url: x + "/previous_step",
+            type: 'POST',
+            success: function (response) {
+                game.undo()
+                board.position(game.fen())
+            }
 
-	}
+        });
+    }
 
-	function isCastling(respMove){
-		if(respMove==='O-O'){
-			if(game.turn()==='b'){
-				game.move('O-O')
-				board.move('e8-g8')
-				board.move('h8-f8')
-
-			}
-			else{
-				game.move('O-O')
-				board.move('e1-g1')
-				board.move('h1-f1')
-			}
-			return true;
-		}
-		else if(respMove==='O-O-O'){
-			if(game.turn()==='b'){
-				game.move('O-O-O')
-				board.move('e8-c8')
-				board.move('a8-d8')
-			}
-			else{
-				game.move('O-O-O')
-				board.move('e1-c1')
-				board.move('a1-d1')
-			}
-			return true;
-		}
-		return false;
-	}
-
-
-
-	function prevStep () {
-
-		var x=window.location.origin;
-		$.ajax({
-			url: x+"/previous_step",
-			type: 'POST',
-			success: function(response) {
-				var from_pos=response.to_pos;
-				var to_pos=response.from_pos;
-				var killed_piece=response.killedPiece;
-				var castling=response.castling;
-				var move2=""+from_pos+"-"+to_pos;
-				game.undo()
-				if(!isPrevCastling(castling)){
-					board.move(move2)
-					var killPos=""+from_pos+"";
-					if(killed_piece!=="Not Killed"){
-						var board_positions=board.position();
-						board_positions[""+from_pos+""]=killed_piece;
-						board.position(board_positions);
-					}
-				}
-			}
-
-		});
-	}
-
-	function startNew() {
-
-		window.location.reload();
-		var x=window.location.origin;
-		$.ajax({
-			url: x+"/startnewgame",
-			type: 'POST',
-			data:{"StartAgain":"true"},
-			success: function () {
-				console.log('difficulty ajax success!!');
-			}
-		});
-	}
+    function startNew() {
+        window.location.reload();
+        var x = window.location.origin;
+        $.ajax({
+            url: x + "/startnewgame",
+            type: 'POST',
+            data: {"StartAgain": "true"},
+            success: function () {
+                console.log('difficulty ajax success!!');
+            }
+        });
+    }
 
 
 </script>
@@ -196,8 +108,8 @@
 <br>
 <input type="button" onclick="startNew()" value="Start Again" cellpadding="0" cellspacing="0"/>
 <br>
-<form action="/homepage" method="post" align="center" >
-	<input type="submit" value="Go Back to Home Page"/>
+<form action="/homepage" method="post" align="center">
+    <input type="submit" value="Go Back to Home Page"/>
 </form>
 </body>
 </html>

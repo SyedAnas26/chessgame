@@ -111,6 +111,9 @@
 
     function promotePiece(piece){
         var promMove
+        stopCount();
+        var userTime=timer;
+        console.log("timer on prom"+userTime)
         document.getElementById("white_promotion_pieces").style.visibility = "hidden";
         document.getElementById("black_promotion_pieces").style.visibility = "hidden";
         var checkPieceExist=""+position_to;
@@ -121,8 +124,11 @@
         else{
             promMove=""+position_from.charAt(0)+"x"+position_to+"="+piece;
         }
-        game.move(promMove)
+        var move=game.move(promMove)
         board.position(game.fen())
+        sendUserMove(move,userTime)
+        updateStatus()
+         window.setTimeout(makeAiMove,250)
     }
 
     function greySquare (square) {
@@ -151,29 +157,33 @@
     function onDrop (source, target, piece, newPos, oldPos, orientation) {
 
         removeGreySquares()
+        position_to=target;
+        position_from=source;
 
         if(piece==='wP' || piece==='bP'){
-            position_to=target;
-            position_from=source;
-            if(target.charAt(1)==1 || target.charAt(1)==8){
-                if(orientation==='white'){
-                    if(game.turn()==='w' && target.charAt(1)==8 ){
-                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
+
+            game.moves({square: source})
+            var posMoves=game.moves({verbose: true})
+            if(movePossible(posMoves,source,target)){
+                if(target.charAt(1)==1 && source.charAt(1)==2 || target.charAt(1)==8 && source.charAt(1)==7){
+                    if(orientation==='white'){
+                        if(game.turn()==='w' && target.charAt(1)==8 ){
+                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                        }
+                        else if(game.turn()==='b' && target.charAt(1)==1){
+                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                        }
                     }
-                    else if(game.turn()==='b' && target.charAt(1)==1){
-                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                    else if(orientation==='black'){
+                        if(game.turn()==='w' && target.charAt(1)==1 ){
+                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                        }
+                        else if(game.turn()==='b' && target.charAt(1)==8){
+                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                        }
+
                     }
                 }
-                else if(orientation==='black'){
-                    if(game.turn()==='w' && target.charAt(1)==1 ){
-                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                    }
-                    else if(game.turn()==='b' && target.charAt(1)==8){
-                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
-                    }
-
-                }
-
             }
         }
 
@@ -189,7 +199,21 @@
         var x=window.location.origin;
         stopCount()
         var userTime=timer;
-        console.log("user Time"+userTime)
+        sendUserMove(move,userTime)
+        updateStatus()
+        window.setTimeout(makeAiMove, 250)
+    }
+
+    function movePossible(posMoves,source,target){
+        for(var i=0;i<posMoves.length;i++){
+            if(posMoves[i].from===source && posMoves[i].to===target){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function sendUserMove(move,userTime){
         $.ajax({
             url: x+"/usermoves",
             type: 'POST',
@@ -202,8 +226,6 @@
                 console.log('Error occured!!');
             }
         });
-        updateStatus()
-        window.setTimeout(makeAiMove, 250)
     }
 
     function onMouseoverSquare (square, piece) {
