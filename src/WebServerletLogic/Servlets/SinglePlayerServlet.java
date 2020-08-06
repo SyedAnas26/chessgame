@@ -37,7 +37,8 @@ public class SinglePlayerServlet extends HttpServlet {
                 String userTimer=req.getParameter("timeTaken");
                 String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
-                aiManager.addMove(userMove, gameStatus,uniqueId,userTimer);
+                String gamePgn=req.getParameter("gamePgn");
+                aiManager.addMove(userMove, gameStatus,uniqueId,userTimer,gamePgn);
 
             } else if (servletPath.equals("/aiMove")) {
                 PrintWriter out = resp.getWriter();

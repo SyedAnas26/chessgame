@@ -25,12 +25,21 @@ public class AiManager {
     }
 
 
-    public void addMove(String userMove, String status,int uniqueId,String userTime) throws Exception {
+    public void addMove(String userMove, String status,int uniqueId,String userTime,String gamePgn) throws Exception {
         try {
             if (status!=null) {
                 gameStatus =Integer.parseInt(status);
+                if(gameStatus==1){
+                    gamePgn=gamePgn+" 1-0";
+                }
+                else if(gameStatus==2){
+                    gamePgn=gamePgn+" 0-1";
+                }
+                else if(gameStatus==3){
+                   gamePgn=gamePgn+ " 1/2-1/2";
+                }
                 userMove = "Game Ended";
-                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus + "')");
+                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
             } else {
                 time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);

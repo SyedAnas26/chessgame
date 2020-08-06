@@ -31,28 +31,6 @@
             }
         });
 
-        function statusUpdate(sts) {
-            if (statusCalled === '0') {
-                $.ajax({
-                    url: x + "/gamestatus",
-                    type: 'POST',
-                    data: {"gameStatus": sts},
-                    success: function () {
-                        if (sts === '3') {
-                            alert("Match Draw");
-                            window.location = x + "/homepage";
-                        }
-                        console.log('draw ajax success!!');
-                    },
-                    error: function (jqXHR, exception) {
-                        console.log('draw ajax Error occured!!');
-                    }
-
-                });
-            }
-        }
-
-
 
         function timedCount() {
             timer=c;
@@ -63,7 +41,7 @@
         function startCount() {
             if (!timer_is_on) {
                 timer_is_on = 1;
-                timedCount();
+                timedCount()
             }
         }
 
@@ -128,7 +106,30 @@
         board.position(game.fen())
         sendUserMove(move,userTime)
         updateStatus()
-         window.setTimeout(makeAiMove,250)
+        window.setTimeout(makeAiMove,250)
+    }
+
+    function statusUpdate(sts) {
+        var gamePgn=game.pgn()
+        if (statusCalled === '0') {
+            $.ajax({
+                url: x + "/gamestatus",
+                type: 'POST',
+                data: {"gameStatus": sts,
+                    "gamePgn":gamePgn},
+                success: function () {
+                    if (sts === '3') {
+                        alert("Match Draw");
+                        window.location = x + "/homepage";
+                    }
+                    console.log('draw ajax success!!');
+                },
+                error: function (jqXHR, exception) {
+                    console.log('draw ajax Error occured!!');
+                }
+
+            });
+        }
     }
 
     function greySquare (square) {

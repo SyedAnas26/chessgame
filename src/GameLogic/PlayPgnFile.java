@@ -1,7 +1,13 @@
 package GameLogic;
 
+import org.apache.commons.io.FileUtils;
+
 import javax.servlet.ServletContext;
 import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -33,9 +39,11 @@ public class PlayPgnFile {
         int add;
         String responseStatus = this.manager.getLastMovementAsStringForJSON();
         try {
+
             totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 3]);
             add = 0;
         } catch (NumberFormatException e) {
+
             totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 4]);
             add = 1;
         }
@@ -99,4 +107,57 @@ public class PlayPgnFile {
         return tmp3;
 
     }
+    public List<String> getHistoryOfGames(int uniqueId){
+        String sql = "SELECT * FROM gamelog WHERE UserID1='" + uniqueId + "'";
+        List<String> games = new ArrayList<>();
+        try {
+            DbConnector.get(sql, rs -> {
+                while (rs.next())
+                {
+                    long millis=rs.getLong("GameId");
+                    Date matchDate = new Date(millis);
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    games.add(sdf.format(matchDate));
+                    String gameLogid=rs.getString("idGameLog");
+                    games.add(gameLogid);
+                }
+                return games;
+            });
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        return games;
+    }
+    public void setWatchHistoryFile(String tomPath,String idGameLog) throws IOException {
+        String sql = "SELECT * FROM gamelog WHERE idGameLog='" + idGameLog + "'";
+        String gamePlayHistory=null;
+        try {
+            gamePlayHistory = (String) DbConnector.get(sql, rs -> {
+                if (rs.next()) {
+                    return rs.getString("GameinPgn");
+                }
+                System.out.println("pgn not found");
+                throw new Exception("pgn not found!!");
+            });
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        File folder = new File(tomPath + "/FileUploads");
+        FileUtils.deleteDirectory(folder);
+        createFolder(folder);
+        File file =new File(tomPath + "/FileUploads/watchHistory.txt");
+        PrintWriter myWriter = new PrintWriter(file);
+        myWriter.write(""+gamePlayHistory);
+        myWriter.close();
+    }
+
+    private void createFolder(File folder) {
+        boolean bool = folder.mkdir();
+        if (bool) {
+            System.out.println("Directory created successfully");
+        } else {
+            System.out.println("Sorry couldn’t create specified directory");
+        }
+    }
+
 }

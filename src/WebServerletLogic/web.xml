@@ -88,6 +88,10 @@
         <jsp-file>/html_files/Homepage.html</jsp-file>
     </servlet>
     <servlet>
+        <servlet-name>History</servlet-name>
+        <jsp-file>/html_files/GamesHistory.html</jsp-file>
+    </servlet>
+    <servlet>
         <servlet-name>LoginError</servlet-name>
         <jsp-file>/html_files/UserNotFound.html</jsp-file>
     </servlet>
@@ -113,6 +117,18 @@
     <servlet-mapping>
         <servlet-name>PgnGame</servlet-name>
         <url-pattern>/PlayPgn</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/setGame</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/getHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>History</servlet-name>
+        <url-pattern>/watchHistory</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoadFileUpload</servlet-name>

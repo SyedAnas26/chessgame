@@ -33,7 +33,6 @@ public class GameManager {
                 .map(String::trim)
                 .filter(Predicate.isEqual("").negate())
                 .toArray(String[]::new);
-
     }
 
     public void conductGame(String move) throws Exception {
@@ -142,7 +141,7 @@ public class GameManager {
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
         } else if (arrayElement.length() == 3) {
-            if (arrayElement.charAt(2) == '+') {
+            if (arrayElement.charAt(2) == '+' || arrayElement.charAt(2)=='#') {
                 arrayElement = arrayElement.substring(0, 2);
                 for2elements(arrayElement);
                 System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
@@ -153,7 +152,7 @@ public class GameManager {
         } else if (arrayElement.length() == 4) {
             if (arrayElement.charAt(2) == '=') {
                 pawnPromotion(arrayElement);
-            } else if (arrayElement.charAt(3) == '+') {
+            } else if (arrayElement.charAt(3) == '+' || arrayElement.charAt(3) == '#') {
                 arrayElement = arrayElement.substring(0, 3);
 
                 for3elements(arrayElement);
@@ -163,7 +162,7 @@ public class GameManager {
             }
         } else if (arrayElement.length() == 5) {
 
-            if (arrayElement.charAt(4) == '+') {
+            if (arrayElement.charAt(4) == '+' || arrayElement.charAt(4) == '#') {
                 arrayElement = arrayElement.substring(0, 4);
                 if (arrayElement.charAt(2) == '=') {
                     pawnPromotion(arrayElement);
@@ -175,7 +174,7 @@ public class GameManager {
                 for5elements(arrayElement);
             }
         } else if (arrayElement.length() == 6) {
-            if (arrayElement.charAt(5) == '+') {
+            if (arrayElement.charAt(5) == '+' || arrayElement.charAt(5) == '#') {
                 arrayElement = arrayElement.substring(0, 5);
                 for5elements(arrayElement);
             }
@@ -609,7 +608,6 @@ public class GameManager {
             team="W";
             uiTeam="w";
         }
-        System.out.println("piece : "+piece+"  team : "+team+"  uiTeam : "+uiTeam);
         if(piece.equals(team+"P")){
             uiKilledPiece=uiTeam+"P";
             }
