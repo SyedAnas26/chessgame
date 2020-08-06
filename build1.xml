@@ -87,7 +87,7 @@
 	<target name="prepare">
         <mkdir  dir="${deploy.home}"/>
         <copy todir="${deploy.home}">
-            <fileset dir="src/WebServerletLogic/OpenChess"/>
+            <fileset dir="src/WebUi"/>
         </copy>
         <copy todir="${deploy.home}">
             <fileset dir="src/WebServerletLogic/Uploads"/>

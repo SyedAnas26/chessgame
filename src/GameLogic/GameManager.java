@@ -13,6 +13,9 @@ public class GameManager {
     public String[] gamePlayAsArray;
     Position fromPositionOrg;
     Position toPositionOrg;
+    String killedPiece;
+    String castling;
+    String pgnElement;
 
     public GameManager(){
         b.setBoard();
@@ -30,7 +33,6 @@ public class GameManager {
                 .map(String::trim)
                 .filter(Predicate.isEqual("").negate())
                 .toArray(String[]::new);
-
     }
 
     public void conductGame(String move) throws Exception {
@@ -51,11 +53,14 @@ public class GameManager {
 
 
         {
+            castling="false";
+            killedPiece="NotKilled";
             updateCurrentPlayerColor(currentPlayer);
             playGame(gamePlayAsArray[step + step/2 - (step%2 == 0? 1: 0)]);
             updateGameStatus();
             currentPlayer = updateCurrentPlayer(currentPlayer);
             currentPlayer += 1;
+
         }
     }
 
@@ -132,11 +137,11 @@ public class GameManager {
     }
 
     public void playGame(String arrayElement) throws Exception {
-
+        pgnElement=arrayElement;
         if (arrayElement.length() == 2) {
             for2elements(arrayElement);
         } else if (arrayElement.length() == 3) {
-            if (arrayElement.charAt(2) == '+') {
+            if (arrayElement.charAt(2) == '+' || arrayElement.charAt(2)=='#') {
                 arrayElement = arrayElement.substring(0, 2);
                 for2elements(arrayElement);
                 System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
@@ -147,7 +152,7 @@ public class GameManager {
         } else if (arrayElement.length() == 4) {
             if (arrayElement.charAt(2) == '=') {
                 pawnPromotion(arrayElement);
-            } else if (arrayElement.charAt(3) == '+') {
+            } else if (arrayElement.charAt(3) == '+' || arrayElement.charAt(3) == '#') {
                 arrayElement = arrayElement.substring(0, 3);
 
                 for3elements(arrayElement);
@@ -157,7 +162,7 @@ public class GameManager {
             }
         } else if (arrayElement.length() == 5) {
 
-            if (arrayElement.charAt(4) == '+') {
+            if (arrayElement.charAt(4) == '+' || arrayElement.charAt(4) == '#') {
                 arrayElement = arrayElement.substring(0, 4);
                 if (arrayElement.charAt(2) == '=') {
                     pawnPromotion(arrayElement);
@@ -169,7 +174,7 @@ public class GameManager {
                 for5elements(arrayElement);
             }
         } else if (arrayElement.length() == 6) {
-            if (arrayElement.charAt(5) == '+') {
+            if (arrayElement.charAt(5) == '+' || arrayElement.charAt(5) == '#') {
                 arrayElement = arrayElement.substring(0, 5);
                 for5elements(arrayElement);
             }
@@ -201,6 +206,7 @@ public class GameManager {
     private void for5elements(String arrayElement) throws Exception {
         if (arrayElement.charAt(0) == 'O') {
             KingCastling("K", arrayElement);
+            castling="O-O-O";
         } else {
             char thePiece = arrayElement.charAt(0);
             String piece = "";
@@ -227,7 +233,8 @@ public class GameManager {
                         }
                     }
 
-                }
+
+                    killedPiece=b.cell[toPosition.x][toPosition.y].pieceType;                }
             }
             movePiece(currentPlayerColor, piece, fromPosition, toPosition);
         }
@@ -245,6 +252,7 @@ public class GameManager {
             }
             toPosition.y = getNumOf(arrayElement.charAt(2));
             toPosition.x = Character.getNumericValue((arrayElement.charAt(3))) - 1;
+            killedPiece=b.cell[toPosition.x][toPosition.y].pieceType;
             String piece = whichPiece(arrayElement, 'P', toPosition);
             fromPosition = getPiecePosition(piece);
             movePiece(currentPlayerColor, piece, fromPosition, toPosition);
@@ -271,6 +279,7 @@ public class GameManager {
 
                 }
             } else {
+                killedPiece=b.cell[toPosition.x][toPosition.y].pieceType;
                 piece = whichPiece(arrayElement, thePiece, toPosition);
                 fromPosition = getPiecePosition(currentPlayerColor.stringFormat + piece);
             }
@@ -284,6 +293,7 @@ public class GameManager {
         Position fromPosition;
 
         if (arrayElement.charAt(0) == 'O') {
+            castling="O-O";
             KingCastling("K", arrayElement);
         } else {
             char thePiece = arrayElement.charAt(0);
@@ -577,12 +587,47 @@ public class GameManager {
 
     private boolean IsBothOddorEven(Position position) {
         return position.x % 2 == 0 && position.y % 2 == 0 || position.x % 2 != 0 && position.y % 2 != 0;
-
-
     }
 
     public String getLastMovementAsStringForJSON() {
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"}";
+       String uiKilledPiece= makeUiKilledPiece();
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"pgn\":\""+pgnElement+"\"}";
+    }
+
+    private String makeUiKilledPiece() {
+        String team;
+        String uiTeam;
+        String uiKilledPiece;
+        String piece =killedPiece.substring(0,2);
+        if(currentPlayerColor==Color.White){
+            team="B";
+            uiTeam="b";
+
+        }
+        else {
+            team="W";
+            uiTeam="w";
+        }
+        if(piece.equals(team+"P")){
+            uiKilledPiece=uiTeam+"P";
+            }
+        else if(killedPiece.equals(team+"RN")||killedPiece.equals(team+"LN")){
+            uiKilledPiece=uiTeam+"N";
+        }
+        else if(killedPiece.equals(team+"RB")||killedPiece.equals(team+"LB")){
+            uiKilledPiece=uiTeam+"B";
+        }
+        else if(killedPiece.equals(team+"RR")||killedPiece.equals(team+"LR")){
+            uiKilledPiece=uiTeam+"R";
+        }
+      else if(killedPiece.equals(team+"Q")){
+            uiKilledPiece=uiTeam+"Q";
+        }
+      else {
+          uiKilledPiece="Not Killed";
+        }
+      return uiKilledPiece;
+
     }
 
     public String getLastFromPosAsString() {

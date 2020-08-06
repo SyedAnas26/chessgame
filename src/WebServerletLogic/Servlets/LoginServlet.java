@@ -39,6 +39,7 @@ public class LoginServlet extends HttpServlet
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
             String name = null;
+            int uniqueId=0;
             boolean success = false;
             HttpSession session = request.getSession(true);
 
@@ -68,6 +69,27 @@ public class LoginServlet extends HttpServlet
 
                     return null;
                 });
+                uniqueId =(int)DbConnector.get(query, res -> {
+
+                    try
+                    {
+                        if (res.next())
+                        {
+                            return res.getInt("UserId");
+                        }
+                    }
+                    catch(SQLException e)
+                    {
+                        throw new ServletException("Servlet Could not display records.", e);
+                    }
+                    catch(Exception e)
+                    {
+                        throw new ServletException("Exception.", e);
+                    }
+
+                    return null;
+                });
+
             }
             catch(Exception e)
             {
@@ -84,6 +106,7 @@ public class LoginServlet extends HttpServlet
 
                 session.setAttribute("userId", request.getParameter("user_id"));
                 session.setAttribute("userName", name);
+                session.setAttribute("uniqueId", uniqueId);
                 response.sendRedirect("/homepage");
             }
             else if (success == false)

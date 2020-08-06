@@ -1,18 +1,14 @@
 package GameLogic;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class AiManager {
-    PgnGenerator pg = null;
-    GameManager gameManager = null;
-    String userMove;
-    int drawClaimStatus=0;
+
+    int gameStatus =0;
     int moveNo;
     long gameId;
-    int time = 0;
+    long time;
     String responseStep;
 
 
@@ -20,28 +16,35 @@ public class AiManager {
 
         List<String> arr = getMovesArr(gameId);
         KongAiConnector kongAI = new KongAiConnector();
-        String move = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
-        System.out.println("AIMove : " + move);
-        gameManager.conductGame(move);
-        responseStep = gameManager.getLastMovementAsStringForJSON();
-        pg.convertToPgn(gameManager.getLastFromPosAsString(), gameManager.getLastToPosAsString());
+        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
+        System.out.println("AIMove : " + aiMove);
+        responseStep = "{\"aiMove\":\""+aiMove+"\"}";
         moveNo++;
         return responseStep;
 
     }
 
 
-    public void addMove(String fromPos, String toPos, String drawClaim) throws Exception {
+    public void addMove(String userMove, String status,int uniqueId,String userTime,String gamePgn) throws Exception {
         try {
-            if (drawClaim!=null) {
-                drawClaimStatus=1;
-                userMove = "Draw Claimed";
+            if (status!=null) {
+                gameStatus =Integer.parseInt(status);
+                if(gameStatus==1){
+                    gamePgn=gamePgn+" 1-0";
+                }
+                else if(gameStatus==2){
+                    gamePgn=gamePgn+" 0-1";
+                }
+                else if(gameStatus==3){
+                   gamePgn=gamePgn+ " 1/2-1/2";
+                }
+                userMove = "Game Ended";
+                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
             } else {
-                userMove = pg.convertToPgn(fromPos, toPos);
+                time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
-                gameManager.conductGame(userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,DrawClaimedStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + drawClaimStatus + "')");
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
             moveNo++;
         } catch (Exception e) {
             e.printStackTrace();
@@ -58,7 +61,6 @@ public class AiManager {
             {
                 moves.add(rs.getString("moves"));
             }
-
             return moves;
         });
 
@@ -66,12 +68,10 @@ public class AiManager {
     }
 
     public void newGame() {
-        pg = new PgnGenerator();
-        gameManager = new GameManager();
-        drawClaimStatus = 0;
+        gameStatus = 0;
         moveNo = 1;
         try {
-            gameId = System.nanoTime();
+            gameId = System.currentTimeMillis();
         } catch (Exception throwables) {
             throwables.printStackTrace();
         }

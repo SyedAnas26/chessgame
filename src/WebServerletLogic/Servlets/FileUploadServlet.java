@@ -18,7 +18,7 @@ import java.util.List;
 
 public class FileUploadServlet extends HttpServlet {
 
-    private final String UPLOAD_DIRECTORY = "\\FileUploads";
+    private final String UPLOAD_DIRECTORY = "/FileUploads";
     String FileName;
 
     @Override
@@ -57,14 +57,12 @@ public class FileUploadServlet extends HttpServlet {
                 out.println("location='/load';");
                 out.println("</script>");
             }
-
         } else {
             out.println("<script type=\"text/javascript\">");
             out.println("alert('You Have not uploaded a File !');");
             out.println("location='/load';");
             out.println("</script>");
         }
-
     }
 
     private void createFolder(File folder) {
