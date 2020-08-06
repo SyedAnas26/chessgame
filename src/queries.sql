@@ -63,3 +63,15 @@ CHANGE COLUMN `idGameLog` `idGameLog` INT NOT NULL AUTO_INCREMENT;
 ALTER TABLE `chessgame_database`.`gamemoves`
 CHANGE COLUMN `DrawClaimedStatus` `GameStatus` INT NULL DEFAULT NULL
 
+
+ALTER TABLE `chessgame_database`.`gamelog`
+ADD COLUMN `GameId` BIGINT NULL DEFAULT NULL AFTER `MatchResult`,
+ADD COLUMN `GameinPgn` LONGTEXT NULL AFTER `GameId`,
+
+
+CREATE INDEX fk_gameid on gamelod (GameId);
+CREATE INDEX fk_gameid on gamemoves (GameID);
+
+
+ALTER TABLE gamelog ADD FOREIGN KEY(GameId) REFERENCES gamemoves(GameID);
+

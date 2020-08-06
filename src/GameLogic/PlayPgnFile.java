@@ -4,10 +4,12 @@ import org.apache.commons.io.FileUtils;
 
 import javax.servlet.ServletContext;
 import java.io.*;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,7 +119,15 @@ public class PlayPgnFile {
                     long millis=rs.getLong("GameId");
                     Date matchDate = new Date(millis);
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    games.add(sdf.format(matchDate));
+                    DateFormat est = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    TimeZone estTime = TimeZone.getTimeZone("IST");
+                    DateFormat gmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    TimeZone gmtTime = TimeZone.getTimeZone("GMT");
+                    est.setTimeZone(gmtTime);
+                    gmt.setTimeZone(estTime);
+                    String indFormat= gmt.format(matchDate);
+                    System.out.println(indFormat);
+                    games.add(indFormat);
                     String gameLogid=rs.getString("idGameLog");
                     games.add(gameLogid);
                 }
