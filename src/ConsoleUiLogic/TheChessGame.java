@@ -9,7 +9,6 @@ public class TheChessGame {
         PlayPgnFile playPgnFile = new PlayPgnFile();
         String gamePlay = playPgnFile.getGamePlay(file, null);
         new ConsoleUi(gamePlay);
-
     }
 }
 
