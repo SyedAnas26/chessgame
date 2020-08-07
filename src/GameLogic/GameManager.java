@@ -16,6 +16,7 @@ public class GameManager {
     String killedPiece;
     String castling;
     String pgnElement;
+    int Step;
 
     public GameManager(){
         b.setBoard();
@@ -53,6 +54,7 @@ public class GameManager {
 
 
         {
+            Step=step;
             castling="false";
             killedPiece="NotKilled";
             updateCurrentPlayerColor(currentPlayer);
@@ -144,7 +146,7 @@ public class GameManager {
             if (arrayElement.charAt(2) == '+' || arrayElement.charAt(2)=='#') {
                 arrayElement = arrayElement.substring(0, 2);
                 for2elements(arrayElement);
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+             //   System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
 
             } else {
                 for3elements(arrayElement);
@@ -156,7 +158,7 @@ public class GameManager {
                 arrayElement = arrayElement.substring(0, 3);
 
                 for3elements(arrayElement);
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+               // System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
                 for4elements(arrayElement);
             }
@@ -169,7 +171,7 @@ public class GameManager {
                 } else {
                     for4elements(arrayElement);
                 }
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+               // System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
                 for5elements(arrayElement);
             }
@@ -591,7 +593,7 @@ public class GameManager {
 
     public String getLastMovementAsStringForJSON() {
        String uiKilledPiece= makeUiKilledPiece();
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"pgn\":\""+pgnElement+"\"}";
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"step\":\""+Step+"\",\"pgn\":\""+pgnElement+"\"";
     }
 
     private String makeUiKilledPiece() {

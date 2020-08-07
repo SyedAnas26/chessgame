@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
           integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
     <script type="text/javascript">
-
+        statusCalled = false;
         var x = window.location.origin;
         $.ajax({
             url: x + "/getUserId",
@@ -27,6 +27,10 @@
                 console.log('difficulty ajax success!!');
             }
         });
+
+        window.onload = (event) => {
+            startNew();
+        };
     </script>
 </head>
 <body>
@@ -39,52 +43,76 @@
         integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
         crossorigin="anonymous"></script>
 <script type="text/javascript">
-
+    var step;
+    var alertStatus = null;
     var game = new Chess()
+
+    function onMoveEnd(oldPos, newPos) {
+        if (alertStatus != null) {
+            alert(alertStatus);
+            alertStatus = null;
+        }
+    }
+
     var config = {
-        position: 'start'
+        position: 'start',
+        onMoveEnd: onMoveEnd
     }
     var board = Chessboard('myBoard', config)
 
 
     function nextStep() {
         var x = window.location.origin;
-        $.ajax({
-            url: x + "/nextstep",
-            type: 'POST',
-            success: function (response) {
-                if (response.checkStatus === "Draw") {
-                    alert("Match Draw!");
-                } else if (response.checkStatus === "Player1") {
-                    alert("Player 1 Wins (White)!");
-                } else if (response.checkStatus === "Player2") {
-                    alert("Player 2 Wins (Black)!");
-                } else {
+        if (!statusCalled) {
+            var status;
+            $.ajax({
+                url: x + "/nextstep",
+                type: 'POST',
+                success: function (response) {
+                    step = response.step;
+                    if (response.checkStatus === "Draw") {
+                        alertStatus = "Match Draw!";
+                        statusCalled = true;
+                    } else if (response.checkStatus === "Player1") {
+                        alertStatus = "Player 1 Wins (White)!";
+                        statusCalled = true;
+                    } else if (response.checkStatus === "Player2") {
+                        alertStatus = "Player 2 Wins (Black)!";
+                        statusCalled = true;
+                    }
                     var pgnMove = response.pgn;
                     game.move(pgnMove)
                     board.position(game.fen())
+
                 }
-            }
-        });
+            });
+
+        }
 
     }
 
     function prevStep() {
 
-        var x = window.location.origin;
-        $.ajax({
-            url: x + "/previous_step",
-            type: 'POST',
-            success: function (response) {
-                game.undo()
-                board.position(game.fen())
-            }
+        var stepInt = parseInt(step);
 
-        });
+        if (stepInt > 0) {
+            var x = window.location.origin;
+            $.ajax({
+                url: x + "/previous_step",
+                type: 'POST',
+                success: function (response) {
+                    statusCalled = false;
+                    game.undo()
+                    board.position(game.fen())
+                    step--;
+                }
+
+            });
+        }
     }
 
     function startNew() {
-        window.location.reload();
+        //window.location.reload();
         var x = window.location.origin;
         $.ajax({
             url: x + "/startnewgame",
@@ -94,9 +122,10 @@
                 console.log('difficulty ajax success!!');
             }
         });
+
+        statusCalled = false;
+
     }
-
-
 </script>
 <br>
 <br>
@@ -106,7 +135,8 @@
 <input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/>
 <br>
 <br>
-<input type="button" onclick="startNew()" value="Start Again" cellpadding="0" cellspacing="0"/>
+<input type="button" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
+       cellspacing="0"/>
 <br>
 <form action="/homepage" method="post" align="center">
     <input type="submit" value="Go Back to Home Page"/>

@@ -71,6 +71,11 @@ public class PgnGameServlet extends HttpServlet {
 
     private void updateStep(String servletPath) {
         if (servletPath.equals("/nextstep")) {
+//            step++;}
+//
+//            else if(servletPath.equals("/previous_step")) {
+//                --step;
+//        }
             if (prevCalled) {
                 prevCalled = false;
             } else {
@@ -94,5 +99,6 @@ public class PgnGameServlet extends HttpServlet {
             }
 
         }
+        }
     }
-}
+

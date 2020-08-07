@@ -37,30 +37,35 @@ public class PlayPgnFile {
 
     public String getResponseStep(int step) throws IOException {
 
-        int totalsteps;
-        int add;
+//        int totalsteps;
+//        int add;
         String responseStatus = this.manager.getLastMovementAsStringForJSON();
-        try {
+//        try {
+//
+//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 3]);
+//            add = 0;
+//        } catch (NumberFormatException e) {
+//
+//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 4]);
+//            add = 1;
+//        }
 
-            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 3]);
-            add = 0;
-        } catch (NumberFormatException e) {
+        //if (step == (totalsteps * 2) + 1) {
+        int checkStep=(step + step/2 - (step%2 == 0? 1: 0))+1;
 
-            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 4]);
-            add = 1;
-        }
+            if (manager.gamePlayAsArray[checkStep].equals("1/2-1/2")) {
+                responseStatus =  responseStatus + ",\"checkStatus\":\"Draw\"}";
 
-        if (step == (totalsteps * 2) + 1) {
-            if (manager.gamePlayAsArray[((totalsteps * 3) - 1) + add].equals("1/2-1/2")) {
-                responseStatus = "{\"from_pos\": \"0\", \"to_pos\" : \"0\",\"checkStatus\":\"Draw\"}";
+            } else if (manager.gamePlayAsArray[checkStep].equals("0-1")) {
+                responseStatus =  responseStatus + ",\"checkStatus\":\"Player2\"}";
 
-            } else if (manager.gamePlayAsArray[((totalsteps * 3) - 1) + add].equals("0-1")) {
-                responseStatus = "{\"from_pos\": \"0\", \"to_pos\" : \"0\",\"checkStatus\":\"Player2\"}";
-
-            } else if (manager.gamePlayAsArray[((totalsteps * 3) - 1) + add].equals("1-0")) {
-                responseStatus = "{\"from_pos\": \"0\", \"to_pos\" : \"0\",\"checkStatus\":\"Player1\"}";
+            } else if (manager.gamePlayAsArray[checkStep].equals("1-0")) {
+                responseStatus =  responseStatus + ",\"checkStatus\":\"Player1\"}";
             }
-        }
+            else {
+                responseStatus =  responseStatus + ",\"checkStatus\":\"0\"}";
+            }
+       // }
         return responseStatus;
     }
 
@@ -118,7 +123,6 @@ public class PlayPgnFile {
                 {
                     long millis=rs.getLong("GameId");
                     Date matchDate = new Date(millis);
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     DateFormat est = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
                     TimeZone estTime = TimeZone.getTimeZone("IST");
                     DateFormat gmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
@@ -126,7 +130,6 @@ public class PlayPgnFile {
                     est.setTimeZone(gmtTime);
                     gmt.setTimeZone(estTime);
                     String indFormat= gmt.format(matchDate);
-                    System.out.println(indFormat);
                     games.add(indFormat);
                     String gameLogid=rs.getString("idGameLog");
                     games.add(gameLogid);
