@@ -292,11 +292,11 @@
         // checkmate?
         if (game.in_checkmate()) {
             status = 'Game over, ' + moveColor + ' is in checkmate.'
-            if(moveColor==='White'){
+            if(moveColor==='White' && statusCalled==='0'){
                 alert("Black won the Match")
                 statusUpdate('2')
             }
-            if(moveColor==='Black'){
+            if(moveColor==='Black' && statusCalled==='0'){
                 alert("White won the Match")
                 statusUpdate('1')
             }

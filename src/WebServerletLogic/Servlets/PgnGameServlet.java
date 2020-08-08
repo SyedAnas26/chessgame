@@ -14,19 +14,18 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PgnGameServlet extends HttpServlet {
+
     int step = 0;
     boolean nextCalled = true;
     boolean prevCalled = false;
-    PlayPgnFile playPgnFile = new PlayPgnFile();
+    PlayPgnFile playPgnFile =new PlayPgnFile();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
 
         ServletContext servletContext = req.getServletContext();
         String responseStep = null;
@@ -37,7 +36,6 @@ public class PgnGameServlet extends HttpServlet {
         HttpSession session = req.getSession();
         int uniqueId = (int) session.getAttribute("uniqueId");
         if (servletPath.equals("/getHistory")) {
-
             List<String> games = playPgnFile.getHistoryOfGames(uniqueId);
             out.print(Arrays.toString(games.toArray()));
 
@@ -58,10 +56,10 @@ public class PgnGameServlet extends HttpServlet {
             String fileName = (String) session.getAttribute("filename");
             String File = "/FileUploads/" + fileName;
             updateStep(servletPath);
-            playPgnFile.playGame(File, step, servletContext);
-            responseStep = playPgnFile.getResponseStep(step);
-            out.print(responseStep);
-
+            if(step==0) {step=1;}
+                playPgnFile.playGame(File, step, servletContext);
+                responseStep = playPgnFile.getResponseStep(step);
+                out.print(responseStep);
         }
     }
 
