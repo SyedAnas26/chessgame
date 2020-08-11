@@ -43,7 +43,9 @@
         integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
         crossorigin="anonymous"></script>
 <script type="text/javascript">
-    var step;
+    var step = 0;
+    var nextCalled = false;
+    var prevMoveCalled = false;
     var alertStatus = null;
     var game = new Chess()
 
@@ -61,15 +63,21 @@
     var board = Chessboard('myBoard', config)
 
 
-    function nextStep() {
+    function nextMove() {
         var x = window.location.origin;
         if (!statusCalled) {
-            var status;
+            // var status;
+            if (prevMoveCalled) {
+                prevMoveCalled = false;
+            } else {
+                step++;
+            }
             $.ajax({
-                url: x + "/nextstep",
+                url: x + "/nextMove",
                 type: 'POST',
+                data: {"step": step},
                 success: function (response) {
-                    step = response.step;
+                    //step = response.step;
                     if (response.checkStatus === "Draw") {
                         alertStatus = "Match Draw!";
                         statusCalled = true;
@@ -86,6 +94,7 @@
 
                 }
             });
+            nextCalled = true;
 
         }
 
@@ -93,43 +102,48 @@
 
     function prevStep() {
 
-        var stepInt = parseInt(step);
 
-        if (stepInt > 0) {
-            var x = window.location.origin;
-            $.ajax({
-                url: x + "/previous_step",
-                type: 'POST',
-                success: function (response) {
-                    statusCalled = false;
-                    game.undo()
-                    board.position(game.fen())
+        if (step > 0) {
+            if (!nextCalled) {
+                if (step > 1)
                     step--;
-                }
+            }
 
-            });
+            // var x = window.location.origin;
+            // $.ajax({
+            //     url: x + "/previous_step",
+            //     type: 'POST',
+            //     success: function (response) {
+            statusCalled = false;
+            game.undo()
+            board.position(game.fen())
+            //     }
+            //
+            // });
+            nextCalled = false;
+            prevMoveCalled = true;
         }
     }
 
     function startNew() {
         //window.location.reload();
-        var x = window.location.origin;
-        $.ajax({
-            url: x + "/startnewgame",
-            type: 'POST',
-            data: {"StartAgain": "true"},
-            success: function () {
-                console.log('difficulty ajax success!!');
-            }
-        });
-
+        // var x = window.location.origin;
+        // $.ajax({
+        //     url: x + "/startnewgame",
+        //     type: 'POST',
+        //     data: {"StartAgain": "true"},
+        //     success: function () {
+        //         console.log('difficulty ajax success!!');
+        //     }
+        // });
+        step = 0;
         statusCalled = false;
 
     }
 </script>
 <br>
 <br>
-<input type="button" onclick="nextStep()" value="Next Step" cellpadding="0" cellspacing="0"/>
+<input type="button" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/>
 <br>
 <br>
 <input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/>

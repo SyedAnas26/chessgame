@@ -100,19 +100,15 @@
 
    <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/nextstep</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/startnewgame</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/previous_step</url-pattern>
+        <url-pattern>/nextMove</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Fileupload</servlet-name>
         <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Fileupload</servlet-name>
+        <url-pattern>/setFileName</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>PgnGame</servlet-name>

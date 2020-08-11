@@ -39,7 +39,7 @@ public class AiManager {
                    gamePgn=gamePgn+ " 1/2-1/2";
                 }
                 userMove = "Game Ended";
-                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
+                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
             } else {
                 time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);

@@ -15,10 +15,6 @@ import java.util.List;
 
 public class PgnGameServlet extends HttpServlet {
 
-    int step = 0;
-    boolean nextCalled = true;
-    boolean prevCalled = false;
-    PlayPgnFile playPgnFile =new PlayPgnFile();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -26,7 +22,7 @@ public class PgnGameServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
+        PlayPgnFile playPgnFile = new PlayPgnFile();
         ServletContext servletContext = req.getServletContext();
         String responseStep = null;
         String servletPath = req.getServletPath();
@@ -41,62 +37,22 @@ public class PgnGameServlet extends HttpServlet {
 
         } else if (servletPath.equals("/setGame")) {
 
-            newGame();
-            String tomPath = req.getServletContext().getRealPath("");
             String idGameLog = req.getParameter("idGameLog");
-            playPgnFile.setWatchHistoryFile(tomPath, idGameLog);
-            session.setAttribute("filename", "watchHistory.txt");
+            int id=Integer.parseInt(idGameLog.substring(1));
+            session.setAttribute("log", "gamelog");
+            session.setAttribute("logId", id);
 
-        } else if (servletPath.equals("/startnewgame")) {
-
-            newGame();
-
-        } else {
-
-            String fileName = (String) session.getAttribute("filename");
-            String File = "/FileUploads/" + fileName;
-            updateStep(servletPath);
-            if(step==0) {step=1;}
-                playPgnFile.playGame(File, step, servletContext);
-                responseStep = playPgnFile.getResponseStep(step);
-                out.print(responseStep);
-        }
-    }
-
-    private void newGame() {
-        step = 0;
-    }
-
-    private void updateStep(String servletPath) {
-        if (servletPath.equals("/nextstep")) {
-//            step++;}
-//
-//            else if(servletPath.equals("/previous_step")) {
-//                --step;
-//        }
-            if (prevCalled) {
-                prevCalled = false;
-            } else {
-                step++;
+        } else{
+            int step = Integer.parseInt(req.getParameter("step"));
+            String log = (String) session.getAttribute("log");
+            int logId = (int) session.getAttribute("logId");
+            try {
+                responseStep = playPgnFile.playGame(log, logId, step);
+            } catch (Exception exception) {
+                System.out.println(exception);
             }
-            nextCalled = true;
-
-
-        } else if (servletPath.equals("/previous_step")) {
-            if (!nextCalled) {
-                if (step > 0) {
-                    --step;
-                    prevCalled = true;
-                } else {
-                    System.out.println("Play next first");
-                }
-            } else if (nextCalled) {
-                nextCalled = false;
-                prevCalled = true;
-                step = step;
-            }
-
-        }
+            out.print(responseStep);
         }
     }
+}
 

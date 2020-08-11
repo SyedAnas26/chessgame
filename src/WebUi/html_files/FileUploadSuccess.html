@@ -4,42 +4,31 @@
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
-        var userId='';
-        window.onload = function() {
-            var x=window.location.origin;
+        var userId = '';
+        window.onload = function () {
+            var x = window.location.origin;
             $.ajax({
-                url: x+"/getUserId",
+                url: x + "/getUserId",
                 type: 'POST',
-                success: function(response) {
-                    userId=response.user_id;
-                    if (userId==='null'){
+                success: function (response) {
+                    userId = response.user_id;
+                    if (userId === 'null') {
                         alert(' Login First ! ');
-                        location='/loginpage';
+                        location = '/loginpage';
                     }
-                }
-            });
-        }
-        function createNew() {
-            var x=window.location.origin;
-            $.ajax({
-                url: x+"/startnewgame",
-                type: 'POST',
-                data:{"StartAgain":"true"},
-                success: function () {
-                    console.log('difficulty ajax success!!');
                 }
             });
         }
     </script>
 </head>
 <body>
-<h1 style="font-family:verdana;" align="center" >Your file successfully uploaded  </h1>
+<h1 style="font-family:verdana;" align="center">Your file successfully uploaded </h1>
 <form align="center" action="PlayPgn" method="post">
-    <input  type="submit" onclick="createNew()" value="Click Here to Watch Game"/>
-    </form>
+    <input type="submit" value="Click Here to Watch Game"/>
+</form>
 <br>
 <form action="logout" method="post" align="center">
     <input type="submit" value="Logout">
-    </form>
+</form>
 </body>
 </html>

@@ -1,9 +1,8 @@
 package GameLogic;
 
-import org.apache.commons.io.FileUtils;
-
-import javax.servlet.ServletContext;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -18,40 +17,18 @@ public class PlayPgnFile {
     GameManager manager = null;
 
 
-    public void playGame(String file, int step, ServletContext context) {
+    public String playGame(String log, int logId, int step) throws Exception {
 
 
         try {
             System.out.println("Step = "+step);
-            String gamePlay = getGamePlay(file, context);
+            String gamePlay = getGamePlay(log, logId);
             manager = new GameManager(gamePlay);
             for (int i = 1; i <= step; i++) {
                 manager.conductGameForPgnFile(i);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public String getResponseStep(int step) throws IOException {
-
-//        int totalsteps;
-//        int add;
-        String responseStatus = this.manager.getLastMovementAsStringForJSON();
-//        try {
-//
-//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 3]);
-//            add = 0;
-//        } catch (NumberFormatException e) {
-//
-//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 4]);
-//            add = 1;
-//        }
-
-        //if (step == (totalsteps * 2) + 1) {
-        int checkStep=(step + step/2 - (step%2 == 0? 1: 0))+1;
+            String responseStatus = this.manager.getLastMovementAsStringForJSON();
+            int checkStep=(step + step/2 - (step%2 == 0? 1: 0))+1;
 
             if (manager.gamePlayAsArray[checkStep].equals("1/2-1/2")) {
                 responseStatus =  responseStatus + ",\"checkStatus\":\"Draw\"}";
@@ -65,33 +42,69 @@ public class PlayPgnFile {
             else {
                 responseStatus =  responseStatus + ",\"checkStatus\":\"0\"}";
             }
-       // }
-        return responseStatus;
+            // }
+            return responseStatus;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+       throw new Exception("response Status error");
     }
 
+    //public String getResponseStep(int step) throws IOException {
 
-    public String getGamePlay(String file, ServletContext context) throws Exception {
-        BufferedReader br;
-        if (context == null) {
-            br = new BufferedReader(new FileReader(file));
+//        int totalsteps;
+//        int add;
+//        try {
+//
+//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 3]);
+//            add = 0;
+//        } catch (NumberFormatException e) {
+//
+//            totalsteps = Integer.parseInt(manager.gamePlayAsArray[manager.gamePlayAsArray.length - 4]);
+//            add = 1;
+//        }
 
-        } else {
-            InputStream is = context.getResourceAsStream(file);
-            InputStreamReader isr = new InputStreamReader(is);
-            br = new BufferedReader(isr);
+        //if (step == (totalsteps * 2) + 1) {
+
+   // }
+
+
+    public String getGamePlay(String log, int logId) throws Exception {
+//        BufferedReader br;
+//        if (context == null) {
+//            br = new BufferedReader(new FileReader(file));
+//
+//        } else {
+//            InputStream is = context.getResourceAsStream(file);
+//            InputStreamReader isr = new InputStreamReader(is);
+//            br = new BufferedReader(isr);
+//        }
+//        String line = br.readLine();
+//        StringBuilder sb = new StringBuilder();
+//        String string = null;
+//        while (line != null) {
+//            sb.append(line).append("\n");
+//            line = br.readLine();
+//            string = sb.toString();
+//        }
+        String column;
+        if(log.equals("gamelog")){
+            column="idGameLog";
         }
-        String line = br.readLine();
-        StringBuilder sb = new StringBuilder();
-        String string = null;
-        while (line != null) {
-            sb.append(line).append("\n");
-            line = br.readLine();
-            string = sb.toString();
+        else
+        {
+            column="idPgnLog";
         }
+        String sql="select * from "+log+" WHERE "+column+"='"+logId+"'";
+        String string= (String) DbConnector.get(sql,rs->{
+            if(rs.next()){
+                return rs.getString("GameinPgn");
+            }
+            return null;
+        });
         String gamePlay = regexElimination(string);
         gamePlay = gamePlay.replace("\n", " ").replace("\r", "");
         return gamePlay;
-
     }
 
     private String regexElimination(String string) {
@@ -156,14 +169,25 @@ public class PlayPgnFile {
             exception.printStackTrace();
         }
         File folder = new File(tomPath + "/FileUploads");
-        FileUtils.deleteDirectory(folder);
-        createFolder(folder);
-        File file =new File(tomPath + "/FileUploads/watchHistory.txt");
+//        FileUtils.deleteDirectory(folder);
+//        createFolder(folder);
+        File file =new File(tomPath + "/FileUploads/watchHistory"+idGameLog+".txt");
         PrintWriter myWriter = new PrintWriter(file);
         myWriter.write(""+gamePlayHistory);
         myWriter.close();
     }
 
+    public int storePgn(String gamPlay,int uniqueId,String fileName) throws Exception {
+        long createdTime=System.currentTimeMillis();
+        String sql="select * from pgnlog WHERE GameinPgn='"+gamPlay+"'";
+        DbConnector.update("insert into pgnlog (createdBy,createdTime,fileName,GameinPgn) values('"+uniqueId+"','"+createdTime+"','"+fileName+"','"+gamPlay+"')");
+        return (int)DbConnector.get(sql,rs->{
+            if(rs.next()){
+                return rs.getInt("idPgnLog");
+            }
+            return null;
+        });
+    }
     private void createFolder(File folder) {
         boolean bool = folder.mkdir();
         if (bool) {
