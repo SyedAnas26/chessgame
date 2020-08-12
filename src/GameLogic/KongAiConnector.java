@@ -25,7 +25,7 @@ public class KongAiConnector
             args.addAll(moveArr);
             script = env.createScript("KongAIConnector.js",
                  new File("../webapps/ROOT/WEB-INF/classes/GameLogic/KongAIConnector.js"), args.toArray(new String[0]));
-            //new File("src\\GameLogic\\KongAIConnector.js"), args.toArray(new String[0]));
+          //  new File("src\\GameLogic\\KongAIConnector.js"), args.toArray(new String[0]));
             // Wait for the script to complete
             ScriptStatus status = script.execute().get();
           //  System.out.println("Status is" + status);

@@ -88,6 +88,4 @@ create table pgnlog
     GameinPgn   longtext    not null
 );
 
-
-
-
+//Updated in Server

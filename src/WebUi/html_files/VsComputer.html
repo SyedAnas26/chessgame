@@ -4,6 +4,28 @@
     <style type="text/css">
         #black_promotion_pieces { visibility: hidden; }
         #white_promotion_pieces { visibility: hidden; }
+        #pgnBox {
+            background-color: white;
+            width: 20%;
+            height: 560px;
+            border: 2px solid white;
+            padding-top: 45px;
+            overflow: auto;
+        }
+        #showPgn{
+            background-color: white;
+            width: 80%;
+            height: 475px;
+            border: 2px solid black;
+            padding: 15px;
+            overflow: auto;
+        }
+        #GameBox{
+            border: 1px solid white;
+            width: 510px;
+            height: 650px;
+            float: left;
+        }
     </style>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
@@ -53,21 +75,24 @@
     </script>
 </head>
 <body>
-<div id="white_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen"  data-piece="wQ"  style="width:62px;height:62px;" onclick="promotePiece('Q')">
-    <img src="img/chesspieces/wikipedia/wN.png" id="wknight"  data-piece="wN" style="width:62px;height:62px;"  onclick="promotePiece('N')">
-    <img src="img/chesspieces/wikipedia/wB.png" id="wbishop"  data-piece="wB"  style="width:62px;height:62px;" onclick="promotePiece('B')">
-    <img src="img/chesspieces/wikipedia/wR.png" id="wrook"  data-piece="wR"  style="width:62px;height:62px;" onclick="promotePiece('R')">
+<div id="GameBox">
+    <div id="white_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen"  data-piece="wQ"  style="width:62px;height:62px;" onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/wN.png" id="wknight"  data-piece="wN" style="width:62px;height:62px;"  onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/wB.png" id="wbishop"  data-piece="wB"  style="width:62px;height:62px;" onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/wR.png" id="wrook"  data-piece="wR"  style="width:62px;height:62px;" onclick="promotePiece('R')">
+    </div>
+    <div id="myBoard" style="width: 500px">
+    </div>
+    <div id="black_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen"  data-piece="bQ" style="width:62px;height:62px;" onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/bN.png" id="bknight"  data-piece="bN" style="width:62px;height:62px;" onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/bB.png" id="bbishop"  data-piece="bB" style="width:62px;height:62px;"onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/bR.png" id="brook"  data-piece="bR" style="width:62px;height:62px;" onclick="promotePiece('R')">
+    </div>
 </div>
-<div id="myBoard" style="width: 500px">
+<div id="pgnBox"><div> <p id="showPgn" style="font-size: 20px;">PGN:</p></div>
 </div>
-<div id="black_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen"  data-piece="bQ" style="width:62px;height:62px;" onclick="promotePiece('Q')">
-    <img src="img/chesspieces/wikipedia/bN.png" id="bknight"  data-piece="bN" style="width:62px;height:62px;" onclick="promotePiece('N')">
-    <img src="img/chesspieces/wikipedia/bB.png" id="bbishop"  data-piece="bB" style="width:62px;height:62px;"onclick="promotePiece('B')">
-    <img src="img/chesspieces/wikipedia/bR.png" id="brook"  data-piece="bR" style="width:62px;height:62px;" onclick="promotePiece('R')">
-</div>
-
 <label>Status:</label>
 <div id="status"></div>
 <script type="text/javascript" src="clientlib/chessboard-1.0.0.min.js"></script>
@@ -77,10 +102,10 @@
     var board = null
     var game = new Chess()
     var $status = $('#status')
-    var $fen = $('#fen')
-    var $pgn = $('#pgn')
+    var $pgn = $('#showPgn')
     var whiteSquareGrey = '#a9a9a9'
     var blackSquareGrey = '#696969'
+    var alertStatus=null;
     startCount()
 
     function removeGreySquares () {
@@ -106,7 +131,7 @@
         board.position(game.fen())
         sendUserMove(move,userTime)
         updateStatus()
-        window.setTimeout(makeAiMove,250)
+        //window.setTimeout(makeAiMove,250)
     }
 
     function statusUpdate(sts) {
@@ -119,7 +144,7 @@
                     "gamePgn":gamePgn},
                 success: function () {
                     if (sts === '3') {
-                        alert("Match Draw");
+                        alert('Match Draw');
                         window.location = x + "/homepage";
                     }
                     console.log('draw ajax success!!');
@@ -293,11 +318,11 @@
         if (game.in_checkmate()) {
             status = 'Game over, ' + moveColor + ' is in checkmate.'
             if(moveColor==='White' && statusCalled==='0'){
-                alert("Black won the Match")
+                alert('Black won the Match');
                 statusUpdate('2')
             }
             if(moveColor==='Black' && statusCalled==='0'){
-                alert("White won the Match")
+                alert('White won the Match');
                 statusUpdate('1')
             }
             statusCalled='1';
@@ -306,7 +331,7 @@
         // draw?
         else if (game.in_draw()) {
             status = 'Game over, drawn position'
-            alert( 'Game over, drawn position')
+            alert('Game over, drawn position');
             statusUpdate('3')
             statusCalled='1';
         }
@@ -322,8 +347,7 @@
         }
 
         $status.html(status)
-        $fen.html(game.fen())
-        $pgn.html(game.pgn())
+        $pgn.html("PGN: "+game.pgn())
     }
 
     var config = {

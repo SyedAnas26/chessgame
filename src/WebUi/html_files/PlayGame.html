@@ -5,6 +5,37 @@
             history.forward();
         </script>
     </head>
+    <style type="text/css">
+        #pgn {
+            background-color: white;
+            width: 15%;
+            height: 480px;
+            border: 2px solid black;
+            padding: 10px;
+            margin-right: 30px;
+            overflow: auto;
+        }
+        #GameBox{
+            border: 1px solid white;
+            width: 510px;
+            height: 510px;
+            float: left;
+        }
+        .button{
+            padding-top: 50px;
+            padding-right: 50px;
+            width: 50px;
+        }
+        .bot{
+            margin-left: 20px;
+            padding: 5px;
+            width: 280px;
+        }
+        th {
+            border: 30px solid white;
+            height: 100px;
+        }
+    </style>
     <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
 
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
@@ -34,8 +65,26 @@
     </script>
 </head>
 <body>
-<div id="myBoard" style="width: 500px"></div>
-<div id="status"></div>
+<div id="GameBox">
+    <div id="myBoard" style="width: 500px"></div>
+</div>
+<div id="pgn"><div><p id="showpgn" style="font-size: 20px;">PGN:</p></div>
+</div>
+<div class="bot">
+    <table>
+        <tr>
+            <th><input type="button" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/></th>
+            <th><input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/></th>
+            <th><input type="button" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
+                       cellspacing="0"/></th>
+        </tr>
+    </table>
+</div>
+<div class="bot">
+    <form action="/homepage" method="post" align="center">
+        <input style="margin-left: 150px"type="submit" value="Go Back to Home Page"/>
+    </form>
+</div>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
         integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
         crossorigin="anonymous"></script>
@@ -47,6 +96,7 @@
     var nextCalled = false;
     var prevMoveCalled = false;
     var alertStatus = null;
+    var $pgn = $('#showpgn')
     var game = new Chess()
 
     function onMoveEnd(oldPos, newPos) {
@@ -54,6 +104,8 @@
             alert(alertStatus);
             alertStatus = null;
         }
+        $pgn.html("PGN: "+game.pgn())
+
     }
 
     var config = {
@@ -122,39 +174,15 @@
             // });
             nextCalled = false;
             prevMoveCalled = true;
+
         }
     }
 
     function startNew() {
-        //window.location.reload();
-        // var x = window.location.origin;
-        // $.ajax({
-        //     url: x + "/startnewgame",
-        //     type: 'POST',
-        //     data: {"StartAgain": "true"},
-        //     success: function () {
-        //         console.log('difficulty ajax success!!');
-        //     }
-        // });
         step = 0;
         statusCalled = false;
-
     }
 </script>
-<br>
-<br>
-<input type="button" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/>
-<br>
-<br>
-<input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/>
-<br>
-<br>
-<input type="button" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
-       cellspacing="0"/>
-<br>
-<form action="/homepage" method="post" align="center">
-    <input type="submit" value="Go Back to Home Page"/>
-</form>
 </body>
 </html>
  
