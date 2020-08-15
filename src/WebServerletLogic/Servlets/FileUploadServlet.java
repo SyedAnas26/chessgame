@@ -30,7 +30,7 @@ public class FileUploadServlet extends HttpServlet {
             System.out.println("ajax came");
             String fileName = request.getParameter("fileName");
             session.setAttribute("fileName",fileName);
-        } else {
+        } else  {
             try {
                 String fileName =(String) session.getAttribute("fileName");
                 // obtains the upload file part in this multipart request
@@ -45,7 +45,9 @@ public class FileUploadServlet extends HttpServlet {
                 int idPgnLog = playPgnFile.storePgn(gamePlay, uniqueId, fileName);
                 session.setAttribute("log", "pgnlog");
                 session.setAttribute("logId", idPgnLog);
-                response.sendRedirect("/fileuploadsuccess");
+                String url="/PlayPgn?id="+uniqueId+"&pgnId="+idPgnLog;
+                System.out.println("i am here");
+                response.sendRedirect(url);
             } catch (Exception ex) {
                 System.out.println(ex);
                 out.println("<script type=\"text/javascript\">");

@@ -15,22 +15,26 @@
             margin-right: 30px;
             overflow: auto;
         }
-        #GameBox{
+
+        #GameBox {
             border: 1px solid white;
             width: 510px;
             height: 510px;
             float: left;
         }
-        .button{
+
+        .button {
             padding-top: 50px;
             padding-right: 50px;
             width: 50px;
         }
-        .bot{
+
+        .bot {
             margin-left: 20px;
             padding: 5px;
             width: 280px;
         }
+
         th {
             border: 30px solid white;
             height: 100px;
@@ -68,7 +72,8 @@
 <div id="GameBox">
     <div id="myBoard" style="width: 500px"></div>
 </div>
-<div id="pgn"><div><p id="showpgn" style="font-size: 20px;">PGN:</p></div>
+<div id="pgn">
+    <div><p id="showpgn" style="font-size: 20px;">PGN:</p></div>
 </div>
 <div class="bot">
     <table>
@@ -82,7 +87,7 @@
 </div>
 <div class="bot">
     <form action="/homepage" method="post" align="center">
-        <input style="margin-left: 150px"type="submit" value="Go Back to Home Page"/>
+        <input style="margin-left: 150px" type="submit" value="Go Back to Home Page"/>
     </form>
 </div>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
@@ -98,14 +103,16 @@
     var alertStatus = null;
     var $pgn = $('#showpgn')
     var game = new Chess()
+    animation_moved = true;
+
 
     function onMoveEnd(oldPos, newPos) {
         if (alertStatus != null) {
             alert(alertStatus);
             alertStatus = null;
         }
-        $pgn.html("PGN: "+game.pgn())
-
+        $pgn.html("PGN: " + game.pgn())
+        animation_moved = true;
     }
 
     var config = {
@@ -117,7 +124,7 @@
 
     function nextMove() {
         var x = window.location.origin;
-        if (!statusCalled) {
+        if (statusCalled === false && animation_moved === true) {
             // var status;
             if (prevMoveCalled) {
                 prevMoveCalled = false;
@@ -140,10 +147,10 @@
                         alertStatus = "Player 2 Wins (Black)!";
                         statusCalled = true;
                     }
+                    animation_moved = false;
                     var pgnMove = response.pgn;
                     game.move(pgnMove)
                     board.position(game.fen())
-
                 }
             });
             nextCalled = true;
@@ -155,10 +162,12 @@
     function prevStep() {
 
 
-        if (step > 0) {
+        if (step > 0 && animation_moved === true) {
             if (!nextCalled) {
-                if (step > 1)
+                if (step > 1) {
                     step--;
+                    animation_moved = false;
+                }
             }
 
             // var x = window.location.origin;
@@ -166,6 +175,7 @@
             //     url: x + "/previous_step",
             //     type: 'POST',
             //     success: function (response) {
+
             statusCalled = false;
             game.undo()
             board.position(game.fen())

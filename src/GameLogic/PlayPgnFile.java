@@ -183,7 +183,9 @@ public class PlayPgnFile {
         DbConnector.update("insert into pgnlog (createdBy,createdTime,fileName,GameinPgn) values('"+uniqueId+"','"+createdTime+"','"+fileName+"','"+gamPlay+"')");
         return (int)DbConnector.get(sql,rs->{
             if(rs.next()){
-                return rs.getInt("idPgnLog");
+                int i=rs.getInt("idPgnLog");
+                System.out.println("logId"+i);
+                return i;
             }
             return null;
         });

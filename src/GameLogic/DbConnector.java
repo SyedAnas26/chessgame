@@ -14,7 +14,7 @@ public class DbConnector
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database", "root", "admin123");
+			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "admin123");
 			return con;
 		}
 		catch (SQLException e)

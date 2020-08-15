@@ -6,6 +6,7 @@
     <script type="text/javascript">
         var userId = '';
         var gamesHistory=[];
+        var uniqueId;
         window.onload = function () {
             var x = window.location.origin;
             $.ajax({
@@ -13,6 +14,7 @@
                 type: 'POST',
                 success: function (response) {
                     userId = response.user_id;
+                    uniqueId=response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
                         location = '/loginpage';
@@ -54,7 +56,7 @@
                 success: function (response) {
                 }
             });
-            location = '/PlayPgn';
+            window.location.href = "/PlayPgn?id="+uniqueId+"&pgnId="+id;
         }
         document.body.appendChild(btn);
     }

@@ -26,27 +26,36 @@ public class SinglePlayerServlet extends HttpServlet {
         String servletPath = req.getServletPath();
         HttpSession session=req.getSession();
         uniqueId=(int)session.getAttribute("uniqueId");
+        PrintWriter out = resp.getWriter();
+        resp.setContentType("application/json");
+        resp.setCharacterEncoding("UTF-8");
+        long gameId=0;
         try {
 
             if (servletPath.equals("/diff")) {
-
                 difficulty = req.getParameter("difficulty");
-                aiManager.newGame();
+                try {
+                    gameId = System.currentTimeMillis();
+                } catch (Exception throwables) {
+                    throwables.printStackTrace();
+                }
+                String sendGameId="{\"gameId\":\""+gameId+"\"}";
+                out.print(sendGameId);
 
             } else if (servletPath.equals("/usermoves") || servletPath.equals("/gamestatus")) {
                 String userTimer=req.getParameter("timeTaken");
                 String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn=req.getParameter("gamePgn");
-                aiManager.addMove(userMove, gameStatus,uniqueId,userTimer,gamePgn);
+                gameId=Long.parseLong(req.getParameter("gameId"));
+                int moveNo=Integer.parseInt(req.getParameter("moveNo"));
+                aiManager.addMove(gameId,moveNo,userMove,gameStatus,uniqueId,userTimer,gamePgn);
 
-            } else if (servletPath.equals("/aiMove")) {
-                PrintWriter out = resp.getWriter();
-                resp.setContentType("application/json");
-                resp.setCharacterEncoding("UTF-8");
-                responseStep = aiManager.getAiMove(difficulty);
+            } else if (servletPath.equals("/aiMove")){
+                gameId=Long.parseLong(req.getParameter("gameId"));
+                int moveNo=Integer.parseInt(req.getParameter("moveNo"));
+                responseStep = aiManager.getAiMove(gameId,moveNo,difficulty);
                 out.print(responseStep);
-
             }
         } catch (Exception exception) {
             exception.printStackTrace();
