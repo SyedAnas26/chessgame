@@ -74,12 +74,32 @@
         var difficulty;
         var gameId;
         var winner;
+        var extraTime;
+        var currenSeconds;
+        var uniqueId;
         window.onload=function () {
+
             var url=location.href;
-            difficulty=url.split('=')[3];
+            difficulty=url.split('=')[3].split('+')[0];
             gameId=url.split('=')[2];
             gameId=gameId.split('&')[0];
+            extraTime=url.split('+')[1];
+            uniqueId=url.split('=')[1].split('&')[0];
+            console.log("extraTime"+extraTime)
             console.log("gameId"+gameId)
+            console.log("diff"+difficulty)
+            console.log("unique"+uniqueId)
+            document.getElementById("goToHome").action="/homepage/"+uniqueId;
+
+            if(difficulty==='10'){
+                currenSeconds=90;
+            }
+            else if(difficulty==='100'){
+                currenSeconds=60;
+            }
+            else if(difficulty==='200'){
+                currenSeconds=30;
+            }
         }
 
         $.ajax({
@@ -93,7 +113,6 @@
                 console.log('difficulty ajax success!!');
             }
         });
-
 
         function timedCount() {
             timer = c;
@@ -139,7 +158,7 @@
         <img src="img/chesspieces/wikipedia/bR.png" id="brook" data-piece="bR" style="width:62px;height:62px;"
              onclick="promotePiece('R')">
     </div>
-    <input type="button"  style="margin-left: 205px" onclick="statusUpdate('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+    <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
 </div>
 <div id="pgnBox">
     <div><p id="showPgn" style="font-size: 20px;">PGN:</p></div>
@@ -202,19 +221,16 @@
     function startTimer(duration, display) {
         var timer = duration, minutes, seconds;
         interval = setInterval(function () {
-            minutes = parseInt(timer / 60, 10)
+            minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
-
+            currenSeconds=(minutes*60)+seconds;
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
-
             display.textContent = minutes + ":" + seconds;
             if (minutes === "00" && seconds === "00") {
                 alert('Time up and Ai won the Match');
-                statusUpdate('2');
-                stopTimer();
+                sendStatus('2');
             }
-
             if (--timer < 0) {
                 timer = duration;
             }
@@ -240,7 +256,6 @@
         var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
         var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
         var fileNameToSaveAs = gameId+'.pgn';
-
         var downloadLink = document.createElement("a");
         downloadLink.download = fileNameToSaveAs;
         downloadLink.innerHTML = "Download File";
@@ -248,7 +263,6 @@
         downloadLink.onclick = destroyClickedElement;
         downloadLink.style.display = "none";
         document.body.appendChild(downloadLink);
-
         downloadLink.click();
     }
     function destroyClickedElement(event)
@@ -256,7 +270,7 @@
         document.body.removeChild(event.target);
     }
 
-    function statusUpdate(sts) {
+    function sendStatus(sts) {
         var gamePgn = game.pgn()
         if (moveNo >= 1) {
             moveNo++
@@ -281,10 +295,10 @@
                 });
                 if (sts === '3') {
                     alert('Match Draw');
-                    stopTimer();
                 }
                 statusCalled = true;
                 winner=sts;
+                stopTimer();
                 console.log("winner"+winner)
             }
         }
@@ -358,9 +372,9 @@
         var x = window.location.origin;
         stopCount()
         var userTime = timer;
+        startCount()
         sendUserMove(move, userTime)
         updateStatus()
-        stopTimer()
         window.setTimeout(makeAiMove, 250)
     }
 
@@ -423,6 +437,16 @@
         stopCount()
         updateStatus()
         startCount()
+        console.log(timer);
+        stopTimer();
+        console.log("Currenseconds"+currenSeconds);
+        if(moveNo===2)
+        {startTimer(currenSeconds, display);}
+        else
+        {var sec=currenSeconds+parseInt(extraTime);
+            console.log('sec'+sec)
+            startTimer(sec, display);}
+
     }
 
     function callAIToPlay() {
@@ -456,20 +480,20 @@
         // checkmate?
         if (game.in_checkmate()) {
             status = 'Game over, ' + moveColor + ' is in checkmate.'
-            if (moveColor === 'White' && statusCalled === '0') {
+            if (moveColor === 'White' && statusCalled === false) {
                 alert('Black won the Match');
-                statusUpdate('2')
+                sendStatus('2')
             }
-            if (moveColor === 'Black' && statusCalled === '0') {
+            if (moveColor === 'Black' && statusCalled === false) {
                 alert('White won the Match');
-                statusUpdate('1')
+                sendStatus('1')
             }
         }
 
         // draw?
         else if (game.in_draw()) {
             status = 'Game over, drawn position'
-            statusUpdate('3')
+            sendStatus('3')
         }
 
         // game still on
@@ -487,18 +511,7 @@
     }
 
     function onMoveEnd(oldPos, newPos) {
-        var seconds=0;
-        if(difficulty==='10'){
-            seconds=90;
-        }
-        else if(difficulty==='100'){
-            seconds=60;
-        }
-        else if(difficulty==='200'){
-            seconds=30;
-        }
-        console.log("seconds"+seconds);
-        startTimer(seconds-1, display);
+
     }
 
     var config = {
@@ -514,11 +527,10 @@
     board = Chessboard('myBoard', config)
     updateStatus()
 
-
 </script>
 <br><br>
-<form action="/homepage" method="post" align="center">
-    <input type="submit" onclick="statusUpdate('3')" value="Go Back to Home Page"/>
+<form id="goToHome" method="post" align="center">
+    <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
 </form>
 </body>
 </html>

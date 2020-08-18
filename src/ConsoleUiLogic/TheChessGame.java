@@ -19,7 +19,7 @@ public class TheChessGame {
 //        new ConsoleUi(gamePlay);
 
         Stockfish client = new Stockfish();
-        String FEN = "8/6pk/8/1R5p/3K3P/8/6r1/8 b - - 0 42";
+        String FEN ="N7/P3pk1p/3p2p1/r4p2/8/4b2B/4P1KP/R7 b - - 1 34";
 
 // initialize and connect to engine
         if (client.startEngine()) {

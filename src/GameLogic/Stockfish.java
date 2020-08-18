@@ -18,7 +18,7 @@ public class Stockfish {
 
     public boolean startEngine() {
         try {
-            this.engineProcess = Runtime.getRuntime().exec("../engine/stockfish");
+            this.engineProcess = Runtime.getRuntime().exec("C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame\\engine\\stockfish_20011801_x64.exe");
             this.processReader = new BufferedReader(new InputStreamReader(this.engineProcess.getInputStream()));
             this.processWriter = new OutputStreamWriter(this.engineProcess.getOutputStream());
             return true;
@@ -61,7 +61,9 @@ public class Stockfish {
 
     public String getBestMove(String fen, int waitTime) {
         this.sendCommand("position fen " + fen);
+       // this.sendCommand("setoption name MultiPV value 3");
         this.sendCommand("go movetime " + waitTime);
+       // System.out.println(this.getOutput(20));
         return this.getOutput(waitTime + 20).split("bestmove ")[1].split(" ")[0];
     }
 
@@ -93,13 +95,14 @@ public class Stockfish {
     }
 
     public float getEvalScore(String fen, int waitTime) {
-        this.sendCommand("position fen " + fen);
+        sendCommand("position fen " + fen);
         this.sendCommand("go movetime " + waitTime);
         float evalScore = 0.0F;
         String[] dump = this.getOutput(waitTime + 20).split("\n");
 
         for(int i = dump.length - 1; i >= 0; --i) {
             if (dump[i].startsWith("info depth ")) {
+//                System.out.println(dump[i]);
                 evalScore = Float.parseFloat(dump[i].split("score cp ")[1].split(" nodes")[0]);
             }
         }

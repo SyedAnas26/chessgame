@@ -48,15 +48,8 @@
         var btn = document.createElement("BUTTON");
         btn.innerHTML = ""+game;
         btn.onclick=function(){
-            $.ajax({
-                url: x + "/setGame",
-                type: 'POST',
-                data:{"gameIdToBeWatched":game,
-                    "idGameLog":id},
-                success: function (response) {
-                }
-            });
-            window.location.href = "/PlayPgn?id="+uniqueId+"&pgnId="+id;
+            id=id.split(" ")[1];
+            window.location.href ="/PlayPgn?id="+uniqueId+"&gamelog="+id;
         }
         document.body.appendChild(btn);
     }

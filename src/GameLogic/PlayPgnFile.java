@@ -17,12 +17,12 @@ public class PlayPgnFile {
     GameManager manager = null;
 
 
-    public String playGame(String log, int logId, int step) throws Exception {
+    public String playGame(String log, int logId, int step,int uniqueId) throws Exception {
 
 
         try {
             System.out.println("Step = "+step);
-            String gamePlay = getGamePlay(log, logId);
+            String gamePlay = getGamePlay(log, logId,uniqueId);
             manager = new GameManager(gamePlay);
             for (int i = 1; i <= step; i++) {
                 manager.conductGameForPgnFile(i);
@@ -69,7 +69,7 @@ public class PlayPgnFile {
    // }
 
 
-    public String getGamePlay(String log, int logId) throws Exception {
+    public String getGamePlay(String log, int logId,int uniqueId) throws Exception {
 //        BufferedReader br;
 //        if (context == null) {
 //            br = new BufferedReader(new FileReader(file));
@@ -88,14 +88,17 @@ public class PlayPgnFile {
 //            string = sb.toString();
 //        }
         String column;
+        String userColumn;
         if(log.equals("gamelog")){
             column="idGameLog";
+            userColumn="(UserID1='"+uniqueId+"' OR UserID2='"+uniqueId+"')";
         }
         else
         {
             column="idPgnLog";
+            userColumn="createdBy='"+uniqueId+"'";
         }
-        String sql="select * from "+log+" WHERE "+column+"='"+logId+"'";
+        String sql="select * from "+log+" WHERE "+userColumn+" AND "+column+"='"+logId+"'";
         String string= (String) DbConnector.get(sql,rs->{
             if(rs.next()){
                 return rs.getString("GameinPgn");
@@ -179,12 +182,12 @@ public class PlayPgnFile {
 
     public int storePgn(String gamPlay,int uniqueId,String fileName) throws Exception {
         long createdTime=System.currentTimeMillis();
-        String sql="select * from pgnlog WHERE GameinPgn='"+gamPlay+"'";
+        String sql="select * from pgnlog WHERE createdBy='"+uniqueId+"' AND createdTime='"+createdTime+"'";
         DbConnector.update("insert into pgnlog (createdBy,createdTime,fileName,GameinPgn) values('"+uniqueId+"','"+createdTime+"','"+fileName+"','"+gamPlay+"')");
         return (int)DbConnector.get(sql,rs->{
             if(rs.next()){
                 int i=rs.getInt("idPgnLog");
-                System.out.println("logId"+i);
+                System.out.println("logId "+i);
                 return i;
             }
             return null;

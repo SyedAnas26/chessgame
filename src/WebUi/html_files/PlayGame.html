@@ -6,20 +6,25 @@
         </script>
     </head>
     <style type="text/css">
-        #pgn {
+        #pgnBox {
             background-color: white;
-            width: 15%;
-            height: 480px;
+            width: 20%;
+            border: 2px solid white;
+            overflow: auto;
+            float: left;
+        }
+        #showPgn {
+            background-color: white;
+            width: 80%;
+            height: 475px;
             border: 2px solid black;
-            padding: 10px;
-            margin-right: 30px;
+            padding: 15px;
             overflow: auto;
         }
-
         #GameBox {
+            padding-top: 30px;
             border: 1px solid white;
             width: 510px;
-            height: 510px;
             float: left;
         }
 
@@ -50,6 +55,9 @@
           integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
     <script type="text/javascript">
         statusCalled = false;
+        var logid;
+        var log;
+        var uniqueId;
         var x = window.location.origin;
         $.ajax({
             url: x + "/getUserId",
@@ -64,6 +72,13 @@
         });
 
         window.onload = (event) => {
+            var url=location.href;
+            logid=url.split('=')[2];
+            uniqueId=url.split('=')[1].split('&')[0];
+            log=url.split('=')[1].split('&')[1];
+            console.log("uniqueId "+uniqueId)
+            console.log("log "+log)
+            console.log("logid " + logid)
             startNew();
         };
     </script>
@@ -72,8 +87,10 @@
 <div id="GameBox">
     <div id="myBoard" style="width: 500px"></div>
 </div>
-<div id="pgn">
-    <div><p id="showpgn" style="font-size: 20px;">PGN:</p></div>
+<div id="pgnBox">
+    <div><p id="showPgn" style="font-size: 20px;">PGN:</p></div>
+    <button onclick="saveTextAsFile()">Save Pgn to File</button>
+
 </div>
 <div class="bot">
     <table>
@@ -101,10 +118,10 @@
     var nextCalled = false;
     var prevMoveCalled = false;
     var alertStatus = null;
-    var $pgn = $('#showpgn')
+    var $pgn = $('#showPgn')
     var game = new Chess()
     animation_moved = true;
-
+    var checkStatus;
 
     function onMoveEnd(oldPos, newPos) {
         if (alertStatus != null) {
@@ -134,16 +151,17 @@
             $.ajax({
                 url: x + "/nextMove",
                 type: 'POST',
-                data: {"step": step},
+                data: {"step": step,"log":log,"logid":logid,"uniqueId":uniqueId},
                 success: function (response) {
                     //step = response.step;
-                    if (response.checkStatus === "Draw") {
+                    checkStatus=response.checkStatus ;
+                    if (checkStatus=== "Draw") {
                         alertStatus = "Match Draw!";
                         statusCalled = true;
-                    } else if (response.checkStatus === "Player1") {
+                    } else if (checkStatus === "Player1") {
                         alertStatus = "Player 1 Wins (White)!";
                         statusCalled = true;
-                    } else if (response.checkStatus === "Player2") {
+                    } else if (checkStatus === "Player2") {
                         alertStatus = "Player 2 Wins (Black)!";
                         statusCalled = true;
                     }
@@ -157,6 +175,39 @@
 
         }
 
+    }
+
+    function saveTextAsFile()
+    {
+        var result='';
+        if(statusCalled===true){
+            if(checkStatus==='Player1'){
+                result=' 1-0';
+            }
+            else if(checkStatus==='Player2'){
+                result=' 0-1';
+            }
+            else if(checkStatus==='Draw'){
+                result=' 1/2-1/2';
+            }
+        }
+        var pgn=game.pgn();
+        var textToSave = pgn+result;
+        var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+        var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+        var fileNameToSaveAs = logid+'.pgn';
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = textToSaveAsURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+    function destroyClickedElement(event)
+    {
+        document.body.removeChild(event.target);
     }
 
     function prevStep() {

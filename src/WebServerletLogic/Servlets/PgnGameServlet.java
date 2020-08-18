@@ -35,19 +35,13 @@ public class PgnGameServlet extends HttpServlet {
             List<String> games = playPgnFile.getHistoryOfGames(uniqueId);
             out.print(Arrays.toString(games.toArray()));
 
-        } else if (servletPath.equals("/setGame")) {
-
-            String idGameLog = req.getParameter("idGameLog");
-            int id=Integer.parseInt(idGameLog.substring(1));
-            session.setAttribute("log", "gamelog");
-            session.setAttribute("logId", id);
-
-        } else{
+        }  else{
             int step = Integer.parseInt(req.getParameter("step"));
-            String log = (String) session.getAttribute("log");
-            int logId = (int) session.getAttribute("logId");
+            int  logId = Integer.parseInt(req.getParameter("logid"));
+            int uniqueid = Integer.parseInt(req.getParameter("uniqueId"));
+            String log =req.getParameter("log");
             try {
-                responseStep = playPgnFile.playGame(log, logId, step);
+                responseStep = playPgnFile.playGame(log, logId, step,uniqueid);
             } catch (Exception exception) {
                 System.out.println(exception);
             }

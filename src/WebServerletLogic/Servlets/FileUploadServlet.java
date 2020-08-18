@@ -43,10 +43,7 @@ public class FileUploadServlet extends HttpServlet {
                 String gamePlay = s.hasNext() ? s.next() : "";
                 System.out.println("FileName " + fileName);
                 int idPgnLog = playPgnFile.storePgn(gamePlay, uniqueId, fileName);
-                session.setAttribute("log", "pgnlog");
-                session.setAttribute("logId", idPgnLog);
-                String url="/PlayPgn?id="+uniqueId+"&pgnId="+idPgnLog;
-                System.out.println("i am here");
+                String url="/PlayPgn?id="+uniqueId+"&pgnlog="+idPgnLog;
                 response.sendRedirect(url);
             } catch (Exception ex) {
                 System.out.println(ex);
