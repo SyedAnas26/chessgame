@@ -5,6 +5,88 @@
             history.forward();
         </script>
     </head>
+    <style type="text/css">
+
+        li:hover {
+            background-color: lightgreen;
+            color: #134B7C;
+            padding: 5px;
+
+        }
+
+        a {
+            color: #1080E1;
+        }
+
+        a:hover {
+            cursor: pointer;
+        }
+
+        .active a {
+            color: #134B7C;
+            padding: 3px;
+            background-color: lightgreen;
+        }
+
+
+        #pgnBox {
+            background-color: white;
+            margin-left: 60px;
+            width: 25%;
+            border: 2px solid white;
+            overflow: auto;
+            padding-top: 30px;
+            float: left;
+        }
+
+        #showPgn {
+            background-color: white;
+            width: 75%;
+            height: 467px;
+            border: 2px solid black;
+            padding: 20px;
+            padding-top: 0px;
+            font-size: 23px;
+            word-spacing: 20px;
+            letter-spacing: 2px;
+            overflow: auto;
+        }
+
+        #whiteMove {
+            float: left;
+            margin: 0 10px;
+        }
+
+        #blackMove {
+            float: left;
+            margin: 0 10px;
+        }
+
+        #GameBox {
+            padding-top: 30px;
+            margin-left: 30px;
+            border: 1px solid white;
+            width: 510px;
+            float: left;
+        }
+
+        .button {
+            padding-top: 50px;
+            padding-right: 50px;
+            width: 50px;
+        }
+
+        .bot {
+            margin-left: 20px;
+            padding: 5px;
+            width: 280px;
+        }
+
+        th {
+            border: 30px solid white;
+            height: 100px;
+        }
+    </style>
     <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
 
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
@@ -14,7 +96,10 @@
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
           integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
     <script type="text/javascript">
-
+        statusCalled = false;
+        var logid;
+        var log;
+        var uniqueId;
         var x = window.location.origin;
         $.ajax({
             url: x + "/getUserId",
@@ -27,11 +112,50 @@
                 console.log('difficulty ajax success!!');
             }
         });
+
+        window.onload = (event) => {
+            var url = location.href;
+            logid = url.split('=')[2];
+            uniqueId = url.split('=')[1].split('&')[0];
+            log = url.split('=')[1].split('&')[1];
+            console.log("uniqueId " + uniqueId)
+            console.log("log " + log)
+            console.log("logid " + logid)
+            startNew();
+        };
     </script>
 </head>
 <body>
-<div id="myBoard" style="width: 500px"></div>
-<div id="status"></div>
+<div id="GameBox">
+    <div id="myBoard" style="width: 500px"></div>
+</div>
+<div id="pgnBox">
+    <div id="showPgn">
+        <h3 style="margin-left:55px;">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
+    <button onclick="saveTextAsFile()">Save Pgn to File</button>
+
+</div>
+<div class="bot">
+    <table>
+        <tr>
+            <th><input type="button" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/></th>
+            <th><input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/></th>
+            <th><input type="button" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
+                       cellspacing="0"/></th>
+        </tr>
+    </table>
+</div>
+<div class="bot">
+    <form action="/homepage" method="post" align="center">
+        <input style="margin-left: 150px" type="submit" value="Go Back to Home Page"/>
+    </form>
+</div>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
         integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
         crossorigin="anonymous"></script>
@@ -39,78 +163,198 @@
         integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
         crossorigin="anonymous"></script>
 <script type="text/javascript">
-
+    var step = 0;
+    var nextCalled = false;
+    var prevMoveCalled = false;
+    var alertStatus = null;
+    var $pgn = $('#showPgn')
     var game = new Chess()
+    animation_moved = true;
+    var checkStatus;
+    var pgnIsClicked;
+
+    function onMoveEnd(oldPos, newPos) {
+        if (alertStatus != null) {
+            alert(alertStatus);
+            alertStatus = null;
+        }
+        animation_moved = true;
+        if (!pgnIsClicked) {
+            displayPgnMovesInUi(step);
+        }
+    }
+
+    function removePgnListChilds() {
+        const deleteWhiteNodes = document.getElementById("whiteMove");
+        while (deleteWhiteNodes.lastElementChild) {
+            deleteWhiteNodes.removeChild(deleteWhiteNodes.lastElementChild);
+        }
+        const deleteBlackNodes = document.getElementById("blackMove");
+        while (deleteBlackNodes.lastElementChild) {
+            deleteBlackNodes.removeChild(deleteBlackNodes.lastElementChild);
+        }
+    }
+
+    function displayPgnMovesInUi(steps) {
+
+        removePgnListChilds();
+        var arr = game.pgn().split(/\d+. |\s+/g);
+        var movesMade = arr.filter(function (el) {
+            return el != "";
+        });
+        if (prevMoveCalled) {
+            steps = steps - 1;
+        }
+        for (var i = 0; i < steps; i++) {
+            if (i === 0 || i % 2 === 0) {
+                showPgnInDisplay("whiteMove", movesMade, i);
+            } else {
+                showPgnInDisplay("blackMove", movesMade, i);
+            }
+        }
+    }
+
+
+    function showPgnInDisplay(elementId, movesMade, i) {
+        var store;
+        var onClickIsCalled = false;
+        var node = document.createElement("LI");
+        var a = document.createElement("a");
+        // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onclick = function (event) {
+            pgnIsClicked = true;
+            $('li').removeClass('active');
+            $(this).addClass('active');
+            onClickIsCalled = true;
+            event.preventDefault()
+            store = i;
+            var chess = new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor = (movesMade.length - store) - 1;
+            for (var j = 0; j < loopfor; j++) {
+                chess.undo();
+            }
+            board.position(chess.fen());
+        }
+        a.textContent = "" + movesMade[i];
+        a.setAttribute("href", "#");
+        node.appendChild(a);
+        if (i === (movesMade.length - 1) && onClickIsCalled === false) {
+            node.classList.add("active");
+        }
+        // node.appendChild(textnode);
+        document.getElementById(elementId).appendChild(node);
+    }
+
     var config = {
-        position: 'start'
+        position: 'start',
+        onMoveEnd: onMoveEnd
     }
     var board = Chessboard('myBoard', config)
 
 
-    function nextStep() {
+    function nextMove() {
         var x = window.location.origin;
-        $.ajax({
-            url: x + "/nextstep",
-            type: 'POST',
-            success: function (response) {
-                if (response.checkStatus === "Draw") {
-                    alert("Match Draw!");
-                } else if (response.checkStatus === "Player1") {
-                    alert("Player 1 Wins (White)!");
-                } else if (response.checkStatus === "Player2") {
-                    alert("Player 2 Wins (Black)!");
-                } else {
+        if (statusCalled === false && animation_moved === true) {
+            // var status;
+            if (prevMoveCalled) {
+                prevMoveCalled = false;
+            } else {
+                step++;
+            }
+            $.ajax({
+                url: x + "/nextMove",
+                type: 'POST',
+                data: {"step": step, "log": log, "logid": logid, "uniqueId": uniqueId},
+                success: function (response) {
+                    //step = response.step;
+                    checkStatus = response.checkStatus;
+                    if (checkStatus === "Draw") {
+                        alertStatus = "Match Draw!";
+                        statusCalled = true;
+                    } else if (checkStatus === "Player1") {
+                        alertStatus = "Player 1 Wins (White)!";
+                        statusCalled = true;
+                    } else if (checkStatus === "Player2") {
+                        alertStatus = "Player 2 Wins (Black)!";
+                        statusCalled = true;
+                    }
+                    animation_moved = false;
                     var pgnMove = response.pgn;
                     game.move(pgnMove)
                     board.position(game.fen())
                 }
-            }
-        });
+            });
+            nextCalled = true;
+            pgnIsClicked = false;
+        }
 
+    }
+
+    function saveTextAsFile() {
+        var result = '';
+        if (statusCalled === true) {
+            if (checkStatus === 'Player1') {
+                result = ' 1-0';
+            } else if (checkStatus === 'Player2') {
+                result = ' 0-1';
+            } else if (checkStatus === 'Draw') {
+                result = ' 1/2-1/2';
+            }
+        }
+        var pgn = game.pgn();
+        var textToSave = pgn + result;
+        var textToSaveAsBlob = new Blob([textToSave], {type: "text/plain"});
+        var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+        var fileNameToSaveAs = logid + '.pgn';
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = textToSaveAsURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+
+    function destroyClickedElement(event) {
+        document.body.removeChild(event.target);
     }
 
     function prevStep() {
 
-        var x = window.location.origin;
-        $.ajax({
-            url: x + "/previous_step",
-            type: 'POST',
-            success: function (response) {
-                game.undo()
-                board.position(game.fen())
+
+        if (step > 0 && animation_moved === true) {
+            if (!nextCalled) {
+                if (step > 1) {
+                    step--;
+                    animation_moved = false;
+                }
             }
 
-        });
+            // var x = window.location.origin;
+            // $.ajax({
+            //     url: x + "/previous_step",
+            //     type: 'POST',
+            //     success: function (response) {
+
+            statusCalled = false;
+            game.undo()
+            board.position(game.fen())
+            //     }
+            //
+            // });
+            nextCalled = false;
+            prevMoveCalled = true;
+            pgnIsClicked = false;
+        }
     }
 
     function startNew() {
-        window.location.reload();
-        var x = window.location.origin;
-        $.ajax({
-            url: x + "/startnewgame",
-            type: 'POST',
-            data: {"StartAgain": "true"},
-            success: function () {
-                console.log('difficulty ajax success!!');
-            }
-        });
+        step = 0;
+        statusCalled = false;
     }
-
-
 </script>
-<br>
-<br>
-<input type="button" onclick="nextStep()" value="Next Step" cellpadding="0" cellspacing="0"/>
-<br>
-<br>
-<input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/>
-<br>
-<br>
-<input type="button" onclick="startNew()" value="Start Again" cellpadding="0" cellspacing="0"/>
-<br>
-<form action="/homepage" method="post" align="center">
-    <input type="submit" value="Go Back to Home Page"/>
-</form>
 </body>
 </html>
  

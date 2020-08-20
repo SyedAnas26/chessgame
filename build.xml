@@ -74,7 +74,7 @@
     <property name="catalina.home"  value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36"/>
     <property name="dist.home"      value="C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame"/>
     <property name="dist.src"       value="chess.jar"/>
-    <property name="dist.war"       value="chess.war"/>
+    <property name="dist.war"       value="ROOT.war"/>
 
 
     <!-- The "prepare" target is used to construct the deployment home

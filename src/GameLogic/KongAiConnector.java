@@ -12,7 +12,7 @@ import java.util.List;
 public class KongAiConnector
 {
 
-    public String getAIMove(int difficulty, long gameId, int moveNo, List<String> moveArr)
+    public String getAIMove(int difficulty, long gameId, int moveNo,String gamePgn, List<String> moveArr)
     {
         NodeEnvironment env = new NodeEnvironment();
 
@@ -21,11 +21,11 @@ public class KongAiConnector
             // Pass in the script file name, a File pointing to the actual script, and an Object[] containg "argv"
             NodeScript script = null;
             List<String> args = new ArrayList<>();
-            args.addAll(Arrays.asList(String.valueOf(difficulty), String.valueOf(gameId), String.valueOf(moveNo)));
+            args.addAll(Arrays.asList(String.valueOf(difficulty), String.valueOf(gameId), String.valueOf(moveNo) , gamePgn));
             args.addAll(moveArr);
             script = env.createScript("KongAIConnector.js",
-                  new File("../webapps/ROOT/WEB-INF/classes/GameLogic/KongAIConnector.js"), args.toArray(new String[0]));
-           // new File("src\\GameLogic\\KongAIConnector.js"), args.toArray(new String[0]));
+                 new File("../webapps/ROOT/WEB-INF/classes/GameLogic/KongAIConnector.js"), args.toArray(new String[0]));
+          // new File("src\\GameLogic\\KongAIConnector.js"), args.toArray(new String[0]));
             // Wait for the script to complete
             ScriptStatus status = script.execute().get();
           //  System.out.println("Status is" + status);

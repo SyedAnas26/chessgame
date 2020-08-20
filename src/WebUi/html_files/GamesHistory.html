@@ -6,6 +6,7 @@
     <script type="text/javascript">
         var userId = '';
         var gamesHistory=[];
+        var uniqueId;
         window.onload = function () {
             var x = window.location.origin;
             $.ajax({
@@ -13,6 +14,7 @@
                 type: 'POST',
                 success: function (response) {
                     userId = response.user_id;
+                    uniqueId=response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
                         location = '/loginpage';
@@ -46,15 +48,8 @@
         var btn = document.createElement("BUTTON");
         btn.innerHTML = ""+game;
         btn.onclick=function(){
-            $.ajax({
-                url: x + "/setGame",
-                type: 'POST',
-                data:{"gameIdToBeWatched":game,
-                    "idGameLog":id},
-                success: function (response) {
-                }
-            });
-            location = '/PlayPgn';
+            id=id.split(" ")[1];
+            window.location.href ="/PlayPgn?id="+uniqueId+"&gamelog="+id;
         }
         document.body.appendChild(btn);
     }

@@ -75,3 +75,23 @@ CREATE INDEX fk_gameid on gamemoves (GameID);
 
 ALTER TABLE gamelog ADD FOREIGN KEY(GameId) REFERENCES gamemoves(GameID);
 
+ALTER TABLE gamelog DROP COLUMN GameStatus;
+
+
+create table pgnlog
+(
+    idPgnLog    int auto_increment
+        primary key,
+    createdBy   int         null,
+    createdTime bigint      null,
+    fileName    varchar(45) not null,
+    GameinPgn   longtext    not null
+);
+
+
+
+ ALTER TABLE gamemoves ADD
+ GameTillNow longtext;
+
+
+//Updated in Server

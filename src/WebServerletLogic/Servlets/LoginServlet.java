@@ -26,7 +26,7 @@ public class LoginServlet extends HttpServlet
         {
 
             HttpSession sess = request.getSession();
-            String user = "{\"user_id\":\"" + sess.getAttribute("userId") + "\",\"user_name\":\"" + sess.getAttribute("userName") + "\"}";
+            String user = "{\"user_id\":\"" + sess.getAttribute("userId") + "\",\"user_name\":\"" + sess.getAttribute("userName") + "\",\"unique_id\":\""+sess.getAttribute("uniqueId")+ "\"}";
             PrintWriter out = response.getWriter();
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
@@ -107,7 +107,8 @@ public class LoginServlet extends HttpServlet
                 session.setAttribute("userId", request.getParameter("user_id"));
                 session.setAttribute("userName", name);
                 session.setAttribute("uniqueId", uniqueId);
-                response.sendRedirect("/homepage");
+                response.sendRedirect("/homepage/"+uniqueId);
+
             }
             else if (success == false)
             {

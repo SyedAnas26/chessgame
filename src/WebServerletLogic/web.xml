@@ -100,23 +100,19 @@
 
    <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/nextstep</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/startnewgame</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>ChessApplication</servlet-name>
-        <url-pattern>/previous_step</url-pattern>
+        <url-pattern>/nextMove</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Fileupload</servlet-name>
         <url-pattern>/upload</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
+        <servlet-name>Fileupload</servlet-name>
+        <url-pattern>/setFileName</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
         <servlet-name>PgnGame</servlet-name>
-        <url-pattern>/PlayPgn</url-pattern>
+        <url-pattern>/PlayPgn/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ChessApplication</servlet-name>
@@ -128,11 +124,11 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>History</servlet-name>
-        <url-pattern>/watchHistory</url-pattern>
+        <url-pattern>/watchHistory/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoadFileUpload</servlet-name>
-        <url-pattern>/load</url-pattern>
+        <url-pattern>/loadpgn</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
@@ -156,19 +152,23 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>HomePage</servlet-name>
-        <url-pattern>/homepage</url-pattern>
+        <url-pattern>/homepage/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>Difficulty</servlet-name>
-        <url-pattern>/difficulty</url-pattern>
+        <url-pattern>/difficulty/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VsComputer</servlet-name>
-        <url-pattern>/vscomputer</url-pattern>
+        <url-pattern>/vscomputer/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
         <url-pattern>/usermoves</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/getGamePosition</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
@@ -192,6 +192,6 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>FuSuccess</servlet-name>
-        <url-pattern>/fileuploadsuccess</url-pattern>
+        <url-pattern>/fileuploadsuccess/*</url-pattern>
     </servlet-mapping>
 </web-app>

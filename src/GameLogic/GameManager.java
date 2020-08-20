@@ -16,6 +16,7 @@ public class GameManager {
     String killedPiece;
     String castling;
     String pgnElement;
+    int Step;
 
     public GameManager(){
         b.setBoard();
@@ -53,6 +54,7 @@ public class GameManager {
 
 
         {
+            Step=step;
             castling="false";
             killedPiece="NotKilled";
             updateCurrentPlayerColor(currentPlayer);
@@ -144,7 +146,7 @@ public class GameManager {
             if (arrayElement.charAt(2) == '+' || arrayElement.charAt(2)=='#') {
                 arrayElement = arrayElement.substring(0, 2);
                 for2elements(arrayElement);
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+             //   System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
 
             } else {
                 for3elements(arrayElement);
@@ -156,7 +158,7 @@ public class GameManager {
                 arrayElement = arrayElement.substring(0, 3);
 
                 for3elements(arrayElement);
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+               // System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
                 for4elements(arrayElement);
             }
@@ -169,7 +171,7 @@ public class GameManager {
                 } else {
                     for4elements(arrayElement);
                 }
-                System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
+               // System.out.println("\n \n \t \t \tIt is a Check\t \t \n \n");
             } else {
                 for5elements(arrayElement);
             }
@@ -252,9 +254,25 @@ public class GameManager {
             }
             toPosition.y = getNumOf(arrayElement.charAt(2));
             toPosition.x = Character.getNumericValue((arrayElement.charAt(3))) - 1;
-            killedPiece=b.cell[toPosition.x][toPosition.y].pieceType;
+            //killedPiece=b.cell[toPosition.x][toPosition.y].pieceType;
             String piece = whichPiece(arrayElement, 'P', toPosition);
             fromPosition = getPiecePosition(piece);
+            if(arrayElement.charAt(1)=='x'){
+                if(b.cell[toPosition.x][toPosition.y].getPieceColor()==Color.noColor){
+                    if(currentPlayerColor==Color.White) {
+                        Position pos=new Position(-1,-1);
+                        pos.x=toPosition.x-1;
+                        pos.y=toPosition.y;
+                        b.cell[pos.x][pos.y] = new Cell(Color.noColor, " ", pos);
+                    }
+                    else if (currentPlayerColor==Color.Black){
+                        Position pos=new Position(-1,-1);
+                        pos.x=toPosition.x+1;
+                        pos.y=toPosition.y;
+                        b.cell[pos.x][pos.y] = new Cell(Color.noColor, " ", pos);
+                    }
+                }
+            }
             movePiece(currentPlayerColor, piece, fromPosition, toPosition);
         } else {
             char thePiece = arrayElement.charAt(0);
@@ -590,8 +608,8 @@ public class GameManager {
     }
 
     public String getLastMovementAsStringForJSON() {
-       String uiKilledPiece= makeUiKilledPiece();
-        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"checkStatus\":\"0\"" +",\"killedPiece\":\""+uiKilledPiece+"\",\"pgn\":\""+pgnElement+"\"}";
+      // String uiKilledPiece= makeUiKilledPiece();
+        return "{\"from_pos\" :\""+ fromPositionOrg.getPositionInOriginalFormat() +"\",\"to_pos\" : \""+ toPositionOrg.getPositionInOriginalFormat()+"\",\"step\":\""+Step+"\",\"pgn\":\""+pgnElement+"\"";
     }
 
     private String makeUiKilledPiece() {

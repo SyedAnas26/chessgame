@@ -4,71 +4,125 @@
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
     <title>Difficulty</title>
-<style type="text/css">
-#button1{
- background-color: #1DE3E0;
- border: 1px;
- color: #082C2B;
-    padding: 16px 32px;
-}
-#button2{
-    background-color: #E7C718;
-    border: 1px;
-    color: #082C2B;
-    padding: 16px 32px;
-}
-#button3{
-    background-color: #E1351C;
-    border: 1px;
-    color: #082C2B;
-    padding: 16px 32px;
-;
-}
-</style>
+    <style type="text/css">
+
+        #difficultyBox{
+            margin-top: 90px;
+            margin-left:40% ;
+            border: 1px;
+            float: left;
+        }
+        #button1{
+            background-color: #1DE3E0;
+            border: 1px;
+            color: #082C2B;
+            padding: 16px 32px;
+        }
+        #button2{
+            background-color: #E7C718;
+            border: 1px;
+            color: #082C2B;
+            padding: 16px 32px;
+        }
+        #button3{
+            background-color: #E1351C;
+            border: 1px;
+            color: #082C2B;
+            padding: 16px 32px;
+        }
+        #extraTymBox{
+            border: 1px;
+            margin-left:150px;
+            margin-top: 25px;
+            float: left;
+        }
+        #extratime1{
+            font-size: 20px;
+            background: none;
+        } #extratime2{
+              font-size: 20px;
+
+              background: none;
+          } #extratime3{
+                font-size: 20px;
+
+
+                background: none;
+            } #extratime4{
+                  font-size: 20px;
+                  background: none;
+              }
+
+    </style>
     <script type="text/javascript">
-var userId=null;
-var difficulty=null;
-function clickResp(action) {
-    if (action === 'Easy') {
-        difficulty = "3"
-    } else if (action === 'Medium') {
-        difficulty = "10"
-    } else if (action === 'Hard') {
-        difficulty = "20"
-    }
-    var x=window.location.origin;
-    $.ajax({
-        url: x+"/diff",
-        type: 'POST',
-        data: {"difficulty": difficulty},
-        success: function () {
-            console.log('difficulty ajax success!!');
+        var userId
+        var extraTime=null;
+        var difficulty=null;
+        var x=window.location.origin;
+        var uniqueId;
+        var previousSelectedExtraTime=0;
+        window.onload=function(){
+            $.ajax({
+                url: x+"/getUserId",
+                type: 'POST',
+                success: function (response) {
+                    uniqueId=response.unique_id;
+                    if (response.user_id==='null') {
+                        alert(' Login First !');
+                        location = '/loginpage';
+                    }
+                    console.log('difficulty ajax success!!');
+                }
+            });
         }
-    });
-}
-var x=window.location.origin;
-$.ajax({
-    url: x+"/getUserId",
-    type: 'POST',
-    success: function (response) {
-        if (response.user_id==='null') {
-            alert(' Login First !');
-            location = '/loginpage';
+        function clickResp(action) {
+            if(extraTime===null){
+                alert(' Choose a time addition to add after each move !')
+            }
+            else{
+                if (action === 'Easy') {
+                    difficulty = "10"
+                } else if (action === 'Medium') {
+                    difficulty = "100"
+                } else if (action === 'Hard') {
+                    difficulty = "200"
+                }
+                var x=window.location.origin;
+                $.ajax({
+                    url: x+"/diff",
+                    type: 'POST',
+                    data: {"difficulty": difficulty},
+                    success: function (response) {
+                        var gameId=response.gameId;
+                        document.location.href=x+"/vscomputer?id="+uniqueId+ "&gameid="+gameId+"&diff="+difficulty+"+"+extraTime;
+                        console.log('difficulty ajax success!!');
+                    }
+                });
+            }
         }
-        console.log('difficulty ajax success!!');
-    }
-});
-</script>
+
+        function setExtraTime(extratime,buttonNo){
+            if(previousSelectedExtraTime!==0)
+            { document.getElementById("extratime"+previousSelectedExtraTime).style.background="none";}
+
+            document.getElementById("extratime"+buttonNo).style.background="#0FFFA3";
+            previousSelectedExtraTime=buttonNo;
+            extraTime=extratime;
+
+        }
+    </script>
 </head>
-<body><div>
-   <form action="vscomputer" method="post" align="center" >
-       <br>
-       <br>
-       <br>
-   <input id="button1"  type="submit" onclick="clickResp('Easy')" value="Easy" ><br><br>
-   <input id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
-   <input id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
-    </form>
+<body><div id="difficultyBox">
+    <input align="center" id="button1"  type="submit" onclick="clickResp('Easy')" value="Easy" ><br><br>
+    <input align="center" id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
+    <input align="center" id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
+</div>
+<div id="extraTymBox">
+    <h2> Choose time to add after each Move</h2>
+    <button id="extratime1" onclick="setExtraTime('0',1)"> +  0s </button><br><br>
+    <button id="extratime2" onclick="setExtraTime('10',2)"> + 10s </button><br><br>
+    <button id="extratime3" onclick="setExtraTime('20',3)"> +  20s </button><br><br>
+    <button id="extratime4" onclick="setExtraTime('30',4)"> +  30s </button>
 </div>
 </body>
 </html>

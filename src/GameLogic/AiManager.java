@@ -5,28 +5,24 @@ import java.util.List;
 
 public class AiManager {
 
-    int gameStatus =0;
-    int moveNo;
-    long gameId;
-    long time;
-    String responseStep;
+    public String getAiMove(long gameId,int moveNo,String difficulty,String gamePgn) throws Exception {
 
-
-    public String getAiMove(String difficulty) throws Exception {
-
+        String responseStep;
         List<String> arr = getMovesArr(gameId);
         KongAiConnector kongAI = new KongAiConnector();
-        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
+        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo,gamePgn, arr);
         System.out.println("AIMove : " + aiMove);
         responseStep = "{\"aiMove\":\""+aiMove+"\"}";
-        moveNo++;
         return responseStep;
 
     }
 
 
-    public void addMove(String userMove, String status,int uniqueId,String userTime,String gamePgn) throws Exception {
+    public void addMove(long gameId,int moveNo,String userMove, String status,int uniqueId,String userTime,String gamePgn) throws Exception {
+
         try {
+            long time=0;
+            int gameStatus =0;
             if (status!=null) {
                 gameStatus =Integer.parseInt(status);
                 if(gameStatus==1){
@@ -39,13 +35,12 @@ public class AiManager {
                    gamePgn=gamePgn+ " 1/2-1/2";
                 }
                 userMove = "Game Ended";
-                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,GameStatus,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
+                DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + 1 + "','" + gameStatus +"','" + gameId +"','" + gamePgn + "')");
             } else {
-                time=Integer.parseInt(userTime);
+                 time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
-            moveNo++;
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus,GameTillNow) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "','" + gamePgn + "')");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,13 +62,21 @@ public class AiManager {
         return moves;
     }
 
-    public void newGame() {
-        gameStatus = 0;
-        moveNo = 1;
-        try {
-            gameId = System.currentTimeMillis();
-        } catch (Exception throwables) {
-            throwables.printStackTrace();
-        }
+    public String getGamePosition(long gameId,int uniqueId) throws Exception {
+        String  sql="SELECT MAX(MoveNo) AS moveNo FROM gamemoves WHERE GameID='"+gameId+"'" ;
+        int moveno= (int)DbConnector.get(sql , rs->{
+              if(rs.next()){
+                  return rs.getInt("moveNo");
+                 }
+              return null;
+        });
+
+        String  sql2="SELECT * FROM gamemoves WHERE GameID='"+gameId+"' AND MoveNo='"+moveno+"'";
+        return  (String) DbConnector.get(sql2, rs->{
+            if(rs.next()){
+                return rs.getString("GameTillNow");
+            }
+            return null;
+        });
     }
 }

@@ -2,28 +2,116 @@
 <html>
 <head>
     <style type="text/css">
-        #black_promotion_pieces { visibility: hidden; }
-        #white_promotion_pieces { visibility: hidden; }
+
+
+        li:hover {
+            background-color: lightgreen;
+            color: #134B7C;
+            padding: 5px;
+
+        }
+        a{
+            color: #1080E1;
+        }
+        a:hover{
+            cursor: pointer;
+        }
+
+        .active a{
+            color: #134B7C;
+            padding: 3px;
+            background-color: lightgreen;
+        }
+
+
+        #black_promotion_pieces {
+            visibility: hidden;
+        }
+
+        #white_promotion_pieces {
+            visibility: hidden;
+        }
+        #whiteMove{
+            float:left;  margin: 0 10px;
+        }
+        #blackMove{
+            float:left; margin:0 10px;
+        }
+        #pgnBox {
+            background-color: white;
+            width: 23%;
+            height: 580px;
+            border: 2px solid white;
+            padding-top: 45px;
+            overflow: auto;
+            float: left;
+        }
+
+        #showPgn {
+            background-color: white;
+            width: 79%;
+            height: 475px;
+            border: 2px solid black;
+            font-size: 20px; word-spacing: 20px;letter-spacing: 2px;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        #GameBox {
+            border: 1px solid white;
+            width: 510px;
+            height: 670px;
+            float: left;
+        }
+
+        #timerBox {
+            background-color: white;
+            width: 20%;
+            height: 305px;
+            border: 2px solid white;
+            padding-top: 300px;
+            overflow: auto;
+        }
+
+        #time {
+            width: 120px;
+            height: 120px;
+            background-color: #303B3B;
+            padding: 20px;
+            font-size: 40px;
+            color: #EEF9F9;
+            border: 3px solid #5DE1A4;
+        }
     </style>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css" integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+          integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
     <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
-        var statusCalled='0';
-        var c= 0;
-        var timer=0;
+        var statusCalled = false;
+        var alterStatus=null;
+        var c = 0;
+        var timer = 0;
         var t;
         var timer_is_on = 0;
-        var x=window.location.origin;
-        var position_to='';
-        var position_from='';
+        var x = window.location.origin;
+        var position_to = '';
+        var position_from = '';
+        var difficulty;
+        var gameId;
+        var winner;
+        var extraTime;
+        var currenSeconds;
+        var uniqueId;
+        var gamePgnSoFar;
+
         $.ajax({
-            url: x+"/getUserId",
+            url: x + "/getUserId",
             type: 'POST',
             success: function (response) {
-                if (response.user_id==='null') {
+                if (response.user_id === 'null') {
                     alert(' Login First !');
                     location = '/loginpage';
                 }
@@ -31,11 +119,10 @@
             }
         });
 
-
         function timedCount() {
-            timer=c;
-            c=c+10;
-            t = setTimeout(timedCount,10);
+            timer = c;
+            c = c + 10;
+            t = setTimeout(timedCount, 10);
         }
 
         function startCount() {
@@ -48,106 +135,287 @@
         function stopCount() {
             clearTimeout(t);
             timer_is_on = 0;
-            c=0;
+            c = 0;
         }
     </script>
 </head>
 <body>
-<div id="white_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen"  data-piece="wQ"  style="width:62px;height:62px;" onclick="promotePiece('Q')">
-    <img src="img/chesspieces/wikipedia/wN.png" id="wknight"  data-piece="wN" style="width:62px;height:62px;"  onclick="promotePiece('N')">
-    <img src="img/chesspieces/wikipedia/wB.png" id="wbishop"  data-piece="wB"  style="width:62px;height:62px;" onclick="promotePiece('B')">
-    <img src="img/chesspieces/wikipedia/wR.png" id="wrook"  data-piece="wR"  style="width:62px;height:62px;" onclick="promotePiece('R')">
+<div id="GameBox">
+    <div id="white_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen" data-piece="wQ" style="width:62px;height:62px;"
+             onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/wN.png" id="wknight" data-piece="wN" style="width:62px;height:62px;"
+             onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/wB.png" id="wbishop" data-piece="wB" style="width:62px;height:62px;"
+             onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/wR.png" id="wrook" data-piece="wR" style="width:62px;height:62px;"
+             onclick="promotePiece('R')">
+    </div>
+    <div id="myBoard" style="width: 500px">
+    </div>
+    <div id="black_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen" data-piece="bQ" style="width:62px;height:62px;"
+             onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/bN.png" id="bknight" data-piece="bN" style="width:62px;height:62px;"
+             onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/bB.png" id="bbishop" data-piece="bB" style="width:62px;height:62px;"
+             onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/bR.png" id="brook" data-piece="bR" style="width:62px;height:62px;"
+             onclick="promotePiece('R')">
+    </div>
+    <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
 </div>
-<div id="myBoard" style="width: 500px">
+<div id="pgnBox">
+    <div id="showPgn">
+        <h3 style="margin-left:55px;">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
+    <button onclick="saveTextAsFile()">Save Pgn to File</button>
 </div>
-<div id="black_promotion_pieces" style="padding-left: 50px;">
-    <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen"  data-piece="bQ" style="width:62px;height:62px;" onclick="promotePiece('Q')">
-    <img src="img/chesspieces/wikipedia/bN.png" id="bknight"  data-piece="bN" style="width:62px;height:62px;" onclick="promotePiece('N')">
-    <img src="img/chesspieces/wikipedia/bB.png" id="bbishop"  data-piece="bB" style="width:62px;height:62px;"onclick="promotePiece('B')">
-    <img src="img/chesspieces/wikipedia/bR.png" id="brook"  data-piece="bR" style="width:62px;height:62px;" onclick="promotePiece('R')">
+<div id="timerBox">
+    <div><span id="time">00:00</span></div>
+    <br>
+    <br>
+    <label style="font-size: 25px">Status:</label>
+    <div style="font-size: 30px" id="status"></div>
 </div>
-
-<label>Status:</label>
-<div id="status"></div>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js" integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js" integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz" crossorigin="anonymous"></script>
+<script type="text/javascript" src="clientlib/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
+        crossorigin="anonymous"></script>
 <script type="text/javascript">
 
-    var board = null
-    var game = new Chess()
+    var board = null;
+    var game = new Chess();
     var $status = $('#status')
-    var $fen = $('#fen')
-    var $pgn = $('#pgn')
     var whiteSquareGrey = '#a9a9a9'
     var blackSquareGrey = '#696969'
+    var alertStatus;
+    var interval;
+    var moveNo=0;
+    var display = document.querySelector('#time');
     startCount()
 
-    function removeGreySquares () {
+
+    window.onload=function () {
+
+        var url=location.href;
+        difficulty=url.split('=')[3].split('+')[0];
+        gameId=url.split('=')[2];
+        gameId=gameId.split('&')[0];
+        extraTime=url.split('+')[1];
+        uniqueId=url.split('=')[1].split('&')[0];
+        console.log("extraTime"+extraTime)
+        console.log("gameId"+gameId)
+        console.log("diff"+difficulty)
+        console.log("unique"+uniqueId)
+        document.getElementById("goToHome").action="/homepage/"+uniqueId;
+
+        $.ajax({
+            url:x+"/getGamePosition",
+            type:'POST',
+            data:{"gameId":gameId, "uniqueId":uniqueId},
+            success: function (response) {
+                gamePgnSoFar=response.gamePosition;
+                setPositions(gamePgnSoFar);
+                console.log("gameSoFar "+gamePgnSoFar);
+            }
+        })
+
+        if(difficulty==='10'){
+            currenSeconds=90;
+        }
+        else if(difficulty==='100'){
+            currenSeconds=60;
+        }
+        else if(difficulty==='200'){
+            currenSeconds=30;
+        }
+    }
+
+    function setPositions(gamePgnSoFar){
+
+        if(gamePgnSoFar!=='null') {
+            var result='';
+            game.load_pgn(gamePgnSoFar);
+            board.position(game.fen());
+            var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
+            var filtered = arr.filter(function (el) {
+                return el!="";
+            });
+            console.log(arr[arr.length-1])
+            if(arr[arr.length-1]==="0-1"){
+                result= " 0-1";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if( arr[arr.length-1]==="1-0"){
+                result= " 1-0";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if(arr[arr.length-1]==="1/2-1/2"){
+                result= " 1/2-1/2";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            }
+
+            moveNo=filtered.length;
+            currenSeconds=parseInt(window.localStorage.getItem(""+gameId));
+            console.log(extraTime)
+            console.log(currenSeconds)
+            var secondsFromStorage;
+            if(game.turn()==='b' )
+            { secondsFromStorage=currenSeconds+parseInt(extraTime);}
+            else
+            { secondsFromStorage=currenSeconds;}
+            if(!statusCalled)
+            {
+                console.log('sec'+secondsFromStorage)
+                startTimer(secondsFromStorage, display);
+            }
+            addPgnDisplayToUi(gamePgnSoFar);
+        }
+
+    }
+
+    function removeGreySquares() {
         $('#myBoard .square-55d63').css('background', '')
     }
 
-    function promotePiece(piece){
+    function promotePiece(piece) {
         var promMove
         stopCount();
-        var userTime=timer;
-        console.log("timer on prom"+userTime)
+        var userTime = timer;
+        console.log("timer on prom" + userTime)
         document.getElementById("white_promotion_pieces").style.visibility = "hidden";
         document.getElementById("black_promotion_pieces").style.visibility = "hidden";
-        var checkPieceExist=""+position_to;
-        if(game.get(checkPieceExist)===null)
-        {
-            promMove=""+position_to+"="+piece;
+        var checkPieceExist = "" + position_to;
+        if (game.get(checkPieceExist) === null) {
+            promMove = "" + position_to + "=" + piece;
+        } else {
+            promMove = "" + position_from.charAt(0) + "x" + position_to + "=" + piece;
         }
-        else{
-            promMove=""+position_from.charAt(0)+"x"+position_to+"="+piece;
-        }
-        var move=game.move(promMove)
+        var move = game.move(promMove)
         board.position(game.fen())
-        sendUserMove(move,userTime)
+        sendUserMove(move, userTime)
         updateStatus()
-        window.setTimeout(makeAiMove,250)
+        window.setTimeout(makeAiMove, 250)
     }
 
-    function statusUpdate(sts) {
-        var gamePgn=game.pgn()
-        if (statusCalled === '0') {
-            $.ajax({
-                url: x + "/gamestatus",
-                type: 'POST',
-                data: {"gameStatus": sts,
-                    "gamePgn":gamePgn},
-                success: function () {
-                    if (sts === '3') {
-                        alert("Match Draw");
-                        window.location = x + "/homepage";
+
+    function stopTimer() {
+        clearInterval(interval);
+    }
+
+    function startTimer(duration, display) {
+        var timer = duration, minutes, seconds;
+        interval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            currenSeconds=(minutes*60)+seconds;
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = minutes + ":" + seconds;
+            window.localStorage.setItem(""+gameId,timer);
+            if (minutes === "00" && seconds === "00") {
+                alert('Time up and Ai won the Match');
+                sendStatus('2');
+            }
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    function saveTextAsFile()
+    {
+        var result='';
+        if(statusCalled=true){
+            if(winner==='1'){
+                result=' 1-0';
+            }
+            else if(winner==='2'){
+                result=' 0-1';
+            }
+            else if(winner==='3'){
+                result=' 1/2-1/2';
+            }
+        }
+        var pgn=game.pgn();
+        var textToSave = pgn+result;
+        var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+        var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+        var fileNameToSaveAs = gameId+'.pgn';
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = textToSaveAsURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+    function destroyClickedElement(event)
+    {
+        document.body.removeChild(event.target);
+    }
+
+    function sendStatus(sts) {
+        var gamePgn = game.pgn()
+        if (moveNo >= 1) {
+            moveNo++
+            if (statusCalled === false) {
+                $.ajax({
+                    url: x + "/gamestatus",
+                    type: 'POST',
+                    data: {
+                        "gameStatus": sts,
+                        "gamePgn": gamePgn,
+                        "gameId": gameId,
+                        "moveNo": moveNo
+                    },
+                    success: function () {
+
+                        console.log('draw ajax success!!');
+                    },
+                    error: function (jqXHR, exception) {
+                        console.log('draw ajax Error occured!!');
                     }
-                    console.log('draw ajax success!!');
-                },
-                error: function (jqXHR, exception) {
-                    console.log('draw ajax Error occured!!');
+
+                });
+                if (sts === '3') {
+                    alert('Match Draw');
                 }
+                statusCalled = true;
+                winner=sts;
+                stopTimer();
+                console.log("winner"+winner)
+            }
+        }
 
-            });
+    }
+
+    function greySquare(square) {
+        if(!statusCalled){
+            var $square = $('#myBoard .square-' + square)
+
+            var background = whiteSquareGrey
+            if ($square.hasClass('black-3c85d')) {
+                background = blackSquareGrey
+            }
+
+            $square.css('background', background)
         }
     }
 
-    function greySquare (square) {
-        var $square = $('#myBoard .square-' + square)
+    function onDragStart(source, piece, position, orientation) {
 
-        var background = whiteSquareGrey
-        if ($square.hasClass('black-3c85d')) {
-            background = blackSquareGrey
-        }
-
-        $square.css('background', background)
-    }
-
-    function onDragStart (source, piece, position, orientation) {
-
-        if (game.game_over()) return false
-
-        else if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+        if (game.game_over() || statusCalled===true) {
+            return false
+        } else if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
             (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
             return false
 
@@ -155,31 +423,28 @@
 
     }
 
-    function onDrop (source, target, piece, newPos, oldPos, orientation) {
+    function onDrop(source, target, piece, newPos, oldPos, orientation) {
 
         removeGreySquares()
-        position_to=target;
-        position_from=source;
+        position_to = target;
+        position_from = source;
 
-        if(piece==='wP' || piece==='bP'){
+        if (piece === 'wP' || piece === 'bP') {
 
             game.moves({square: source})
-            var posMoves=game.moves({verbose: true})
-            if(movePossible(posMoves,source,target)){
-                if(target.charAt(1)==1 && source.charAt(1)==2 || target.charAt(1)==8 && source.charAt(1)==7){
-                    if(orientation==='white'){
-                        if(game.turn()==='w' && target.charAt(1)==8 ){
+            var posMoves = game.moves({verbose: true})
+            if (movePossible(posMoves, source, target)) {
+                if (target.charAt(1) == 1 && source.charAt(1) == 2 || target.charAt(1) == 8 && source.charAt(1) == 7) {
+                    if (orientation === 'white') {
+                        if (game.turn() === 'w' && target.charAt(1) == 8) {
                             document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        }
-                        else if(game.turn()==='b' && target.charAt(1)==1){
+                        } else if (game.turn() === 'b' && target.charAt(1) == 1) {
                             document.getElementById("black_promotion_pieces").style.visibility = "visible";
                         }
-                    }
-                    else if(orientation==='black'){
-                        if(game.turn()==='w' && target.charAt(1)==1 ){
+                    } else if (orientation === 'black') {
+                        if (game.turn() === 'w' && target.charAt(1) == 1) {
                             document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        }
-                        else if(game.turn()==='b' && target.charAt(1)==8){
+                        } else if (game.turn() === 'b' && target.charAt(1) == 8) {
                             document.getElementById("black_promotion_pieces").style.visibility = "visible";
                         }
 
@@ -197,29 +462,33 @@
         // illegal move
         if (move === null) return 'snapback'
 
-        var x=window.location.origin;
+        var x = window.location.origin;
         stopCount()
-        var userTime=timer;
-        sendUserMove(move,userTime)
+        var userTime = timer;
+        startCount()
+        sendUserMove(move, userTime)
         updateStatus()
         window.setTimeout(makeAiMove, 250)
     }
 
-    function movePossible(posMoves,source,target){
-        for(var i=0;i<posMoves.length;i++){
-            if(posMoves[i].from===source && posMoves[i].to===target){
+
+    function movePossible(posMoves, source, target) {
+        for (var i = 0; i < posMoves.length; i++) {
+            if (posMoves[i].from === source && posMoves[i].to === target) {
                 return true;
             }
         }
         return false;
     }
 
-    function sendUserMove(move,userTime){
+    function sendUserMove(move, userTime) {
+        moveNo++;
+        var gameTillNow=game.pgn();
         $.ajax({
-            url: x+"/usermoves",
+            url: x + "/usermoves",
             type: 'POST',
-            data: {"userMove":move.san,"timeTaken":userTime},
-            async:false,
+            data: {"userMove": move.san, "timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
+            async: false,
             success: function () {
                 console.log('ajax success!!');
             },
@@ -229,7 +498,7 @@
         });
     }
 
-    function onMouseoverSquare (square, piece) {
+    function onMouseoverSquare(square, piece) {
         // get list of possible moves for this square
         var moves = game.moves({
             square: square,
@@ -248,41 +517,55 @@
         }
     }
 
-    function onMouseoutSquare (square, piece) {
+    function onMouseoutSquare(square, piece) {
         removeGreySquares()
     }
 
 
-    function onSnapEnd () {
+    function onSnapEnd() {
         board.position(game.fen())
     }
 
     function makeAiMove() {
         callAIToPlay()
+        stopCount()
         updateStatus()
         startCount()
+        console.log(timer);
+        stopTimer();
+        console.log("Currenseconds"+currenSeconds);
+        if(moveNo===2)
+        {startTimer(currenSeconds, display);}
+        else
+        {var sec=currenSeconds+parseInt(extraTime);
+            console.log('sec'+sec)
+            startTimer(sec, display);}
+
     }
-    function callAIToPlay()
-    {
-        var respMove='';
-        var x=window.location.origin;
+
+    function callAIToPlay() {
+        moveNo++;
+        var pgn=game.pgn();
+        var respMove = '';
+        var x = window.location.origin;
         console.log("Inside ai Player");
         $.ajax({
-            url: x+"/aiMove",
+            url: x + "/aiMove",
             type: 'POST',
-            async:false,
-            success: function(response) {
-                respMove=response.aiMove
+            async: false,
+            data:{"gameId":gameId , "moveNo":moveNo,"difficulty":difficulty,"gamePgn":pgn},
+            success: function (response) {
+                respMove = response.aiMove
             }
         });
         //if(!isCastling(respMove)){
-        var aiMove = game.move(respMove, { sloppy: true })
+        var aiMove = game.move(respMove, {sloppy: true})
         //var move=""+aiMove.from+"-"+aiMove.to;
         board.position(game.fen())
         //}
     }
 
-    function updateStatus () {
+    function updateStatus() {
         var status = ''
         var moveColor = 'White'
         if (game.turn() === 'b') {
@@ -292,23 +575,23 @@
         // checkmate?
         if (game.in_checkmate()) {
             status = 'Game over, ' + moveColor + ' is in checkmate.'
-            if(moveColor==='White'){
-                alert("Black won the Match")
-                statusUpdate('2')
+            if (moveColor === 'White' && statusCalled === false) {
+                alert('Black won the Match');
+                stopTimer();
+                sendStatus('2')
             }
-            if(moveColor==='Black'){
-                alert("White won the Match")
-                statusUpdate('1')
+            if (moveColor === 'Black' && statusCalled === false) {
+                alert('White won the Match');
+                stopTimer();
+                sendStatus('1')
             }
-            statusCalled='1';
         }
 
         // draw?
         else if (game.in_draw()) {
             status = 'Game over, drawn position'
-            alert( 'Game over, drawn position')
-            statusUpdate('3')
-            statusCalled='1';
+            stopTimer();
+            sendStatus('3')
         }
 
         // game still on
@@ -322,8 +605,69 @@
         }
 
         $status.html(status)
-        $fen.html(game.fen())
-        $pgn.html(game.pgn())
+        addPgnDisplayToUi(game.pgn());
+    }
+
+    function removePgnListChilds(){
+        const deleteWhitePgnMoves = document.getElementById("whiteMove");
+        while (deleteWhitePgnMoves.lastElementChild) {
+            deleteWhitePgnMoves.removeChild(deleteWhitePgnMoves.lastElementChild);
+        }
+        const deleteBlackPgnMoves = document.getElementById("blackMove");
+        while (deleteBlackPgnMoves.lastElementChild) {
+            deleteBlackPgnMoves.removeChild(deleteBlackPgnMoves.lastElementChild);
+        }
+    }
+
+    function addPgnDisplayToUi(gamePgn){
+        removePgnListChilds();
+        if(gamePgn!=='null'){
+            var  arr =gamePgn.split(/\d+. |\s+/g);
+            var movesMade = arr.filter(function (el) {
+                return el!="";
+            });
+            for(var i=0;i<movesMade.length;i++)
+            {if(i===0 || i%2===0){
+                showPgnInDisplay("whiteMove",movesMade,i);
+            }
+            else if(i>0){
+                showPgnInDisplay("blackMove",movesMade,i);
+            }
+            }
+        }
+    }
+    function showPgnInDisplay(elementId,movesMade,i){
+        var store;
+        var onClickIsCalled=false;
+        var node = document.createElement("LI");
+        var a=document.createElement("a");
+        // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onclick=function(event){
+            $('li').removeClass('active');
+            $(this).addClass('active');
+            onClickIsCalled=true;
+            event.preventDefault()
+            store=i;
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=(movesMade.length - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board.position(chess.fen());
+        }
+        a.textContent=""+movesMade[i];
+        a.setAttribute("href","#");
+        node.appendChild(a);
+        if(i===(movesMade.length-1)){
+            node.classList.add("active");
+        }
+        // node.appendChild(textnode);
+        document.getElementById(elementId).appendChild(node);
+    }
+
+    function onMoveEnd(oldPos, newPos) {
+
     }
 
     var config = {
@@ -333,19 +677,16 @@
         onDrop: onDrop,
         onMouseoutSquare: onMouseoutSquare,
         onMouseoverSquare: onMouseoverSquare,
+        onMoveEnd: onMoveEnd,
         onSnapEnd: onSnapEnd
     }
     board = Chessboard('myBoard', config)
     updateStatus()
 
-
-
 </script>
 <br><br>
-<input type="button" onclick="statusUpdate('3')" value="Claim Draw"  cellpadding="0" cellspacing="0"/>
-<br><br>
-<form action="/homepage"  method="post" align="center" >
-    <input type="submit" onclick="statusUpdate('3')" value="Go Back to Home Page"/>
+<form id="goToHome" method="post" align="center">
+    <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
 </form>
 </body>
 </html>
