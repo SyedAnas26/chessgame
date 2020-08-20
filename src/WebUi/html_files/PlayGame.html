@@ -6,23 +6,65 @@
         </script>
     </head>
     <style type="text/css">
+
+        li:hover {
+            background-color: lightgreen;
+            color: #134B7C;
+            padding: 5px;
+
+        }
+
+        a {
+            color: #1080E1;
+        }
+
+        a:hover {
+            cursor: pointer;
+        }
+
+        .active a {
+            color: #134B7C;
+            padding: 3px;
+            background-color: lightgreen;
+        }
+
+
         #pgnBox {
             background-color: white;
-            width: 20%;
+            margin-left: 60px;
+            width: 25%;
             border: 2px solid white;
             overflow: auto;
+            padding-top: 30px;
             float: left;
         }
+
         #showPgn {
             background-color: white;
-            width: 80%;
-            height: 475px;
+            width: 75%;
+            height: 467px;
             border: 2px solid black;
-            padding: 15px;
+            padding: 20px;
+            padding-top: 0px;
+            font-size: 23px;
+            word-spacing: 20px;
+            letter-spacing: 2px;
             overflow: auto;
         }
+
+        #whiteMove {
+            float: left;
+            margin: 0 10px;
+        }
+
+        #blackMove {
+            float: left;
+            margin: 0 10px;
+        }
+
         #GameBox {
             padding-top: 30px;
+            margin-left: 30px;
             border: 1px solid white;
             width: 510px;
             float: left;
@@ -72,12 +114,12 @@
         });
 
         window.onload = (event) => {
-            var url=location.href;
-            logid=url.split('=')[2];
-            uniqueId=url.split('=')[1].split('&')[0];
-            log=url.split('=')[1].split('&')[1];
-            console.log("uniqueId "+uniqueId)
-            console.log("log "+log)
+            var url = location.href;
+            logid = url.split('=')[2];
+            uniqueId = url.split('=')[1].split('&')[0];
+            log = url.split('=')[1].split('&')[1];
+            console.log("uniqueId " + uniqueId)
+            console.log("log " + log)
             console.log("logid " + logid)
             startNew();
         };
@@ -88,7 +130,14 @@
     <div id="myBoard" style="width: 500px"></div>
 </div>
 <div id="pgnBox">
-    <div><p id="showPgn" style="font-size: 20px;">PGN:</p></div>
+    <div id="showPgn">
+        <h3 style="margin-left:55px;">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
     <button onclick="saveTextAsFile()">Save Pgn to File</button>
 
 </div>
@@ -122,14 +171,79 @@
     var game = new Chess()
     animation_moved = true;
     var checkStatus;
+    var pgnIsClicked;
 
     function onMoveEnd(oldPos, newPos) {
         if (alertStatus != null) {
             alert(alertStatus);
             alertStatus = null;
         }
-        $pgn.html("PGN: " + game.pgn())
         animation_moved = true;
+        if (!pgnIsClicked) {
+            displayPgnMovesInUi(step);
+        }
+    }
+
+    function removePgnListChilds() {
+        const deleteWhiteNodes = document.getElementById("whiteMove");
+        while (deleteWhiteNodes.lastElementChild) {
+            deleteWhiteNodes.removeChild(deleteWhiteNodes.lastElementChild);
+        }
+        const deleteBlackNodes = document.getElementById("blackMove");
+        while (deleteBlackNodes.lastElementChild) {
+            deleteBlackNodes.removeChild(deleteBlackNodes.lastElementChild);
+        }
+    }
+
+    function displayPgnMovesInUi(steps) {
+
+        removePgnListChilds();
+        var arr = game.pgn().split(/\d+. |\s+/g);
+        var movesMade = arr.filter(function (el) {
+            return el != "";
+        });
+        if (prevMoveCalled) {
+            steps = steps - 1;
+        }
+        for (var i = 0; i < steps; i++) {
+            if (i === 0 || i % 2 === 0) {
+                showPgnInDisplay("whiteMove", movesMade, i);
+            } else {
+                showPgnInDisplay("blackMove", movesMade, i);
+            }
+        }
+    }
+
+
+    function showPgnInDisplay(elementId, movesMade, i) {
+        var store;
+        var onClickIsCalled = false;
+        var node = document.createElement("LI");
+        var a = document.createElement("a");
+        // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onclick = function (event) {
+            pgnIsClicked = true;
+            $('li').removeClass('active');
+            $(this).addClass('active');
+            onClickIsCalled = true;
+            event.preventDefault()
+            store = i;
+            var chess = new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor = (movesMade.length - store) - 1;
+            for (var j = 0; j < loopfor; j++) {
+                chess.undo();
+            }
+            board.position(chess.fen());
+        }
+        a.textContent = "" + movesMade[i];
+        a.setAttribute("href", "#");
+        node.appendChild(a);
+        if (i === (movesMade.length - 1) && onClickIsCalled === false) {
+            node.classList.add("active");
+        }
+        // node.appendChild(textnode);
+        document.getElementById(elementId).appendChild(node);
     }
 
     var config = {
@@ -151,11 +265,11 @@
             $.ajax({
                 url: x + "/nextMove",
                 type: 'POST',
-                data: {"step": step,"log":log,"logid":logid,"uniqueId":uniqueId},
+                data: {"step": step, "log": log, "logid": logid, "uniqueId": uniqueId},
                 success: function (response) {
                     //step = response.step;
-                    checkStatus=response.checkStatus ;
-                    if (checkStatus=== "Draw") {
+                    checkStatus = response.checkStatus;
+                    if (checkStatus === "Draw") {
                         alertStatus = "Match Draw!";
                         statusCalled = true;
                     } else if (checkStatus === "Player1") {
@@ -172,30 +286,27 @@
                 }
             });
             nextCalled = true;
-
+            pgnIsClicked = false;
         }
 
     }
 
-    function saveTextAsFile()
-    {
-        var result='';
-        if(statusCalled===true){
-            if(checkStatus==='Player1'){
-                result=' 1-0';
-            }
-            else if(checkStatus==='Player2'){
-                result=' 0-1';
-            }
-            else if(checkStatus==='Draw'){
-                result=' 1/2-1/2';
+    function saveTextAsFile() {
+        var result = '';
+        if (statusCalled === true) {
+            if (checkStatus === 'Player1') {
+                result = ' 1-0';
+            } else if (checkStatus === 'Player2') {
+                result = ' 0-1';
+            } else if (checkStatus === 'Draw') {
+                result = ' 1/2-1/2';
             }
         }
-        var pgn=game.pgn();
-        var textToSave = pgn+result;
-        var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+        var pgn = game.pgn();
+        var textToSave = pgn + result;
+        var textToSaveAsBlob = new Blob([textToSave], {type: "text/plain"});
         var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
-        var fileNameToSaveAs = logid+'.pgn';
+        var fileNameToSaveAs = logid + '.pgn';
         var downloadLink = document.createElement("a");
         downloadLink.download = fileNameToSaveAs;
         downloadLink.innerHTML = "Download File";
@@ -205,8 +316,8 @@
         document.body.appendChild(downloadLink);
         downloadLink.click();
     }
-    function destroyClickedElement(event)
-    {
+
+    function destroyClickedElement(event) {
         document.body.removeChild(event.target);
     }
 
@@ -235,7 +346,7 @@
             // });
             nextCalled = false;
             prevMoveCalled = true;
-
+            pgnIsClicked = false;
         }
     }
 

@@ -5,12 +5,12 @@ import java.util.List;
 
 public class AiManager {
 
-    public String getAiMove(long gameId,int moveNo,String difficulty) throws Exception {
+    public String getAiMove(long gameId,int moveNo,String difficulty,String gamePgn) throws Exception {
 
         String responseStep;
         List<String> arr = getMovesArr(gameId);
         KongAiConnector kongAI = new KongAiConnector();
-        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo, arr);
+        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo,gamePgn, arr);
         System.out.println("AIMove : " + aiMove);
         responseStep = "{\"aiMove\":\""+aiMove+"\"}";
         return responseStep;
@@ -40,7 +40,7 @@ public class AiManager {
                  time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "')");
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus,GameTillNow) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "','" + gamePgn + "')");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -62,4 +62,21 @@ public class AiManager {
         return moves;
     }
 
+    public String getGamePosition(long gameId,int uniqueId) throws Exception {
+        String  sql="SELECT MAX(MoveNo) AS moveNo FROM gamemoves WHERE GameID='"+gameId+"'" ;
+        int moveno= (int)DbConnector.get(sql , rs->{
+              if(rs.next()){
+                  return rs.getInt("moveNo");
+                 }
+              return null;
+        });
+
+        String  sql2="SELECT * FROM gamemoves WHERE GameID='"+gameId+"' AND MoveNo='"+moveno+"'";
+        return  (String) DbConnector.get(sql2, rs->{
+            if(rs.next()){
+                return rs.getString("GameTillNow");
+            }
+            return null;
+        });
+    }
 }

@@ -88,4 +88,10 @@ create table pgnlog
     GameinPgn   longtext    not null
 );
 
+
+
+ ALTER TABLE gamemoves ADD
+ GameTillNow longtext;
+
+
 //Updated in Server

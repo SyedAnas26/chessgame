@@ -26,7 +26,8 @@ var args = process.argv;
 var thinkDepth = parseInt(args[2]);
 var gameID = parseInt(args[3]);
 var moveNo = parseInt(args[4]);
-var gamePgnSoFar = args.slice(5);
+var gamePgn=args[5];
+var gamePgnSoFar = args.slice(6);
 
 chessAI.setOptions(
 {
@@ -38,7 +39,7 @@ timeout: 1000
 var move = chessAI.play(gamePgnSoFar);
 stopCount()
 var aiTime=timer;
-
+gamePgn=gamePgn+" "+move;
 //Connecting mysql....
 var mysql = require('mysql');
 
@@ -51,7 +52,7 @@ database: 'chessgame_database'
 
 con.connect(function(err) {
 if (err) throw err;
-var sql = "insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus) values('"+gameID+"','"+moveNo+"','"+move+"','"+aiTime+"',0)";
+var sql = "insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus,GameTillNow) values('"+gameID+"','"+moveNo+"','"+move+"','"+aiTime+"','0','"+gamePgn+"')";
 con.query(sql, function (err, result) {
 if (err) throw err;
 //console.log(result.affectedRows + " record(s) updated (Ai Move)");

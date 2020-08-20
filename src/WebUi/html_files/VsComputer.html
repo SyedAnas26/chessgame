@@ -2,6 +2,28 @@
 <html>
 <head>
     <style type="text/css">
+
+
+        li:hover {
+            background-color: lightgreen;
+            color: #134B7C;
+            padding: 5px;
+
+        }
+        a{
+            color: #1080E1;
+        }
+        a:hover{
+            cursor: pointer;
+        }
+
+        .active a{
+            color: #134B7C;
+            padding: 3px;
+            background-color: lightgreen;
+        }
+
+
         #black_promotion_pieces {
             visibility: hidden;
         }
@@ -9,10 +31,15 @@
         #white_promotion_pieces {
             visibility: hidden;
         }
-
+        #whiteMove{
+            float:left;  margin: 0 10px;
+        }
+        #blackMove{
+            float:left; margin:0 10px;
+        }
         #pgnBox {
             background-color: white;
-            width: 20%;
+            width: 23%;
             height: 580px;
             border: 2px solid white;
             padding-top: 45px;
@@ -22,9 +49,10 @@
 
         #showPgn {
             background-color: white;
-            width: 80%;
+            width: 79%;
             height: 475px;
             border: 2px solid black;
+            font-size: 20px; word-spacing: 20px;letter-spacing: 2px;
             padding: 15px;
             overflow: auto;
         }
@@ -77,30 +105,7 @@
         var extraTime;
         var currenSeconds;
         var uniqueId;
-        window.onload=function () {
-
-            var url=location.href;
-            difficulty=url.split('=')[3].split('+')[0];
-            gameId=url.split('=')[2];
-            gameId=gameId.split('&')[0];
-            extraTime=url.split('+')[1];
-            uniqueId=url.split('=')[1].split('&')[0];
-            console.log("extraTime"+extraTime)
-            console.log("gameId"+gameId)
-            console.log("diff"+difficulty)
-            console.log("unique"+uniqueId)
-            document.getElementById("goToHome").action="/homepage/"+uniqueId;
-
-            if(difficulty==='10'){
-                currenSeconds=90;
-            }
-            else if(difficulty==='100'){
-                currenSeconds=60;
-            }
-            else if(difficulty==='200'){
-                currenSeconds=30;
-            }
-        }
+        var gamePgnSoFar;
 
         $.ajax({
             url: x + "/getUserId",
@@ -161,7 +166,14 @@
     <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
 </div>
 <div id="pgnBox">
-    <div><p id="showPgn" style="font-size: 20px;">PGN:</p></div>
+    <div id="showPgn">
+        <h3 style="margin-left:55px;">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
     <button onclick="saveTextAsFile()">Save Pgn to File</button>
 </div>
 <div id="timerBox">
@@ -180,7 +192,6 @@
     var board = null;
     var game = new Chess();
     var $status = $('#status')
-    var $pgn = $('#showPgn')
     var whiteSquareGrey = '#a9a9a9'
     var blackSquareGrey = '#696969'
     var alertStatus;
@@ -188,6 +199,87 @@
     var moveNo=0;
     var display = document.querySelector('#time');
     startCount()
+
+
+    window.onload=function () {
+
+        var url=location.href;
+        difficulty=url.split('=')[3].split('+')[0];
+        gameId=url.split('=')[2];
+        gameId=gameId.split('&')[0];
+        extraTime=url.split('+')[1];
+        uniqueId=url.split('=')[1].split('&')[0];
+        console.log("extraTime"+extraTime)
+        console.log("gameId"+gameId)
+        console.log("diff"+difficulty)
+        console.log("unique"+uniqueId)
+        document.getElementById("goToHome").action="/homepage/"+uniqueId;
+
+        $.ajax({
+            url:x+"/getGamePosition",
+            type:'POST',
+            data:{"gameId":gameId, "uniqueId":uniqueId},
+            success: function (response) {
+                gamePgnSoFar=response.gamePosition;
+                setPositions(gamePgnSoFar);
+                console.log("gameSoFar "+gamePgnSoFar);
+            }
+        })
+
+        if(difficulty==='10'){
+            currenSeconds=90;
+        }
+        else if(difficulty==='100'){
+            currenSeconds=60;
+        }
+        else if(difficulty==='200'){
+            currenSeconds=30;
+        }
+    }
+
+    function setPositions(gamePgnSoFar){
+
+        if(gamePgnSoFar!=='null') {
+            var result='';
+            game.load_pgn(gamePgnSoFar);
+            board.position(game.fen());
+            var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
+            var filtered = arr.filter(function (el) {
+                return el!="";
+            });
+            console.log(arr[arr.length-1])
+            if(arr[arr.length-1]==="0-1"){
+                result= " 0-1";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if( arr[arr.length-1]==="1-0"){
+                result= " 1-0";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if(arr[arr.length-1]==="1/2-1/2"){
+                result= " 1/2-1/2";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            }
+
+            moveNo=filtered.length;
+            currenSeconds=parseInt(window.localStorage.getItem(""+gameId));
+            console.log(extraTime)
+            console.log(currenSeconds)
+            var secondsFromStorage;
+            if(game.turn()==='b' )
+            { secondsFromStorage=currenSeconds+parseInt(extraTime);}
+            else
+            { secondsFromStorage=currenSeconds;}
+            if(!statusCalled)
+            {
+                console.log('sec'+secondsFromStorage)
+                startTimer(secondsFromStorage, display);
+            }
+            addPgnDisplayToUi(gamePgnSoFar);
+        }
+
+    }
 
     function removeGreySquares() {
         $('#myBoard .square-55d63').css('background', '')
@@ -227,6 +319,7 @@
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             display.textContent = minutes + ":" + seconds;
+            window.localStorage.setItem(""+gameId,timer);
             if (minutes === "00" && seconds === "00") {
                 alert('Time up and Ai won the Match');
                 sendStatus('2');
@@ -390,10 +483,11 @@
 
     function sendUserMove(move, userTime) {
         moveNo++;
+        var gameTillNow=game.pgn();
         $.ajax({
             url: x + "/usermoves",
             type: 'POST',
-            data: {"userMove": move.san, "timeTaken": userTime,"gameId":gameId,"moveNo":moveNo},
+            data: {"userMove": move.san, "timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
             success: function () {
                 console.log('ajax success!!');
@@ -451,6 +545,7 @@
 
     function callAIToPlay() {
         moveNo++;
+        var pgn=game.pgn();
         var respMove = '';
         var x = window.location.origin;
         console.log("Inside ai Player");
@@ -458,7 +553,7 @@
             url: x + "/aiMove",
             type: 'POST',
             async: false,
-            data:{"gameId":gameId , "moveNo":moveNo},
+            data:{"gameId":gameId , "moveNo":moveNo,"difficulty":difficulty,"gamePgn":pgn},
             success: function (response) {
                 respMove = response.aiMove
             }
@@ -482,10 +577,12 @@
             status = 'Game over, ' + moveColor + ' is in checkmate.'
             if (moveColor === 'White' && statusCalled === false) {
                 alert('Black won the Match');
+                stopTimer();
                 sendStatus('2')
             }
             if (moveColor === 'Black' && statusCalled === false) {
                 alert('White won the Match');
+                stopTimer();
                 sendStatus('1')
             }
         }
@@ -493,6 +590,7 @@
         // draw?
         else if (game.in_draw()) {
             status = 'Game over, drawn position'
+            stopTimer();
             sendStatus('3')
         }
 
@@ -507,7 +605,65 @@
         }
 
         $status.html(status)
-        $pgn.html("PGN: " + game.pgn())
+        addPgnDisplayToUi(game.pgn());
+    }
+
+    function removePgnListChilds(){
+        const deleteWhitePgnMoves = document.getElementById("whiteMove");
+        while (deleteWhitePgnMoves.lastElementChild) {
+            deleteWhitePgnMoves.removeChild(deleteWhitePgnMoves.lastElementChild);
+        }
+        const deleteBlackPgnMoves = document.getElementById("blackMove");
+        while (deleteBlackPgnMoves.lastElementChild) {
+            deleteBlackPgnMoves.removeChild(deleteBlackPgnMoves.lastElementChild);
+        }
+    }
+
+    function addPgnDisplayToUi(gamePgn){
+        removePgnListChilds();
+        if(gamePgn!=='null'){
+            var  arr =gamePgn.split(/\d+. |\s+/g);
+            var movesMade = arr.filter(function (el) {
+                return el!="";
+            });
+            for(var i=0;i<movesMade.length;i++)
+            {if(i===0 || i%2===0){
+                showPgnInDisplay("whiteMove",movesMade,i);
+            }
+            else if(i>0){
+                showPgnInDisplay("blackMove",movesMade,i);
+            }
+            }
+        }
+    }
+    function showPgnInDisplay(elementId,movesMade,i){
+        var store;
+        var onClickIsCalled=false;
+        var node = document.createElement("LI");
+        var a=document.createElement("a");
+        // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onclick=function(event){
+            $('li').removeClass('active');
+            $(this).addClass('active');
+            onClickIsCalled=true;
+            event.preventDefault()
+            store=i;
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=(movesMade.length - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board.position(chess.fen());
+        }
+        a.textContent=""+movesMade[i];
+        a.setAttribute("href","#");
+        node.appendChild(a);
+        if(i===(movesMade.length-1)){
+            node.classList.add("active");
+        }
+        // node.appendChild(textnode);
+        document.getElementById(elementId).appendChild(node);
     }
 
     function onMoveEnd(oldPos, newPos) {

@@ -29,13 +29,13 @@ public class SinglePlayerServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        long gameId=0;
         try {
 
             if (servletPath.equals("/diff")) {
+                long gameId=0;
                 difficulty = req.getParameter("difficulty");
                 try {
-                    gameId = System.currentTimeMillis();
+                     gameId = System.currentTimeMillis();
                 } catch (Exception throwables) {
                     throwables.printStackTrace();
                 }
@@ -47,19 +47,28 @@ public class SinglePlayerServlet extends HttpServlet {
                 String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn=req.getParameter("gamePgn");
-                gameId=Long.parseLong(req.getParameter("gameId"));
+                long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
                 aiManager.addMove(gameId,moveNo,userMove,gameStatus,uniqueId,userTimer,gamePgn);
 
             } else if (servletPath.equals("/aiMove")){
-                gameId=Long.parseLong(req.getParameter("gameId"));
+               long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
-                responseStep = aiManager.getAiMove(gameId,moveNo,difficulty);
+                String gamepgn=req.getParameter("gamePgn");
+                difficulty=req.getParameter("difficulty");
+                responseStep = aiManager.getAiMove(gameId,moveNo,difficulty,gamepgn);
                 out.print(responseStep);
+            }
+            else if(servletPath.equals("/getGamePosition")){
+                uniqueId=Integer.parseInt(req.getParameter("uniqueId"));
+                long gameId=Long.parseLong(req.getParameter("gameId"));
+                String pgn=aiManager.getGamePosition(gameId,uniqueId);
+                pgn="{\"gamePosition\":\""+pgn+"\"}";
+                System.out.println(pgn);
+                out.print(pgn);
             }
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-
     }
 }

@@ -168,6 +168,10 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/getGamePosition</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
         <url-pattern>/gamestatus</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
