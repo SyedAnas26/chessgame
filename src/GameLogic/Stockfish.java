@@ -18,7 +18,7 @@ public class Stockfish {
 
     public boolean startEngine() {
         try {
-            this.engineProcess = Runtime.getRuntime().exec("C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame\\engine\\stockfish_20011801_x64.exe");
+            this.engineProcess = Runtime.getRuntime().exec("../../engine/stockfish");
             this.processReader = new BufferedReader(new InputStreamReader(this.engineProcess.getInputStream()));
             this.processWriter = new OutputStreamWriter(this.engineProcess.getOutputStream());
             return true;
@@ -59,13 +59,19 @@ public class Stockfish {
         return buffer.toString();
     }
 
-    public String getBestMove(String fen, int waitTime) {
+    public String getBestMove(String fen, String depth,int skill) {
         this.sendCommand("position fen " + fen);
-       // this.sendCommand("setoption name MultiPV value 3");
-        this.sendCommand("go movetime " + waitTime);
-       // System.out.println(this.getOutput(20));
-        return this.getOutput(waitTime + 20).split("bestmove ")[1].split(" ")[0];
+        this.sendCommand("setoption name Skill Level value "+ skill);
+        this.sendCommand("setoption name MultiPV value 3");
+        this.sendCommand("go depth " + depth);
+        System.out.println(this.getOutput(20));
+        String[] Output =this.getOutput(20).split("bestmove");
+        String out=Output[1].split(" ponder")[0];
+        //System.out.println("Output[1]"+out);
+        return out;
     }
+
+
 
     public void stopEngine() {
         try {

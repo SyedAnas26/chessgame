@@ -169,7 +169,7 @@
     var alertStatus = null;
     var $pgn = $('#showPgn')
     var game = new Chess()
-    animation_moved = true;
+    animation_moved;
     var checkStatus;
     var pgnIsClicked;
 
@@ -178,10 +178,10 @@
             alert(alertStatus);
             alertStatus = null;
         }
-        animation_moved = true;
         if (!pgnIsClicked) {
             displayPgnMovesInUi(step);
         }
+        animation_moved = true;
     }
 
     function removePgnListChilds() {
@@ -322,8 +322,6 @@
     }
 
     function prevStep() {
-
-
         if (step > 0 && animation_moved === true) {
             if (!nextCalled) {
                 if (step > 1) {
@@ -351,6 +349,7 @@
     }
 
     function startNew() {
+        animation_moved = true;
         step = 0;
         statusCalled = false;
     }

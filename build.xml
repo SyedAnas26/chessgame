@@ -94,7 +94,7 @@
         </copy>
         <mkdir  dir="${deploy.home}/WEB-INF"/>
         <copy  file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
-        <copy  file="src/GameLogic/KongAIConnector.js" tofile="${deploy.home}/WEB-INF/classes/GameLogic/KongAIConnector.js"/>
+        <copy  file="engine/stockfish_20011801_x64" tofile="${deploy.home}/WEB-INF/engine/stockfish"/>
         <mkdir  dir="${deploy.home}/WEB-INF/lib"/>
         <copy todir="${deploy.home}/WEB-INF/lib">
             <fileset dir="${dist.home}/jars"/>

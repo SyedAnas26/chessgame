@@ -6,68 +6,81 @@
     <title>Difficulty</title>
     <style type="text/css">
 
-        #difficultyBox{
+        #difficultyBox {
             margin-top: 90px;
-            margin-left:40% ;
+            margin-left: 30%;
             border: 1px;
-            float: left;
         }
-        #button1{
+
+        #button1 {
             background-color: #1DE3E0;
-            border: 1px;
-            color: #082C2B;
-            padding: 16px 32px;
+            margin-left: 40%;
+            border: 2px solid red;
+            color: #481807;
+            border-color: #606D70;
+            font-size: 20px;
+            padding: 10px 32px;
         }
-        #button2{
+
+        #button2 {
             background-color: #E7C718;
             border: 1px;
             color: #082C2B;
             padding: 16px 32px;
         }
-        #button3{
+
+        #button3 {
             background-color: #E1351C;
             border: 1px;
             color: #082C2B;
             padding: 16px 32px;
         }
-        #extraTymBox{
+
+        #extraTymBox {
             border: 1px;
-            margin-left:150px;
+            margin-left: 150px;
             margin-top: 25px;
             float: left;
         }
-        #extratime1{
+
+        #extratime1 {
             font-size: 20px;
             background: none;
-        } #extratime2{
-              font-size: 20px;
+        }
 
-              background: none;
-          } #extratime3{
-                font-size: 20px;
+        #extratime2 {
+            font-size: 20px;
+
+            background: none;
+        }
+
+        #extratime3 {
+            font-size: 20px;
 
 
-                background: none;
-            } #extratime4{
-                  font-size: 20px;
-                  background: none;
-              }
+            background: none;
+        }
+
+        #extratime4 {
+            font-size: 20px;
+            background: none;
+        }
 
     </style>
     <script type="text/javascript">
         var userId
-        var extraTime=null;
-        var difficulty=null;
-        var x=window.location.origin;
+        var extraTime = null;
+        var difficulty = null;
+        var x = window.location.origin;
         var uniqueId;
-        var previousSelectedExtraTime=0;
-        window.onload=function(){
+        var previousSelectedExtraTime = 0;
+        window.onload = function () {
             $.ajax({
-                url: x+"/getUserId",
+                url: x + "/getUserId",
                 type: 'POST',
                 success: function (response) {
-                    uniqueId=response.unique_id;
-                    if (response.user_id==='null') {
+                    uniqueId = response.unique_id;
+                    if (response.user_id === 'null') {
                         alert(' Login First !');
                         location = '/loginpage';
                     }
@@ -75,54 +88,92 @@
                 }
             });
         }
-        function clickResp(action) {
-            if(extraTime===null){
-                alert(' Choose a time addition to add after each move !')
+
+        function clickResp() {
+            var baseTime;
+            var skillLevel;
+            var extratime;
+            // if(extraTime===null){
+            //     alert(' Choose a time addition to add after each move !')
+            // }
+            // else{
+            //     if (action === 'Easy') {
+            //         difficulty = "10"
+            //     } else if (action === 'Medium') {
+            //         difficulty = "100"
+            //     } else if (action === 'Hard') {
+            //         difficulty = "200"
+
+            //     }
+            baseTime = $('#baseTime').val() * 60;
+            skillLevel = $("#skillLevel").val();
+            extratime = $("#extratime").val();
+            if (skillLevel === null || skillLevel === "") {
+                alert("Set a skill Level for AI")
+                return false;
             }
-            else{
-                if (action === 'Easy') {
-                    difficulty = "10"
-                } else if (action === 'Medium') {
-                    difficulty = "100"
-                } else if (action === 'Hard') {
-                    difficulty = "200"
+            if (extratime === null || extratime === "") {
+                extratime = "0";
+            }
+            if (baseTime === null || baseTime === "") {
+                alert("Set a baseTime")
+                return false;
+            }
+
+            var x = window.location.origin;
+            $.ajax({
+                url: x + "/diff",
+                type: 'POST',
+                data: {"difficulty": difficulty},
+                success: function (response) {
+                    var gameId = response.gameId;
+                    document.location.href = x + "/vscomputer?id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime;
+                    console.log('difficulty ajax success!!');
                 }
-                var x=window.location.origin;
-                $.ajax({
-                    url: x+"/diff",
-                    type: 'POST',
-                    data: {"difficulty": difficulty},
-                    success: function (response) {
-                        var gameId=response.gameId;
-                        document.location.href=x+"/vscomputer?id="+uniqueId+ "&gameid="+gameId+"&diff="+difficulty+"+"+extraTime;
-                        console.log('difficulty ajax success!!');
-                    }
-                });
-            }
+            });
         }
 
-        function setExtraTime(extratime,buttonNo){
-            if(previousSelectedExtraTime!==0)
-            { document.getElementById("extratime"+previousSelectedExtraTime).style.background="none";}
 
-            document.getElementById("extratime"+buttonNo).style.background="#0FFFA3";
-            previousSelectedExtraTime=buttonNo;
-            extraTime=extratime;
+        function setExtraTime(extratime, buttonNo) {
+            if (previousSelectedExtraTime !== 0) {
+                document.getElementById("extratime" + previousSelectedExtraTime).style.background = "none";
+            }
+
+            document.getElementById("extratime" + buttonNo).style.background = "#0FFFA3";
+            previousSelectedExtraTime = buttonNo;
+            extraTime = extratime;
 
         }
     </script>
 </head>
-<body><div id="difficultyBox">
-    <input align="center" id="button1"  type="submit" onclick="clickResp('Easy')" value="Easy" ><br><br>
-    <input align="center" id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
-    <input align="center" id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
+<body>
+<div id="difficultyBox">
+    <label align="center" for="baseTime" style="font-size: 30px;">Base Time (mintues)[1-5]:</label>
+    <input type="number" name="baseTime" id="baseTime" min="1" max="5" style="font-size: 20px;" value="5">
+    <br>
+    <br>
+    <label align="center" for="extratime" style="font-size: 30px;">Extra Time (seconds)[0-60]:</label>
+    <input type="number" name="extratime" id="extratime" min="0" max="60" style="font-size: 20px;">
+    <br>
+    <br>
+    <label for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label>
+    <input type="number" name="skillLevel" style="font-size: 20px;" max="20" min="0" id="skillLevel">
+    <br>
 </div>
-<div id="extraTymBox">
+<br>
+<br>
+<input type="button" id="button1" onclick="return clickResp()" value="Create Game">
+<!--  <div id="difficultyBox">
+ <input align="center" id="button1"  type="submit" onclick="clickResp('Easy')" value="Easy" ><br><br>
+ <input align="center" id="button2"  type="submit"  onclick="clickResp('Medium')" value="Medium"><br><br>
+ <input align="center" id="button3"  type="submit" onclick="clickResp('Hard')"   value="Hard"><br><br>
+</div> -->
+<!-- <div id="extraTymBox">
     <h2> Choose time to add after each Move</h2>
     <button id="extratime1" onclick="setExtraTime('0',1)"> +  0s </button><br><br>
     <button id="extratime2" onclick="setExtraTime('10',2)"> + 10s </button><br><br>
     <button id="extratime3" onclick="setExtraTime('20',3)"> +  20s </button><br><br>
     <button id="extratime4" onclick="setExtraTime('30',4)"> +  30s </button>
-</div>
+</div> -->
 </body>
 </html>

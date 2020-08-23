@@ -32,20 +32,20 @@ public class TheChessGame {
         client.sendCommand("uci");
 
 // receive output dump
-        System.out.println(client.getOutput(0));
+     //   System.out.println(client.getOutput(0));
 
 // get the best move for a position with a given think time
-        System.out.println("Best move : " + client.getBestMove(FEN, 100));
+        System.out.println("Best move : " + client.getBestMove(FEN,"3",10));
 
 // get all the legal moves from a given position
-        System.out.println("Legal moves : " + client.getLegalMoves(FEN));
+       // System.out.println("Legal moves : " + client.getLegalMoves(FEN));
 
 // draw board from a given position
-        System.out.println("Board state :");
-        client.drawBoard(FEN);
+       // System.out.println("Board state :");
+        //client.drawBoard(FEN);
 
 // get the evaluation score of current position
-        System.out.println("Eval score : " + client.getEvalScore(FEN, 2000));
+   //    System.out.println("Eval score : " + client.getEvalScore(FEN, 2000));
 
 // stop the engine
         System.out.println("Stopping engine..");

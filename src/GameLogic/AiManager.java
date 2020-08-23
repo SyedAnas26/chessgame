@@ -5,14 +5,14 @@ import java.util.List;
 
 public class AiManager {
 
-    public String getAiMove(long gameId,int moveNo,String difficulty,String gamePgn) throws Exception {
+    public String getAiMove(String FEN,int skill/*long gameId,int moveNo,String difficulty,String gamePgn*/) throws Exception {
 
         String responseStep;
-        List<String> arr = getMovesArr(gameId);
-        KongAiConnector kongAI = new KongAiConnector();
-        String aiMove = kongAI.getAIMove(Integer.parseInt(difficulty), gameId, moveNo,gamePgn, arr);
-        System.out.println("AIMove : " + aiMove);
-        responseStep = "{\"aiMove\":\""+aiMove+"\"}";
+        //List<String> arr = getMovesArr(gameId);
+        StockfishConnector stockfishAI = new StockfishConnector();
+        String aiMove = stockfishAI.getAiMove(FEN,skill);
+        System.out.println("AIMove : " + aiMove.trim());
+        responseStep = "{\"aiMove\":\""+aiMove.trim()+"\"}";
         return responseStep;
 
     }

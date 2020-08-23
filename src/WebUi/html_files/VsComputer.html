@@ -39,17 +39,17 @@
         }
         #pgnBox {
             background-color: white;
-            width: 23%;
+            width: 25%;
             height: 580px;
             border: 2px solid white;
-            padding-top: 45px;
+            padding-top: 63px;
             overflow: auto;
             float: left;
         }
 
         #showPgn {
             background-color: white;
-            width: 79%;
+            width: 81%;
             height: 475px;
             border: 2px solid black;
             font-size: 20px; word-spacing: 20px;letter-spacing: 2px;
@@ -197,6 +197,7 @@
     var alertStatus;
     var interval;
     var moveNo=0;
+    var baseTime;
     var display = document.querySelector('#time');
     startCount()
 
@@ -204,15 +205,17 @@
     window.onload=function () {
 
         var url=location.href;
-        difficulty=url.split('=')[3].split('+')[0];
+        difficulty=url.split('&skill=')[1].split('&')[0];
         gameId=url.split('=')[2];
         gameId=gameId.split('&')[0];
         extraTime=url.split('+')[1];
         uniqueId=url.split('=')[1].split('&')[0];
-        console.log("extraTime"+extraTime)
-        console.log("gameId"+gameId)
-        console.log("diff"+difficulty)
-        console.log("unique"+uniqueId)
+        baseTime=url.split('&time=')[1].split('+')[0];
+        console.log("extraTime "+extraTime)
+        console.log("gameId "+gameId)
+        console.log("skillLevel "+difficulty)
+        console.log("unique "+uniqueId)
+        console.log("baseTime "+baseTime)
         document.getElementById("goToHome").action="/homepage/"+uniqueId;
 
         $.ajax({
@@ -226,15 +229,7 @@
             }
         })
 
-        if(difficulty==='10'){
-            currenSeconds=90;
-        }
-        else if(difficulty==='100'){
-            currenSeconds=60;
-        }
-        else if(difficulty==='200'){
-            currenSeconds=30;
-        }
+        currenSeconds=parseInt(baseTime);
     }
 
     function setPositions(gamePgnSoFar){
@@ -545,7 +540,7 @@
 
     function callAIToPlay() {
         moveNo++;
-        var pgn=game.pgn();
+        var fen=game.fen();
         var respMove = '';
         var x = window.location.origin;
         console.log("Inside ai Player");
@@ -553,10 +548,12 @@
             url: x + "/aiMove",
             type: 'POST',
             async: false,
-            data:{"gameId":gameId , "moveNo":moveNo,"difficulty":difficulty,"gamePgn":pgn},
+            data:{"gameFEN":fen,"skillLevel":difficulty},
             success: function (response) {
                 respMove = response.aiMove
+                console.log("ai move "+respMove)
             }
+            //"gameId":gameId , "moveNo":moveNo,"difficulty":difficulty,"gamePgn":pgn
         });
         //if(!isCastling(respMove)){
         var aiMove = game.move(respMove, {sloppy: true})
@@ -648,9 +645,14 @@
             onClickIsCalled=true;
             event.preventDefault()
             store=i;
+            var length=movesMade.length;
+            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
+            {
+                length=length-1;
+            }
             var chess=new Chess();
             chess.load_pgn(game.pgn());
-            var loopfor=(movesMade.length - store)-1;
+            var loopfor=((length) - store)-1;
             for(var j=0;j<loopfor;j++){
                 chess.undo();
             }
