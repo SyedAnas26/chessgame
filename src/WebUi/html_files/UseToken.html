@@ -1,0 +1,52 @@
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <title>Waiting</title>
+    <script type="text/javascript">
+        var x=window.location.origin;
+        window.onload=function () {
+            $.ajax({
+                url: x + "/getUserId",
+                type: 'POST',
+                success: function (response) {
+                   var  userId = response.user_id;
+                   var  userName = response.user_name;
+                   var  uniqueId = response.unique_id;
+                    if (userId === 'null') {
+                        alert(' Login First ! ');
+                        location = '/loginpage';
+                    }
+                }
+            });
+        }
+
+
+        function joinGame(){
+            $.ajax({
+                url: x + "/joinGame",
+                type: 'POST',
+                data:{"tokenId":token},
+                success: function (respone) {
+                    if(respone.gameId==='0'){
+                        alert("The token is already Used")
+                    }
+                    else {
+                        location = '/vs/' + token + "/" + respone.gameId;
+                    }
+                },
+            });
+        }
+    </script>
+</head>
+<body>
+<div align="center" style="margin-top:250px">
+    <h3>Enter the token to join a Game</h3>
+    <br>
+    <br><label style="font-size: 30px" for="token">Enter the Challenge Token: </label>
+    <input  type="text" id="token" name="token" style="font-size: 30px"/>
+    <input type="button" style="font-size: 30px;" value="Join" onclick="joinGame()">
+</div>
+</body>
+</html>

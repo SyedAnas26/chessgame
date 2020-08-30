@@ -13,7 +13,9 @@
             padding: 5px;
 
         }
-
+        #board1{
+            display: none;
+        }
         a {
             color: #1080E1;
         }
@@ -49,6 +51,15 @@
             font-size: 23px;
             word-spacing: 20px;
             letter-spacing: 2px;
+            overflow: auto;
+        }
+
+        #smallBoardBox {
+            background-color: white;
+            width: 20%;
+            height: 400px;
+            border: 2px solid white;
+            padding-top: 120px;
             overflow: auto;
         }
 
@@ -126,6 +137,13 @@
     </script>
 </head>
 <body>
+<audio id="moveSound">
+    <source src="Sound/move.wav"/></audio>
+<audio id="blackMoveSound">
+    <source src="Sound/blackMove.wav"/></audio>
+<audio id="captureSound">
+    <source src="Sound/captureSound.mp3"/>
+</audio>
 <div id="GameBox">
     <div id="myBoard" style="width: 500px"></div>
 </div>
@@ -139,7 +157,13 @@
     </div>
     <br>
     <button onclick="saveTextAsFile()">Save Pgn to File</button>
-
+</div>
+<div id="smallBoardBox">
+    <div id="board1" style="width: 200px"></div>
+    <br>
+    <br>
+    <input type="button" value="Play" onclick="playGame()">
+    <input type="button" value="Stop" onclick="stopGame()">
 </div>
 <div class="bot">
     <table>
@@ -169,11 +193,19 @@
     var alertStatus = null;
     var $pgn = $('#showPgn')
     var game = new Chess()
-    animation_moved;
-    var checkStatus;
+    var animation_moved;
+    var checkStatus='0';
     var pgnIsClicked;
+    var interval;
 
     function onMoveEnd(oldPos, newPos) {
+        animation_moved = true;
+        if(game.turn()==='b'){
+            document.getElementById("moveSound").play();
+        }
+        else {
+            document.getElementById("blackMoveSound").play();
+        }
         if (alertStatus != null) {
             alert(alertStatus);
             alertStatus = null;
@@ -181,7 +213,6 @@
         if (!pgnIsClicked) {
             displayPgnMovesInUi(step);
         }
-        animation_moved = true;
     }
 
     function removePgnListChilds() {
@@ -195,6 +226,15 @@
         }
     }
 
+    function playGame(){
+        interval=setInterval(function(){
+            nextMove();
+        },1000)
+    }
+
+    function stopGame(){
+        clearInterval(interval);
+    }
     function displayPgnMovesInUi(steps) {
 
         removePgnListChilds();
@@ -221,6 +261,25 @@
         var node = document.createElement("LI");
         var a = document.createElement("a");
         // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onmouseover=function(){
+            store=i;
+            var length=movesMade.length;
+            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
+            {
+                length=length-1;
+            }
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=((length) - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board1.position(chess.fen())
+            document.getElementById("board1").style.display="block";
+        }
+        node.onmouseout=function(){
+            document.getElementById("board1").style.display="none";
+        }
         node.onclick = function (event) {
             pgnIsClicked = true;
             $('li').removeClass('active');
@@ -243,8 +302,14 @@
             node.classList.add("active");
         }
         // node.appendChild(textnode);
+        node.classList.add("displaySmallBoard")
         document.getElementById(elementId).appendChild(node);
     }
+
+    var board1 = Chessboard('board1', {
+        position: 'start',
+        showNotation: false
+    })
 
     var config = {
         position: 'start',
@@ -281,13 +346,20 @@
                     }
                     animation_moved = false;
                     var pgnMove = response.pgn;
-                    game.move(pgnMove)
+                    var m= game.move(pgnMove)
                     board.position(game.fen())
+                    var san=m.san;
+                    for(var i=0;i<san.length;i++){
+                        if(san.charAt(i)==='x'){
+                            document.getElementById("captureSound").play();
+                        }
+                    }
                 }
             });
             nextCalled = true;
             pgnIsClicked = false;
         }
+        else{stopGame();}
 
     }
 

@@ -95,3 +95,8 @@ create table pgnlog
 
 
 //Updated in Server
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+ADD COLUMN `gameID` BIGINT NOT NULL AFTER `Status`,
+CHANGE COLUMN `CreatedByPlayAs` `CreatedByPlayAs` VARCHAR(1) NOT NULL ;

@@ -26,6 +26,7 @@ public class GameManager {
 
         b.setBoard();
         makeGivenStringIntoArray(gamePlay);
+
     }
 
     private void makeGivenStringIntoArray(String gamePlay) {

@@ -38,7 +38,7 @@ public class StockfishConnector {
         client.sendCommand("uci");
 
 // receive output dump
-      //  System.out.println(client.getOutput(0));
+        System.out.println(client.getOutput(0));
 
 // get the best move for a position with a given think time
         String aiMove= client.getBestMove(FEN,depth,skill);
@@ -54,9 +54,25 @@ public class StockfishConnector {
         //System.out.println("Eval score : " + client.getEvalScore(FEN, 2000));
 
 // stop the engine
+
         System.out.println("Stopping engine..");
         client.stopEngine();
         return aiMove;
+    }
+
+    public String getEvalScore(String  FEN){
+        Stockfish client = new Stockfish();
+        if (client.startEngine()) {
+            System.out.println("Engine has started..");
+        } else {
+            System.out.println("Oops! Something went wrong..");
+        }
+        client.sendCommand("uci");
+        System.out.println(client.getOutput(0));
+        String evalScore = ""+client.getEvalScore(FEN, 100);
+        client.stopEngine();
+        return  evalScore;
+
     }
 }
 

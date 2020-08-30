@@ -1,6 +1,7 @@
 package WebServerletLogic.Servlets;
 
 import GameLogic.AiManager;
+import GameLogic.StockfishConnector;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -29,6 +30,7 @@ public class SinglePlayerServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
+        StockfishConnector stc=new StockfishConnector();
         try {
 
             if (servletPath.equals("/diff")) {
@@ -47,18 +49,26 @@ public class SinglePlayerServlet extends HttpServlet {
                 String userMove=req.getParameter("userMove");
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn=req.getParameter("gamePgn");
+                String fen=req.getParameter("FEN");
                 long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
                 aiManager.addMove(gameId,moveNo,userMove,gameStatus,uniqueId,userTimer,gamePgn);
-
+                 out.print(stc.getEvalScore(fen));
             } else if (servletPath.equals("/aiMove")){
-               long gameId=Long.parseLong(req.getParameter("gameId"));
                 int skill=Integer.parseInt(req.getParameter("skillLevel"));
                 String FEN=req.getParameter("gameFEN");
-               int moveNo=Integer.parseInt(req.getParameter("moveNo"));
                 responseStep = aiManager.getAiMove(FEN,skill);
                 System.out.println(responseStep);
                 out.print(responseStep);
+            }else if (servletPath.equals("/aiMoveinPgn")){
+                long gameId=Long.parseLong(req.getParameter("gameId"));
+                int moveNo=Integer.parseInt(req.getParameter("moveNo"));
+                String aimove=req.getParameter("aiMovePgn");
+                String fen=req.getParameter("FEN");
+                String game=req.getParameter("gamePgn");
+                System.out.println(game);
+                aiManager.addMove(gameId,moveNo,aimove,null,uniqueId,"0",game);
+                out.print(stc.getEvalScore(fen));
             }
             else if(servletPath.equals("/getGamePosition")){
                 uniqueId=Integer.parseInt(req.getParameter("uniqueId"));

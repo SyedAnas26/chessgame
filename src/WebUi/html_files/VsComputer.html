@@ -8,6 +8,7 @@
             background-color: lightgreen;
             color: #134B7C;
             padding: 5px;
+            width: 50px;
 
         }
         a{
@@ -15,6 +16,9 @@
         }
         a:hover{
             cursor: pointer;
+        }
+        #board1{
+            display: none;
         }
 
         .active a{
@@ -40,9 +44,9 @@
         #pgnBox {
             background-color: white;
             width: 25%;
-            height: 580px;
+            height: 700px;
             border: 2px solid white;
-            padding-top: 63px;
+            padding-top: 0px;
             overflow: auto;
             float: left;
         }
@@ -67,13 +71,13 @@
         #timerBox {
             background-color: white;
             width: 20%;
-            height: 305px;
+            height: 550px;
             border: 2px solid white;
-            padding-top: 300px;
+            padding-top: 100px;
             overflow: auto;
         }
 
-        #time {
+        .time {
             width: 120px;
             height: 120px;
             background-color: #303B3B;
@@ -103,9 +107,15 @@
         var gameId;
         var winner;
         var extraTime;
-        var currenSeconds;
+        var aiCurrenSeconds;
+        var humanCurrenSeconds;
         var uniqueId;
         var gamePgnSoFar;
+        var alertStatus;
+        var winTeam;
+        var aiScore;
+        var humanScore;
+        var boardFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
         $.ajax({
             url: x + "/getUserId",
@@ -140,6 +150,22 @@
     </script>
 </head>
 <body>
+<audio id="moveSound">
+    <source src="Sound/move.wav"/></audio>
+<audio id="blackMoveSound">
+    <source src="Sound/blackMove.wav"/></audio>
+<audio id="wrongMove">
+    <source src="Sound/wrongMove.mp3"/>
+</audio>
+<audio id="win">
+    <source src="Sound/win.wav"/>
+</audio>
+<audio id="lose">
+    <source src="Sound/lose.mp3"/>
+</audio>
+<audio id="captureSound">
+    <source src="Sound/captureSound.mp3"/>
+</audio>
 <div id="GameBox">
     <div id="white_promotion_pieces" style="padding-left: 50px;">
         <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen" data-piece="wQ" style="width:62px;height:62px;"
@@ -164,8 +190,18 @@
              onclick="promotePiece('R')">
     </div>
     <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+    <br>
+    <br>
+    <form id="goToHome" method="post" align="center">
+        <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
+    </form>
 </div>
+
 <div id="pgnBox">
+    <span style="margin-left: 80px; font-size:30px;">Eval Score</span><br>
+    <span style="font-size: 22px;">Your Score: <span style="font-size: 22px;" id="humanScore"></span></span>
+    <span style="margin-left: 40px; font-size:22px;" style="display: inline-block;">AI Score: <span style="font-size: 22px;" id="aiScore"></span></span>
+
     <div id="showPgn">
         <h3 style="margin-left:55px;">PGN:</h3>
         <ol id="whiteMove">
@@ -177,7 +213,14 @@
     <button onclick="saveTextAsFile()">Save Pgn to File</button>
 </div>
 <div id="timerBox">
-    <div><span id="time">00:00</span></div>
+    <div id="board1" style="width: 200px"></div>
+    <br>
+    <br>
+    <div><span class="time" id="aiTime">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Ai Time </span></div>
+    <br>
+    <br>
+    <br>
+    <div><span class="time" id="humanTime">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Your Time </span></div>
     <br>
     <br>
     <label style="font-size: 25px">Status:</label>
@@ -194,11 +237,14 @@
     var $status = $('#status')
     var whiteSquareGrey = '#a9a9a9'
     var blackSquareGrey = '#696969'
-    var alertStatus;
+    var alertStatus=null;
     var interval;
     var moveNo=0;
     var baseTime;
-    var display = document.querySelector('#time');
+    var aiTimer = document.querySelector('#aiTime');
+    var humanTimer = document.querySelector('#humanTime');
+    var playerColor;
+
     startCount()
 
 
@@ -209,6 +255,7 @@
         gameId=url.split('=')[2];
         gameId=gameId.split('&')[0];
         extraTime=url.split('+')[1];
+        playerColor=url.split('+')[2];
         uniqueId=url.split('=')[1].split('&')[0];
         baseTime=url.split('&time=')[1].split('+')[0];
         console.log("extraTime "+extraTime)
@@ -229,7 +276,15 @@
             }
         })
 
-        currenSeconds=parseInt(baseTime);
+        aiCurrenSeconds=parseInt(baseTime);
+        humanCurrenSeconds=parseInt(baseTime);
+
+
+        if(playerColor==='b'){
+            makeAiMove();
+            board.orientation('black')
+
+        }
     }
 
     function setPositions(gamePgnSoFar){
@@ -258,14 +313,18 @@
             }
 
             moveNo=filtered.length;
-            currenSeconds=parseInt(window.localStorage.getItem(""+gameId));
+            aiCurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"ai"));
+            humanCurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"human"));
             console.log(extraTime)
-            console.log(currenSeconds)
+            // console.log(currenSeconds)
             var secondsFromStorage;
+            var display
             if(game.turn()==='b' )
-            { secondsFromStorage=currenSeconds+parseInt(extraTime);}
+            { secondsFromStorage=aiCurrenSeconds;
+                display=aiTimer;}
             else
-            { secondsFromStorage=currenSeconds;}
+            { secondsFromStorage=humanCurrenSeconds;
+                display=humanTimer;}
             if(!statusCalled)
             {
                 console.log('sec'+secondsFromStorage)
@@ -297,6 +356,7 @@
         board.position(game.fen())
         sendUserMove(move, userTime)
         updateStatus()
+        startTimer(aiCurrenSeconds,aiTimer);
         window.setTimeout(makeAiMove, 250)
     }
 
@@ -305,19 +365,47 @@
         clearInterval(interval);
     }
 
+    function playMoveSound(move){
+        var san=move.san;
+        for(var i=0;i<san.length;i++){
+            if(san.charAt(i)==='x'){
+                document.getElementById("captureSound").play();
+            }
+        }
+        if(game.turn()==='b') {
+            document.getElementById("moveSound").play();
+        }
+        else
+        {
+            document.getElementById('blackMoveSound').play();
+        }
+    }
+    function wrongMoveSound(){ document.getElementById("wrongMove").play(); }
+
     function startTimer(duration, display) {
         var timer = duration, minutes, seconds;
         interval = setInterval(function () {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
-            currenSeconds=(minutes*60)+seconds;
+            if(display===aiTimer){
+                aiCurrenSeconds=(minutes*60)+seconds;
+            }
+            else if(display===humanTimer){
+                humanCurrenSeconds=(minutes*60)+seconds;
+            }
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             display.textContent = minutes + ":" + seconds;
-            window.localStorage.setItem(""+gameId,timer);
-            if (minutes === "00" && seconds === "00") {
-                alert('Time up and Ai won the Match');
-                sendStatus('2');
+            window.localStorage.setItem(""+gameId+"ai",aiCurrenSeconds);
+            window.localStorage.setItem(""+gameId+"human",humanCurrenSeconds);
+            if (baseTime!=="0" && minutes === "00" && seconds === "00") {
+                alert('Time Up');
+                if(display===aiTimer)
+                {sendStatus('2');}
+                else
+                {
+                    sendStatus('1');
+                }
             }
             if (--timer < 0) {
                 timer = duration;
@@ -381,11 +469,22 @@
                     }
 
                 });
-                if (sts === '3') {
-                    alert('Match Draw');
-                }
                 statusCalled = true;
                 winner=sts;
+                if(sts==='1' && playerColor==='w'){
+                    winTeam='human';
+                }
+                else if (sts==='2' && playerColor==='b'){
+                    winTeam='human';
+                }
+                else
+                {
+                    winTeam='AI';
+                }
+                if (sts === '3') {
+                    alert('Match Draw');
+                    winTeam='Draw';
+                }
                 stopTimer();
                 console.log("winner"+winner)
             }
@@ -408,6 +507,10 @@
 
     function onDragStart(source, piece, position, orientation) {
 
+        if(game.turn()!=playerColor){
+            return false;
+        }
+
         if (game.game_over() || statusCalled===true) {
             return false
         } else if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
@@ -424,26 +527,29 @@
         position_to = target;
         position_from = source;
 
+
+
         if (piece === 'wP' || piece === 'bP') {
 
             game.moves({square: source})
             var posMoves = game.moves({verbose: true})
             if (movePossible(posMoves, source, target)) {
                 if (target.charAt(1) == 1 && source.charAt(1) == 2 || target.charAt(1) == 8 && source.charAt(1) == 7) {
-                    if (orientation === 'white') {
-                        if (game.turn() === 'w' && target.charAt(1) == 8) {
-                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        } else if (game.turn() === 'b' && target.charAt(1) == 1) {
-                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
-                        }
-                    } else if (orientation === 'black') {
-                        if (game.turn() === 'w' && target.charAt(1) == 1) {
-                            document.getElementById("white_promotion_pieces").style.visibility = "visible";
-                        } else if (game.turn() === 'b' && target.charAt(1) == 8) {
-                            document.getElementById("black_promotion_pieces").style.visibility = "visible";
-                        }
-
+                    // if (orientation === 'white') {
+                    if (game.turn() === 'w' && target.charAt(1) == 8) {
+                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                    } else if (game.turn() === 'b' && target.charAt(1) == 1) {
+                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
                     }
+                    //} else if (orientation === 'black') {
+                    //         if (game.turn() === 'w' && target.charAt(1) == 1) {
+                    //             document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                    //         } else if (game.turn() === 'b' && target.charAt(1) == 8) {
+                    //             document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                    //         }
+
+                    //     }
+                    // }
                 }
             }
         }
@@ -461,9 +567,17 @@
         stopCount()
         var userTime = timer;
         startCount()
+        stopTimer();
+        if(moveNo===0){
+            startTimer(aiCurrenSeconds,aiTimer);
+        }else{
+            startTimer(aiCurrenSeconds+parseInt(extraTime),aiTimer);
+        }
         sendUserMove(move, userTime)
         updateStatus()
-        window.setTimeout(makeAiMove, 250)
+        onMoveEnd('null','null')
+        playMoveSound(move)
+        window.setTimeout(makeAiMove,1000)
     }
 
 
@@ -479,18 +593,23 @@
     function sendUserMove(move, userTime) {
         moveNo++;
         var gameTillNow=game.pgn();
+        var fen=game.fen();
         $.ajax({
             url: x + "/usermoves",
             type: 'POST',
-            data: {"userMove": move.san, "timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
+            data: {"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
-            success: function () {
+            success: function (resp) {
+                humanScore=resp;
                 console.log('ajax success!!');
             },
             error: function (jqXHR, exception) {
                 console.log('Error occured!!');
             }
         });
+        if(humanScore!=undefined)
+        {
+            document.getElementById("humanScore").innerHTML=humanScore;}
     }
 
     function onMouseoverSquare(square, piece) {
@@ -504,11 +623,16 @@
         if (moves.length === 0) return
 
         // highlight the square they moused over
-        greySquare(square)
+        var fen=game.fen()
+        console.log(fen)
 
-        // highlight the possible squares for this piece
-        for (var i = 0; i < moves.length; i++) {
-            greySquare(moves[i].to)
+        if(boardFen===fen.split(' ')[[0]] && game.turn()===playerColor)
+        {  greySquare(square)
+
+            // highlight the possible squares for this piece
+            for (var i = 0; i < moves.length; i++) {
+                greySquare(moves[i].to)
+            }
         }
     }
 
@@ -520,6 +644,14 @@
     function onSnapEnd() {
         board.position(game.fen())
     }
+    function onSnapbackEnd(piece, square, position, orientation){
+        wrongMoveSound()
+
+        console.log(game.fen())
+    }
+    function onChange(oldPos, newPos){
+        boardFen=Chessboard.objToFen(newPos);
+    }
 
     function makeAiMove() {
         callAIToPlay()
@@ -527,15 +659,15 @@
         updateStatus()
         startCount()
         console.log(timer);
-        stopTimer();
-        console.log("Currenseconds"+currenSeconds);
+        stopTimer()
+        stopTimer()
+        console.log("Currenseconds"+aiCurrenSeconds);
         if(moveNo===2)
-        {startTimer(currenSeconds, display);}
+        {startTimer(humanCurrenSeconds, humanTimer);}
         else
-        {var sec=currenSeconds+parseInt(extraTime);
+        {var sec=humanCurrenSeconds+parseInt(extraTime);
             console.log('sec'+sec)
-            startTimer(sec, display);}
-
+            startTimer(sec, humanTimer);}
     }
 
     function callAIToPlay() {
@@ -557,8 +689,24 @@
         });
         //if(!isCastling(respMove)){
         var aiMove = game.move(respMove, {sloppy: true})
+        var p=game.pgn();
+        fen=game.fen();
+        console.log(p);
+        $.ajax({
+            url: x + "/aiMoveinPgn",
+            type: 'POST',
+            async: false,
+            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen},
+            success: function (resp) {
+                aiScore=JSON.parse(resp);
+                console.log(aiScore);
+            }
+        });
         //var move=""+aiMove.from+"-"+aiMove.to;
+        playMoveSound(aiMove)
         board.position(game.fen())
+        if(aiScore!=undefined)
+        {document.getElementById("aiScore").innerHTML=aiScore;}
         //}
     }
 
@@ -573,13 +721,11 @@
         if (game.in_checkmate()) {
             status = 'Game over, ' + moveColor + ' is in checkmate.'
             if (moveColor === 'White' && statusCalled === false) {
-                alert('Black won the Match');
-                stopTimer();
+                alertStatus='Black won the Match';
                 sendStatus('2')
             }
             if (moveColor === 'Black' && statusCalled === false) {
-                alert('White won the Match');
-                stopTimer();
+                alertStatus='White won the Match';
                 sendStatus('1')
             }
         }
@@ -635,10 +781,34 @@
     }
     function showPgnInDisplay(elementId,movesMade,i){
         var store;
+        var aiScoreHere;
+        var humanScoreHere;
         var onClickIsCalled=false;
         var node = document.createElement("LI");
         var a=document.createElement("a");
         // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onmouseover=function(){
+            store=i;
+            aiScoreHere=aiScore;
+            humanScoreHere=humanScore;
+            var length=movesMade.length;
+            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
+            {
+                length=length-1;
+            }
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=((length) - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board1.position(chess.fen())
+            document.getElementById("board1").style.display="block";
+        }
+        node.onmouseout=function(){
+            document.getElementById("board1").style.display="none";
+        }
+
         node.onclick=function(event){
             $('li').removeClass('active');
             $(this).addClass('active');
@@ -657,6 +827,9 @@
                 chess.undo();
             }
             board.position(chess.fen());
+            document.getElementById('moveSound').play();
+            document.getElementById('aiScore').innerHTML=aiScoreHere;
+            document.getElementById('humanScore').innerHTML=humanScoreHere;
         }
         a.textContent=""+movesMade[i];
         a.setAttribute("href","#");
@@ -664,13 +837,33 @@
         if(i===(movesMade.length-1)){
             node.classList.add("active");
         }
+        node.classList.add("displaySmallBoard")
         // node.appendChild(textnode);
         document.getElementById(elementId).appendChild(node);
     }
 
     function onMoveEnd(oldPos, newPos) {
-
+        if(alertStatus!=null){
+            if(winTeam==='human'){
+                document.getElementById("win").play();
+                document.getElementById("win").onended=function () {
+                    alert("You Won the Match");
+                };
+            }else if(winTeam==='AI'){
+                document.getElementById("lose").play();
+                document.getElementById("lose").onended=function () {
+                    alert("AI Won the Match");
+                };
+            }
+            stopTimer();
+            alertStatus=null;
+        }
     }
+
+    var board1 = Chessboard('board1', {
+        position: 'start',
+        showNotation: false
+    })
 
     var config = {
         draggable: true,
@@ -680,6 +873,8 @@
         onMouseoutSquare: onMouseoutSquare,
         onMouseoverSquare: onMouseoverSquare,
         onMoveEnd: onMoveEnd,
+        onSnapbackEnd: onSnapbackEnd,
+        onChange:onChange,
         onSnapEnd: onSnapEnd
     }
     board = Chessboard('myBoard', config)
@@ -687,8 +882,5 @@
 
 </script>
 <br><br>
-<form id="goToHome" method="post" align="center">
-    <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
-</form>
 </body>
 </html>
