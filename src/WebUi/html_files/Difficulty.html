@@ -99,6 +99,9 @@
             font-size: 20px;
             background: none;
         }
+        .skilllevel{
+            display: block;
+        }
 
     </style>
     <script type="text/javascript">
@@ -107,11 +110,16 @@
         var difficulty = null;
         var x = window.location.origin;
         var uniqueId;
-        var baseTime;
-        var skillLevel;
-        var extratime;
+        var baseTime=null;
+        var skillLevel=null;
+        var extratime=null;
+        var playerColor=null;
+        var mode='vsComp';
+        var challengeType;
         var previousSelectedButton = 0;
         window.onload = function () {
+            var url=location.href;
+           // mode=url.split('/')[1];
             $.ajax({
                 url: x + "/getUserId",
                 type: 'POST',
@@ -131,22 +139,27 @@
             if(type==='standard'){
                 baseTime=15*60;
                 extratime=0;
+                challengeType=1;
             }
             else if(type==='unlimited'){
                 baseTime=0;
                 extratime=0;
+                challengeType=2;
             }
             else if(type==='lightning'){
                 baseTime=2*60;
                 extratime=10;
+                challengeType=3;
             }
             else if(type==='blitz'){
                 baseTime=10*60;
                 extratime=30;
+                challengeType=4;
             }
             else if(type==='custom'){
                 baseTime = $('#baseTime').val() * 60;
                 extratime = $("#extratime").val();
+                challengeType=5;
             }
             // if(extraTime===null){
             //     alert(' Choose a time addition to add after each move !')
@@ -164,32 +177,58 @@
 
         function createGame(){
 
+
+            playerColor=$("input[name='playerColor']:checked").val();
+
             skillLevel = $("#skillLevel").val();
 
-            if (skillLevel === null || skillLevel === "") {
-                alert("Set a skill Level for AI")
-                return false;
-            }
+
             if (extratime === null || extratime === "") {
-                alert("Set a extra time for custom")
+                alert("Select a GameType")
                 return false;
             }
             if (baseTime === null || baseTime === "") {
-                alert("Set a baseTime for custom")
+                alert("Select a GameType")
+                return false;
+            }
+            if(mode==='vsComp') {
+                if (skillLevel === null || skillLevel === "") {
+                    alert("Set a skill Level for AI")
+                    return false;
+                }
+            }
+            if(playerColor=== null || playerColor===undefined){
+                alert('Set your Side on Board')
                 return false;
             }
 
             var x = window.location.origin;
-            $.ajax({
-                url: x + "/diff",
-                type: 'POST',
-                data: {"difficulty": difficulty},
-                success: function (response) {
-                    var gameId = response.gameId;
-                    document.location.href = x + "/vs/computer?id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime;
-                    console.log('difficulty ajax success!!');
-                }
-            });
+
+            if(mode==='vsComp') {
+                $.ajax({
+                    url: x + "/diff",
+                    type: 'POST',
+                    data: {"difficulty": difficulty},
+                    success: function (response) {
+                        var gameId = response.gameId;
+                        document.location.href = x + "/vscomputer?id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
+                        console.log('difficulty ajax success!!');
+                    }
+                });
+            }
+            else if(mode==='multi'){
+                $.ajax({
+                    url: x + "/createChallenge",
+                    type: 'POST',
+                    data: {"challengeType": challengeType},
+                    success: function (response) {
+                        var gameId = response.gameId;
+                        var token=response.token;
+                        document.location.href = x + "/waitingforopponent/"+token+"/"+gameId;
+                        console.log('difficulty ajax success!!');
+                    }
+                });
+            }
         }
 
         function setGameType(buttonNo) {
@@ -222,8 +261,8 @@
     <br>
     <br>
     <br>
-    <label for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label>
-    <input type="number" name="skillLevel" style="font-size: 20px;" max="20" min="0" id="skillLevel"> &nbsp &nbsp<span>Play As</span>    <input type="radio" name="playerColor" value="w">  White    <input type="radio" name="playerColor" value="b">  Black
+    <label class="skilllevel" for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label>
+    <input  class="skilllevel"  type="number" name="skillLevel" style="font-size: 20px;" max="20" min="0" id="skillLevel"> &nbsp &nbsp<span>Play As</span>    <input type="radio" name="playerColor" value="w">  <span>White</span>    <input type="radio" name="playerColor" value="b">  <span>Black</span>
     <br>
     <br>
     <br>
