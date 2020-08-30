@@ -1,6 +1,8 @@
 package GameLogic;
 
 
+import util.OSHelper;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -133,8 +135,19 @@ public class Stockfish {
          */
         public boolean startEngine() {
             try {
-              // engineProcess = Runtime.getRuntime().exec("/root/apache-tomcat-9.0.37/webapps/ROOT/WEB-INF/engine/stockfish");
-                engineProcess = Runtime.getRuntime().exec("C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame\\engine\\stock.exe");
+                switch (OSHelper.getOSType())
+                {
+                    case MAC:
+                        engineProcess = Runtime.getRuntime().exec("/Users/muthu-1987/git/chessgame/engine/stockfish-11-64");
+                        break;
+                    case UNIX:
+                        engineProcess = Runtime.getRuntime().exec("/root/apache-tomcat-9.0.37/webapps/ROOT/WEB-INF/engine/stockfish");
+                        break;
+                    case WINDOWS:
+                        engineProcess = Runtime.getRuntime().exec("C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame\\engine\\stock.exe");
+                        break;
+                }
+
                 processReader = new BufferedReader(new InputStreamReader(
                         engineProcess.getInputStream()));
                 processWriter = new OutputStreamWriter(
