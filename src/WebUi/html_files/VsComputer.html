@@ -283,7 +283,7 @@
         player1CurrenSeconds=parseInt(baseTime);
 
 
-        if(playerColor==='b'){
+        if(playerColor==='b' && mode==='computer'){
             makeAiMove();
             board.orientation('black')
 
@@ -360,7 +360,9 @@
         sendUserMove(move, userTime)
         updateStatus()
         startTimer(player2CurrenSeconds,player2Timer);
-        window.setTimeout(makeAiMove, 250)
+        if(mode==='computer') {
+            window.setTimeout(makeAiMove, 250)
+        }
     }
 
 
@@ -583,7 +585,7 @@
         updateStatus()
         onMoveEnd('null','null')
         playMoveSound(move)
-        if(mode==="computer") {
+        if(mode==='computer') {
             window.setTimeout(makeAiMove, 1000)
         }
     }

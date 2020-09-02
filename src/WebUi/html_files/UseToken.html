@@ -32,13 +32,12 @@
             $.ajax({
                 url: x + "/joinGame",
                 type: 'POST',
-                data:{"tokenId":token},
+                data:{"tokenId":token,"uniqueId":uniqueId},
                 success: function (response) {
                     if(response.invalid==='true'){
                         alert("The token is invalid")
                     }
                     else {
-                        console.log("uniqueId "+uniqueId);
                         if(uniqueId===response.createdUser){
                             playerColor=response.createdByPlayAs;
                         }

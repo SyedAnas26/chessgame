@@ -1,5 +1,7 @@
 package GameLogic;
 
+import org.json.JSONObject;
+
 import java.security.SecureRandom;
 import java.sql.ResultSet;
 
@@ -10,11 +12,11 @@ public class MultiPlayerManager {
     public String createChallenge(long gameId,int uniqueId,String createdByPlayAs,String challengeType) throws Exception {
 
         String token=randomString(10);
-        String sql="insert into challengeTable (ChallengeToken,CreatedByUserID,CreatedByPlayAs,ChallengeType,status,gameID) values ('"+token+"','"+uniqueId+"','"+createdByPlayAs+"','"+challengeType+"','0','"+gameId+"')";
-        DbConnector.update(sql);
+        DbConnector.update("insert into challengeTable (ChallengeToken,CreatedByUserID,CreatedByPlayAs,ChallengeType,status,gameID) values ('"+token+"','"+uniqueId+"','"+createdByPlayAs+"','"+challengeType+"','0','"+gameId+"')");
+        DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,MatchResult,GameId,GameinPgn) values('" + 2 + "','" + uniqueId + "','" + challengeType + "','" + 0 +"','" + gameId +"','" + "null" + "')");
         return token;
     }
-    public String acceptChallenge(String token) throws Exception {
+    public String acceptChallenge(String token,String uniqueId ) throws Exception {
         String resp="invalid";
          String sql="SELECT *  FROM challengeTable WHERE ChallengeToken='"+token+"'";
              resp= (String)DbConnector.get(sql, rs->{
@@ -36,8 +38,11 @@ public class MultiPlayerManager {
                }
                return "{\"invalid\":\"true\"}";
            });
-        System.out.println("Db resp "+resp);
-if(!resp.equals("{\"invalid\":\"true\"}")) {
+        JSONObject obj = new JSONObject(resp);
+if(obj.getString("invalid").equals("false")) {
+    if(!uniqueId.equals(obj.getString("createdUser"))){
+        DbConnector.update("UPDATE gamelog SET UserID2='"+uniqueId+"' WHERE GameId='"+obj.getString("gameId")+"'");
+    }
     if (resp.split(">")[1].equals("1")) {
         DbConnector.update("UPDATE challengeTable SET Status='2' WHERE ChallengeToken='" + token + "'");
     } else {

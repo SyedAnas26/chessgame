@@ -29,8 +29,9 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
         }
         else if(servletPath.equals("/joinGame")){
             String token=req.getParameter("tokenId");
+            String uniqueId=req.getParameter("uniqueId");
             System.out.println("token "+token);
-            String response=multiPlayerManager.acceptChallenge(token);
+            String response=multiPlayerManager.acceptChallenge(token,uniqueId);
             System.out.println("response "+response);
             out.print(response);
         }

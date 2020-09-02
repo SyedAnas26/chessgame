@@ -131,7 +131,7 @@ public class PlayPgnFile {
 
     }
     public List<String> getHistoryOfGames(int uniqueId){
-        String sql = "SELECT * FROM gamelog WHERE UserID1='" + uniqueId + "'";
+        String sql = "SELECT * FROM gamelog WHERE UserID1='" + uniqueId + "' OR UserID2='"+uniqueId+"'";
         List<String> games = new ArrayList<>();
         try {
             DbConnector.get(sql, rs -> {

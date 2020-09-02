@@ -1,5 +1,7 @@
 package GameLogic;
 
+import util.OSHelper;
+
 import javax.servlet.ServletException;
 import java.sql.*;
 
@@ -14,7 +16,17 @@ public class DbConnector
 
 		try {
 			Class.forName("com.mysql.jdbc.Driver");
-			con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "admin123");
+			switch (OSHelper.getOSType()){
+				case MAC:
+				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "");
+				break;
+				case UNIX:
+					con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "admin123");
+					break;
+				case WINDOWS:
+					con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "admin123");
+					break;
+			}
 			return con;
 		}
 		catch (SQLException e)

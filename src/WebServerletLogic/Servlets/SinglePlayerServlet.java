@@ -53,7 +53,7 @@ public class SinglePlayerServlet extends HttpServlet {
                 long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
                 aiManager.addMove(gameId,moveNo,userMove,gameStatus,uniqueId,userTimer,gamePgn);
-                 out.print(stc.getEvalScore(fen));
+                out.print(stc.getEvalScore(fen));
             } else if (servletPath.equals("/aiMove")){
                 int skill=Integer.parseInt(req.getParameter("skillLevel"));
                 String FEN=req.getParameter("gameFEN");
