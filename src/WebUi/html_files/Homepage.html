@@ -34,8 +34,8 @@
             });
         }
 
-        function sendRedirect(goTo) {
-             window.location.href=x+goTo+"/"+uniqueId
+        function sendRedirect(goTo,mode) {
+             window.location.href=x+goTo+"/"+uniqueId;
         }
     </script>
 </head>
@@ -43,17 +43,17 @@
 <h2 align="center" id="welcome"></h2>
 <div id="buttons">
     <br>
-    <input  type="button" align="center" value="Click Here to Play Chess Game Vs Computer" onclick="sendRedirect('/difficulty')"><br>
+    <input  type="button" align="center" value="Click Here to Play Chess Game Vs Computer" onclick="sendRedirect('/difficulty/vscomp')"><br>
 <br>
-    <input  type="button" align="center" value="Click Here to Create a Challenge " onclick="sendRedirect('/difficulty')"><br>
+    <input  type="button" align="center" value="Click Here to Create a Challenge " onclick="sendRedirect('/difficulty/multi')"><br>
     <br>
-    <input  type="button" align="center" value="Click Here to Play Chess with ur Friends using Token" onclick="sendRedirect('/usetoken')"><br>
+    <input  type="button" align="center" value="Click Here to Play Chess with ur Friends using Token" onclick="sendRedirect('/usetoken','null')"><br>
     <br>
     <form action="/loadpgn" method="post">
 <input  type="submit" align="center" value="Click Here to Play a Chess Pgn File"><br>
 </form>
     <br>
-    <input  type="button" align="center" value="Click Here to Watch ur game History" onclick="sendRedirect('/watchHistory')"><br>
+    <input  type="button" align="center" value="Click Here to Watch ur game History" onclick="sendRedirect('/watchHistory','n')"><br>
 <form action="/logout" method="post" align="center" >
     <input type="submit" value="Logout" >
 </form>

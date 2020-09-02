@@ -74,3 +74,20 @@ create table pgnlog
     fileName    varchar(45) not null,
     GameinPgn   longtext    not null
 );
+
+
+
+
+# updated Queries
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `idChallengeTable` `idChallengeTable` INT NOT NULL AUTO_INCREMENT ;
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `ChallengeType` `ChallengeType` INT NOT NULL ;
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `ChallengeType` `ChallengeType` VARCHAR(20) NOT NULL ;

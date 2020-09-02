@@ -1,8 +1,8 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <title>Difficulty</title>
     <style type="text/css">
 
@@ -101,6 +101,7 @@
         }
         .skilllevel{
             display: block;
+            display:inline-block;
         }
 
     </style>
@@ -114,12 +115,13 @@
         var skillLevel=null;
         var extratime=null;
         var playerColor=null;
-        var mode='vsComp';
+        var mode;
         var challengeType;
         var previousSelectedButton = 0;
         window.onload = function () {
             var url=location.href;
-           // mode=url.split('/')[1];
+            mode=url.split('/')[4];
+            console.log("mode = "+mode);
             $.ajax({
                 url: x + "/getUserId",
                 type: 'POST',
@@ -132,6 +134,12 @@
                     console.log('difficulty ajax success!!');
                 }
             });
+            if(mode==='multi'){
+                document.getElementsByClassName("skilllevel")[0].style.display="none";
+                document.getElementsByClassName("skilllevel")[1].style.display="none";
+
+            }
+
         }
 
         function clickResp(type,buttonNo) {
@@ -159,7 +167,7 @@
             else if(type==='custom'){
                 baseTime = $('#baseTime').val() * 60;
                 extratime = $("#extratime").val();
-                challengeType=5;
+                challengeType=5+"&"+baseTime+"&"+extratime;
             }
             // if(extraTime===null){
             //     alert(' Choose a time addition to add after each move !')
@@ -204,14 +212,14 @@
 
             var x = window.location.origin;
 
-            if(mode==='vsComp') {
+            if(mode==='vscomp') {
                 $.ajax({
                     url: x + "/diff",
                     type: 'POST',
                     data: {"difficulty": difficulty},
                     success: function (response) {
                         var gameId = response.gameId;
-                        document.location.href = x + "/vscomputer?id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
+                        document.location.href = x + "/vs?mode=computer&id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
                         console.log('difficulty ajax success!!');
                     }
                 });
@@ -220,7 +228,7 @@
                 $.ajax({
                     url: x + "/createChallenge",
                     type: 'POST',
-                    data: {"challengeType": challengeType},
+                    data: {"challengeType": challengeType,"uniqueId":uniqueId,"createdPlayAs":playerColor},
                     success: function (response) {
                         var gameId = response.gameId;
                         var token=response.token;
@@ -261,8 +269,7 @@
     <br>
     <br>
     <br>
-    <label class="skilllevel" for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label>
-    <input  class="skilllevel"  type="number" name="skillLevel" style="font-size: 20px;" max="20" min="0" id="skillLevel"> &nbsp &nbsp<span>Play As</span>    <input type="radio" name="playerColor" value="w">  <span>White</span>    <input type="radio" name="playerColor" value="b">  <span>Black</span>
+    <label class="skilllevel" for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label><input  class="skilllevel"  type="number" name="skillLevel" style="font-size: 30px;" max="20" min="0" id="skillLevel">  &nbsp  &nbsp<span>Play As</span>    <input type="radio" name="playerColor" value="w">    <span>White</span>    <input type="radio" name="playerColor" value="b">  <span>Black</span>
     <br>
     <br>
     <br>

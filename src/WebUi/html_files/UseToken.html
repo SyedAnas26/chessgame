@@ -6,14 +6,18 @@
     <title>Waiting</title>
     <script type="text/javascript">
         var x=window.location.origin;
+        var baseTime;
+        var playerColor;
+        var extraTime;
+        var uniqueId;
         window.onload=function () {
             $.ajax({
                 url: x + "/getUserId",
                 type: 'POST',
                 success: function (response) {
-                   var  userId = response.user_id;
-                   var  userName = response.user_name;
-                   var  uniqueId = response.unique_id;
+                    var  userId = response.user_id;
+                    var  userName = response.user_name;
+                    uniqueId = response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
                         location = '/loginpage';
@@ -24,18 +28,50 @@
 
 
         function joinGame(){
+            var token=$('#token').val();
             $.ajax({
                 url: x + "/joinGame",
                 type: 'POST',
                 data:{"tokenId":token},
-                success: function (respone) {
-                    if(respone.gameId==='0'){
-                        alert("The token is already Used")
+                success: function (response) {
+                    if(response.invalid==='true'){
+                        alert("The token is invalid")
                     }
                     else {
-                        location = '/vs/' + token + "/" + respone.gameId;
+                        console.log("uniqueId "+uniqueId);
+                        if(uniqueId===response.createdUser){
+                            playerColor=response.createdByPlayAs;
+                        }
+                        else if(response.createdByPlayAs==='w'){
+                            playerColor='b';
+                        }
+                        else if(response.createdByPlayAs==='b'){
+                            playerColor='w';
+                        }
+                        if(response.challengeType==='1'){
+                            baseTime=15*60;
+                            extratime=0;
+                        }
+                        else if(response.challengeType==='2'){
+                            baseTime=0;
+                            extratime=0;
+                        }
+                        else if(response.challengeType==='3'){
+                            baseTime=2*60;
+                            extratime=10;
+                        }
+                        else if(response.challengeType==='4'){
+                            baseTime=10*60;
+                            extratime=30;
+                        }
+                        else if(response.challengeType.startsWith("5")){
+                            baseTime=response.challengeType.split('&')[1];
+                            extratime=response.challengeType.split('&')[2];
+                        }
+
+                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId+"&token="+token+"&time="+baseTime+"+"+extratime+"+"+playerColor;
                     }
-                },
+                }
             });
         }
     </script>

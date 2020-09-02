@@ -171,7 +171,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>VsComputer</servlet-name>
-        <url-pattern>/vscomputer/*</url-pattern>
+        <url-pattern>/vs/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>waiting</servlet-name>

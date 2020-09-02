@@ -91,8 +91,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
           integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
-    <script type="text/javascript" src="../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
         var statusCalled = false;
         var alterStatus=null;
@@ -107,14 +107,14 @@
         var gameId;
         var winner;
         var extraTime;
-        var aiCurrenSeconds;
-        var humanCurrenSeconds;
+        var player2CurrenSeconds;
+        var player1CurrenSeconds;
         var uniqueId;
         var gamePgnSoFar;
         var alertStatus;
         var winTeam;
-        var aiScore;
-        var humanScore;
+        var player2Score;
+        var player1Score;
         var boardFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
 
         $.ajax({
@@ -199,8 +199,8 @@
 
 <div id="pgnBox">
     <span style="margin-left: 80px; font-size:30px;">Eval Score</span><br>
-    <span style="font-size: 22px;">Your Score: <span style="font-size: 22px;" id="humanScore"></span></span>
-    <span style="margin-left: 40px; font-size:22px;" style="display: inline-block;">AI Score: <span style="font-size: 22px;" id="aiScore"></span></span>
+    <span style="font-size: 22px;">Your Score: <span style="font-size: 22px;" id="player1Score"></span></span>
+    <span style="margin-left: 40px; font-size:22px;" style="display: inline-block;">Opp Score: <span style="font-size: 22px;" id="player2Score"></span></span>
 
     <div id="showPgn">
         <h3 style="margin-left:55px;">PGN:</h3>
@@ -216,11 +216,11 @@
     <div id="board1" style="width: 200px"></div>
     <br>
     <br>
-    <div><span class="time" id="aiTime">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Ai Time </span></div>
+    <div><span class="time" id="player2Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Opponent Time </span></div>
     <br>
     <br>
     <br>
-    <div><span class="time" id="humanTime">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Your Time </span></div>
+    <div><span class="time" id="player1Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Your Time </span></div>
     <br>
     <br>
     <label style="font-size: 25px">Status:</label>
@@ -241,9 +241,10 @@
     var interval;
     var moveNo=0;
     var baseTime;
-    var aiTimer = document.querySelector('#aiTime');
-    var humanTimer = document.querySelector('#humanTime');
+    var player2Timer = document.querySelector('#player2Time');
+    var player1Timer = document.querySelector('#player1Time');
     var playerColor;
+    var mode;
 
     startCount()
 
@@ -251,12 +252,14 @@
     window.onload=function () {
 
         var url=location.href;
-        difficulty=url.split('&skill=')[1].split('&')[0];
-        gameId=url.split('=')[2];
-        gameId=gameId.split('&')[0];
+        mode=url.split('mode=')[1].split('&')[0];
+        if(mode==="computer") {
+            difficulty = url.split('&skill=')[1].split('&')[0];
+        }
+        gameId=url.split('&gameid=')[1].split('&')[0];
         extraTime=url.split('+')[1];
         playerColor=url.split('+')[2];
-        uniqueId=url.split('=')[1].split('&')[0];
+        uniqueId=url.split('id=')[1].split('&')[0];
         baseTime=url.split('&time=')[1].split('+')[0];
         console.log("extraTime "+extraTime)
         console.log("gameId "+gameId)
@@ -276,8 +279,8 @@
             }
         })
 
-        aiCurrenSeconds=parseInt(baseTime);
-        humanCurrenSeconds=parseInt(baseTime);
+        player2CurrenSeconds=parseInt(baseTime);
+        player1CurrenSeconds=parseInt(baseTime);
 
 
         if(playerColor==='b'){
@@ -313,18 +316,18 @@
             }
 
             moveNo=filtered.length;
-            aiCurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"ai"));
-            humanCurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"human"));
+            player2CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"ai"));
+            player1CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"human"));
             console.log(extraTime)
             // console.log(currenSeconds)
             var secondsFromStorage;
             var display
             if(game.turn()==='b' )
-            { secondsFromStorage=aiCurrenSeconds;
-                display=aiTimer;}
+            { secondsFromStorage=player2CurrenSeconds;
+                display=player2Timer;}
             else
-            { secondsFromStorage=humanCurrenSeconds;
-                display=humanTimer;}
+            { secondsFromStorage=player1CurrenSeconds;
+                display=player1Timer;}
             if(!statusCalled)
             {
                 console.log('sec'+secondsFromStorage)
@@ -356,7 +359,7 @@
         board.position(game.fen())
         sendUserMove(move, userTime)
         updateStatus()
-        startTimer(aiCurrenSeconds,aiTimer);
+        startTimer(player2CurrenSeconds,player2Timer);
         window.setTimeout(makeAiMove, 250)
     }
 
@@ -387,24 +390,26 @@
         interval = setInterval(function () {
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
-            if(display===aiTimer){
-                aiCurrenSeconds=(minutes*60)+seconds;
+            if(display===player2Timer){
+                player2CurrenSeconds=(minutes*60)+seconds;
             }
-            else if(display===humanTimer){
-                humanCurrenSeconds=(minutes*60)+seconds;
+            else if(display===player1Timer){
+                player1CurrenSeconds=(minutes*60)+seconds;
             }
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             display.textContent = minutes + ":" + seconds;
-            window.localStorage.setItem(""+gameId+"ai",aiCurrenSeconds);
-            window.localStorage.setItem(""+gameId+"human",humanCurrenSeconds);
+            window.localStorage.setItem(""+gameId+"ai",player2CurrenSeconds);
+            window.localStorage.setItem(""+gameId+"human",player1CurrenSeconds);
             if (baseTime!=="0" && minutes === "00" && seconds === "00") {
-                alert('Time Up');
-                if(display===aiTimer)
-                {sendStatus('2');}
+                if(display===player2Timer)
+                {
+                    alert('Time Up White Won');
+                    sendStatus('1');}
                 else
                 {
-                    sendStatus('1');
+                    alert('Time Up Black Won');
+                    sendStatus('2');
                 }
             }
             if (--timer < 0) {
@@ -507,7 +512,7 @@
 
     function onDragStart(source, piece, position, orientation) {
 
-        if(game.turn()!=playerColor){
+        if(game.turn()!==playerColor){
             return false;
         }
 
@@ -568,16 +573,19 @@
         var userTime = timer;
         startCount()
         stopTimer();
+
         if(moveNo===0){
-            startTimer(aiCurrenSeconds,aiTimer);
+            startTimer(player2CurrenSeconds,player2Timer);
         }else{
-            startTimer(aiCurrenSeconds+parseInt(extraTime),aiTimer);
+            startTimer(player2CurrenSeconds+parseInt(extraTime),player2Timer);
         }
         sendUserMove(move, userTime)
         updateStatus()
         onMoveEnd('null','null')
         playMoveSound(move)
-        window.setTimeout(makeAiMove,1000)
+        if(mode==="computer") {
+            window.setTimeout(makeAiMove, 1000)
+        }
     }
 
 
@@ -600,16 +608,16 @@
             data: {"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
             success: function (resp) {
-                humanScore=resp;
+                player1Score=resp;
                 console.log('ajax success!!');
             },
             error: function (jqXHR, exception) {
                 console.log('Error occured!!');
             }
         });
-        if(humanScore!=undefined)
+        if(player1Score!=undefined)
         {
-            document.getElementById("humanScore").innerHTML=humanScore;}
+            document.getElementById("player1Score").innerHTML=player1Score;}
     }
 
     function onMouseoverSquare(square, piece) {
@@ -661,13 +669,13 @@
         console.log(timer);
         stopTimer()
         stopTimer()
-        console.log("Currenseconds"+aiCurrenSeconds);
+        console.log("Currenseconds"+player2CurrenSeconds);
         if(moveNo===2)
-        {startTimer(humanCurrenSeconds, humanTimer);}
+        {startTimer(player1CurrenSeconds, player1Timer);}
         else
-        {var sec=humanCurrenSeconds+parseInt(extraTime);
+        {var sec=player1CurrenSeconds+parseInt(extraTime);
             console.log('sec'+sec)
-            startTimer(sec, humanTimer);}
+            startTimer(sec, player1Timer);}
     }
 
     function callAIToPlay() {
@@ -698,15 +706,15 @@
             async: false,
             data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen},
             success: function (resp) {
-                aiScore=JSON.parse(resp);
-                console.log(aiScore);
+                player2Score=JSON.parse(resp);
+                console.log(player2Score);
             }
         });
         //var move=""+aiMove.from+"-"+aiMove.to;
         playMoveSound(aiMove)
         board.position(game.fen())
-        if(aiScore!=undefined)
-        {document.getElementById("aiScore").innerHTML=aiScore;}
+        if(player2Score!=undefined)
+        {document.getElementById("player2Score").innerHTML=player2Score;}
         //}
     }
 
@@ -781,16 +789,16 @@
     }
     function showPgnInDisplay(elementId,movesMade,i){
         var store;
-        var aiScoreHere;
-        var humanScoreHere;
+        var player2ScoreHere;
+        var player1ScoreHere;
         var onClickIsCalled=false;
         var node = document.createElement("LI");
         var a=document.createElement("a");
         // var textnode = document.createTextNode(""+movesMade[i]);
         node.onmouseover=function(){
             store=i;
-            aiScoreHere=aiScore;
-            humanScoreHere=humanScore;
+            player2ScoreHere=player2Score;
+            player1ScoreHere=player1Score;
             var length=movesMade.length;
             if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
             {
@@ -828,8 +836,8 @@
             }
             board.position(chess.fen());
             document.getElementById('moveSound').play();
-            document.getElementById('aiScore').innerHTML=aiScoreHere;
-            document.getElementById('humanScore').innerHTML=humanScoreHere;
+            document.getElementById('player2Score').innerHTML=player2ScoreHere;
+            document.getElementById('player1Score').innerHTML=player1ScoreHere;
         }
         a.textContent=""+movesMade[i];
         a.setAttribute("href","#");
