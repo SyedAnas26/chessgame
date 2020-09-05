@@ -40,7 +40,7 @@ public class AiManager {
                  time=Integer.parseInt(userTime);
                 System.out.println("UserMove : " + userMove);
             }
-            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,TimeTaken,GameStatus,GameTillNow) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + time + "','" + gameStatus + "','" + gamePgn + "')");
+            DbConnector.update("insert into gamemoves (GameID,MoveNo,Moves,MovedBy,TimeTaken,GameStatus,GameTillNow) values('" + gameId + "','" + moveNo + "','" + userMove + "','" + uniqueId + "','"+ time + "','" + gameStatus + "','" + gamePgn + "')");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,5 +78,25 @@ public class AiManager {
             }
             return null;
         });
+    }
+
+    public String getTotalTime(int uniqueId, long gameId) throws Exception {
+        String sql="SELECT * FROM gamemoves WHERE NOT MovedBy='"+uniqueId+"' AND GameID='"+gameId+"'";
+        List<Integer> timeTaken=new ArrayList<>();
+        int totalTime=0;
+        int totalMoves=0;
+        DbConnector.get(sql,rs->{
+            while (rs.next()){
+                timeTaken.add(rs.getInt("TimeTaken"));
+            }
+            return timeTaken;
+        });
+        for (int time:timeTaken){
+            System.out.println("time "+time);
+            totalTime+=time;
+        }
+        System.out.println(totalTime);
+            totalMoves=timeTaken.size();
+        return "{\"totalMoves\":\""+totalMoves+"\",\"totalTime\":\""+totalTime+"\"}";
     }
 }

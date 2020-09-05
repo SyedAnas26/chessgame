@@ -265,14 +265,14 @@
     <input align="center" id="button2"  type="submit"  onclick="clickResp('unlimited',2)" value="Unlimited"> &nbsp &nbsp <span>[Base Time: Unlimited , Increment Time: Unlimited ]</span><br><br>
     <input align="center" id="button3"  type="submit" onclick="clickResp('lightning',3)" value="Lightning"> &nbsp &nbsp <span>[Base Time: 2mins , Increment Time: 10 secs ]</span><br><br>
     <input align="center" id="button4"  type="submit" onclick="clickResp('blitz',4)" value="Blitz"> &nbsp &nbsp <span>[Base Time: 10mins , Increment Time: 30 secs ]</span><br><br>
-    <input type="submit" id="button5" onclick="clickResp('custom',5)" value="Custom"> &nbsp &nbsp <span>Base Time</span> <input type="number" name="baseTime" id="baseTime" min="1" max="15" value="5" style="font-size: 20px">   <span>Extra Time</span>  <input type="number" name="extratime" id="extratime" min="0" max="60" value="10" style="font-size: 20px">
+    <input type="submit" id="button5" onclick="clickResp('custom',5)" value="Custom"> &nbsp &nbsp <span>Base Time</span> <input type="number" name="baseTime" id="baseTime" min="1" max="30" value="5" onchange="clickResp('custom',5)" style="font-size: 20px">   <span>Extra Time</span>  <input type="number" name="extratime" id="extratime" min="0" max="60" value="10" onchange="clickResp('custom',5)" style="font-size: 20px">
     <br>
     <br>
     <br>
     <label class="skilllevel" for="skillLevel" style="font-size: 30px;">AI Skill Level [0-20]:</label><input  class="skilllevel"  type="number" name="skillLevel" style="font-size: 30px;" max="20" min="0" id="skillLevel">  &nbsp  &nbsp<span>Play As</span>    <input type="radio" name="playerColor" value="w">    <span>White</span>    <input type="radio" name="playerColor" value="b">  <span>Black</span>
     <br>
     <br>
-    <br>
+    <br>x
     <input type="button" id="createGame" onclick="return createGame()" value="Create Game">
 </div>
 <br>

@@ -5,11 +5,7 @@
 
 
         li:hover {
-            background-color: lightgreen;
-            color: #134B7C;
-            padding: 5px;
-            width: 50px;
-
+            cursor: pointer;
         }
         a{
             color: #1080E1;
@@ -18,7 +14,7 @@
             cursor: pointer;
         }
         #board1{
-            display: none;
+            visibility:hidden;
         }
 
         .active a{
@@ -70,7 +66,7 @@
 
         #timerBox {
             background-color: white;
-            width: 20%;
+            width:500px;
             height: 550px;
             border: 2px solid white;
             padding-top: 100px;
@@ -107,6 +103,7 @@
         var gameId;
         var winner;
         var extraTime;
+        var notWrong;
         var player2CurrenSeconds;
         var player1CurrenSeconds;
         var uniqueId;
@@ -212,6 +209,7 @@
     <br>
     <button onclick="saveTextAsFile()">Save Pgn to File</button>
 </div>
+
 <div id="timerBox">
     <div id="board1" style="width: 200px"></div>
     <br>
@@ -245,6 +243,8 @@
     var player1Timer = document.querySelector('#player1Time');
     var playerColor;
     var mode;
+    var lastP1currenSec;
+    var lastP2currenSec;
 
     startCount()
 
@@ -257,10 +257,10 @@
             difficulty = url.split('&skill=')[1].split('&')[0];
         }
         gameId=url.split('&gameid=')[1].split('&')[0];
-        extraTime=url.split('+')[1];
+        extraTime=parseInt(url.split('+')[1]);
         playerColor=url.split('+')[2];
         uniqueId=url.split('id=')[1].split('&')[0];
-        baseTime=url.split('&time=')[1].split('+')[0];
+        baseTime=parseInt(url.split('&time=')[1].split('+')[0]);
         console.log("extraTime "+extraTime)
         console.log("gameId "+gameId)
         console.log("skillLevel "+difficulty)
@@ -278,11 +278,8 @@
                 console.log("gameSoFar "+gamePgnSoFar);
             }
         })
-
         player2CurrenSeconds=parseInt(baseTime);
         player1CurrenSeconds=parseInt(baseTime);
-
-
         if(playerColor==='b' && mode==='computer'){
             makeAiMove();
             board.orientation('black')
@@ -345,7 +342,7 @@
     function promotePiece(piece) {
         var promMove
         stopCount();
-        var userTime = timer;
+        var userTime = baseTime-player1CurrenSeconds;
         console.log("timer on prom" + userTime)
         document.getElementById("white_promotion_pieces").style.visibility = "hidden";
         document.getElementById("black_promotion_pieces").style.visibility = "hidden";
@@ -357,6 +354,7 @@
         }
         var move = game.move(promMove)
         board.position(game.fen())
+
         sendUserMove(move, userTime)
         updateStatus()
         startTimer(player2CurrenSeconds,player2Timer);
@@ -364,6 +362,10 @@
             window.setTimeout(makeAiMove, 250)
         }
     }
+
+    document.body.addEventListener("click", function (evt) {
+        document.getElementById("board1").style.visibility="hidden";
+    });
 
 
     function stopTimer() {
@@ -375,6 +377,7 @@
         for(var i=0;i<san.length;i++){
             if(san.charAt(i)==='x'){
                 document.getElementById("captureSound").play();
+                return;
             }
         }
         if(game.turn()==='b') {
@@ -403,7 +406,7 @@
             display.textContent = minutes + ":" + seconds;
             window.localStorage.setItem(""+gameId+"ai",player2CurrenSeconds);
             window.localStorage.setItem(""+gameId+"human",player1CurrenSeconds);
-            if (baseTime!=="0" && minutes === "00" && seconds === "00") {
+            if (baseTime!==0 && minutes === "00" && seconds === "00") {
                 if(display===player2Timer)
                 {
                     alert('Time Up White Won');
@@ -423,7 +426,7 @@
     function saveTextAsFile()
     {
         var result='';
-        if(statusCalled=true){
+        if(statusCalled===true){
             if(winner==='1'){
                 result=' 1-0';
             }
@@ -465,7 +468,8 @@
                         "gameStatus": sts,
                         "gamePgn": gamePgn,
                         "gameId": gameId,
-                        "moveNo": moveNo
+                        "moveNo": moveNo,
+                        "uniqueId":uniqueId
                     },
                     success: function () {
 
@@ -561,6 +565,10 @@
             }
         }
 
+        if(source===target){
+            notWrong=true;
+        }
+
         // see if the move is legal
         var move = game.move({
             from: source,
@@ -572,14 +580,23 @@
 
         var x = window.location.origin;
         stopCount()
-        var userTime = timer;
+        if(moveNo>0){
+            var uTime = lastP1currenSec-player1CurrenSeconds;
+            var u=Math.abs(uTime)-extraTime;
+            var userTime=Math.abs(u);
+            lastP1currenSec=player1CurrenSeconds;
+        }
+        else{
+            userTime=0;
+            lastP1currenSec=player1CurrenSeconds;
+
+        }
         startCount()
         stopTimer();
-
         if(moveNo===0){
             startTimer(player2CurrenSeconds,player2Timer);
         }else{
-            startTimer(player2CurrenSeconds+parseInt(extraTime),player2Timer);
+            startTimer(player2CurrenSeconds+extraTime,player2Timer);
         }
         sendUserMove(move, userTime)
         updateStatus()
@@ -589,7 +606,6 @@
             window.setTimeout(makeAiMove, 1000)
         }
     }
-
 
     function movePossible(posMoves, source, target) {
         for (var i = 0; i < posMoves.length; i++) {
@@ -607,17 +623,19 @@
         $.ajax({
             url: x + "/usermoves",
             type: 'POST',
-            data: {"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
+            data: {"uniqueId":uniqueId,"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
             success: function (resp) {
-                player1Score=resp;
+                var t=parseInt(resp.totalTime);
+                var m=parseInt(resp.totalMoves);
+                // player2CurrenSeconds=(baseTime-t)+(m*extraTime);
                 console.log('ajax success!!');
             },
             error: function (jqXHR, exception) {
                 console.log('Error occured!!');
             }
         });
-        if(player1Score!=undefined)
+        if(player1Score!==undefined)
         {
             document.getElementById("player1Score").innerHTML=player1Score;}
     }
@@ -655,8 +673,10 @@
         board.position(game.fen())
     }
     function onSnapbackEnd(piece, square, position, orientation){
-        wrongMoveSound()
-
+        if(!notWrong) {
+            wrongMoveSound()
+        }
+        notWrong=false;
         console.log(game.fen())
     }
     function onChange(oldPos, newPos){
@@ -675,7 +695,7 @@
         if(moveNo===2)
         {startTimer(player1CurrenSeconds, player1Timer);}
         else
-        {var sec=player1CurrenSeconds+parseInt(extraTime);
+        {var sec=player1CurrenSeconds+extraTime;
             console.log('sec'+sec)
             startTimer(sec, player1Timer);}
     }
@@ -706,9 +726,12 @@
             url: x + "/aiMoveinPgn",
             type: 'POST',
             async: false,
-            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen},
+            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen,"aiTime":"1"},
             success: function (resp) {
-                player2Score=JSON.parse(resp);
+                var t=parseInt(resp.totalTime);
+                var m=parseInt(resp.totalMoves);
+                //player1CurrenSeconds=(baseTime-t)+(m*extraTime);
+                // player2Score=JSON.parse(resp);
                 console.log(player2Score);
             }
         });
@@ -813,11 +836,11 @@
                 chess.undo();
             }
             board1.position(chess.fen())
-            document.getElementById("board1").style.display="block";
+            document.getElementById("board1").style.visibility="visible";
         }
-        node.onmouseout=function(){
-            document.getElementById("board1").style.display="none";
-        }
+        // node.onmouseout=function(){
+        //     document.getElementById("board1").style.visibility="hidden";
+        // }
 
         node.onclick=function(event){
             $('li').removeClass('active');
@@ -838,8 +861,8 @@
             }
             board.position(chess.fen());
             document.getElementById('moveSound').play();
-            document.getElementById('player2Score').innerHTML=player2ScoreHere;
-            document.getElementById('player1Score').innerHTML=player1ScoreHere;
+            // document.getElementById('player2Score').innerHTML=player2ScoreHere;
+            // document.getElementById('player1Score').innerHTML=player1ScoreHere;
         }
         a.textContent=""+movesMade[i];
         a.setAttribute("href","#");

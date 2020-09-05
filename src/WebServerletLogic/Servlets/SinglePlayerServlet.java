@@ -46,14 +46,17 @@ public class SinglePlayerServlet extends HttpServlet {
 
             } else if (servletPath.equals("/usermoves") || servletPath.equals("/gamestatus")) {
                 String userTimer=req.getParameter("timeTaken");
+                System.out.println("UT"+userTimer);
                 String userMove=req.getParameter("userMove");
+                int uniqueId=Integer.parseInt(req.getParameter("uniqueId"));
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn=req.getParameter("gamePgn");
                 String fen=req.getParameter("FEN");
                 long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
                 aiManager.addMove(gameId,moveNo,userMove,gameStatus,uniqueId,userTimer,gamePgn);
-                out.print(stc.getEvalScore(fen));
+                String res=aiManager.getTotalTime(uniqueId,gameId);
+                out.print(res);
             } else if (servletPath.equals("/aiMove")){
                 int skill=Integer.parseInt(req.getParameter("skillLevel"));
                 String FEN=req.getParameter("gameFEN");
@@ -63,12 +66,15 @@ public class SinglePlayerServlet extends HttpServlet {
             }else if (servletPath.equals("/aiMoveinPgn")){
                 long gameId=Long.parseLong(req.getParameter("gameId"));
                 int moveNo=Integer.parseInt(req.getParameter("moveNo"));
+                String aiTime=req.getParameter("aiTime");
+                System.out.println("AT "+aiTime);
                 String aimove=req.getParameter("aiMovePgn");
                 String fen=req.getParameter("FEN");
                 String game=req.getParameter("gamePgn");
                 System.out.println(game);
-                aiManager.addMove(gameId,moveNo,aimove,null,uniqueId,"0",game);
-                out.print(stc.getEvalScore(fen));
+                aiManager.addMove(gameId,moveNo,aimove,null,0,aiTime,game);
+                String res=aiManager.getTotalTime(0,gameId);
+                out.print(res);
             }
             else if(servletPath.equals("/getGamePosition")){
                 uniqueId=Integer.parseInt(req.getParameter("uniqueId"));
