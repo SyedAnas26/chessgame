@@ -66,7 +66,7 @@
 
         #timerBox {
             background-color: white;
-            width:500px;
+            width:350px;
             height: 550px;
             border: 2px solid white;
             padding-top: 100px;
@@ -280,10 +280,10 @@
         })
         player2CurrenSeconds=parseInt(baseTime);
         player1CurrenSeconds=parseInt(baseTime);
-        if(playerColor==='b' && mode==='computer'){
-            makeAiMove();
+        if(playerColor==='b'){
+            if(mode==='computer')
+            { makeAiMove();}
             board.orientation('black')
-
         }
     }
 
@@ -295,7 +295,7 @@
             board.position(game.fen());
             var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
             var filtered = arr.filter(function (el) {
-                return el!="";
+                return el!=="";
             });
             console.log(arr[arr.length-1])
             if(arr[arr.length-1]==="0-1"){

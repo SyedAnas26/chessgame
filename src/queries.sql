@@ -97,7 +97,7 @@ ALTER TABLE `chessgame_database`.`gamelog`
 DROP FOREIGN KEY `fk_gameid`;
 ALTER TABLE `chessgame_database`.`gamelog`
 DROP INDEX `fk_gameid` ;
-;
+
 
 ALTER TABLE `chessgame_database`.`gamelog`
 CHANGE COLUMN `GameFormat` `GameFormat` VARCHAR(20) NOT NULL ;
