@@ -1,12 +1,13 @@
-create table gamemoves
+create table challengetable
 (
-    GameID            int         not null,
-    MoveNo            int         not null,
-    Moves             varchar(45) not null,
-    TimeTaken         int         not null,
-    DrawClaimedStatus int         null,
-    GameMoveId        int auto_increment
-        primary key
+    idChallengeTable int         not null
+        primary key,
+    ChallengeToken   varchar(10) not null,
+    CreatedByUserID  int         not null,
+    CreatedByPlayAs  varchar(1)  not null,
+    ChallengeType    tinyint     not null,
+    Status           tinyint     null,
+    gameID           bigint      not null
 );
 
 create table login
@@ -20,20 +21,41 @@ create table login
         primary key
 );
 
+
+
+create table gamemoves
+(
+    GameID      bigint      not null,
+    MoveNo      int         not null,
+    Moves       varchar(45) not null,
+    TimeTaken   int         not null,
+    GameStatus  int         null,
+    GameMoveId  int auto_increment
+        primary key,
+    GameTillNow longtext    null
+);
+
+create index fk_gameid
+    on gamemoves (GameID);
+
+
 create table gamelog
 (
-    idGameLog   int     not null
+    idGameLog   int auto_increment
         primary key,
-    GameType    tinyint not null,
-    UserID1     int     null,
-    UserID2     int     null,
-    GameFormat  int     not null,
-    GameStatus  int     not null,
-    MatchResult int     not null,
+    GameType    tinyint  not null,
+    UserID1     int      null,
+    UserID2     int      null,
+    GameFormat  int      not null,
+    MatchResult int      not null,
+    GameId      bigint   null,
+    GameinPgn   longtext null,
     constraint UserID1_FK
         foreign key (UserID1) references login (UserId),
     constraint UserID2_FK
-        foreign key (UserID2) references login (UserId)
+        foreign key (UserID2) references login (UserId),
+    constraint fk_gameid
+        foreign key (GameId) references gamemoves (GameID)
 );
 
 create index UserID1_FK_idx
@@ -41,41 +63,6 @@ create index UserID1_FK_idx
 
 create index UserID2FK_idx
     on gamelog (UserID2);
-
-create table challengetable
-(
-    idChallengeTable int         not null
-        primary key,
-    ChallengeToken   varchar(10) not null,
-    CreatedByUserID  int         not null,
-    CreatedByPlayAs  tinyint(1)  not null,
-    ChallengeType    tinyint     not null,
-    Status           tinyint     null
-);
-
-
-
-//TO change big int GameID
-
-ALTER TABLE `chessgame_database`.`gamelog`
-CHANGE COLUMN `idGameLog` `idGameLog` INT NOT NULL AUTO_INCREMENT;
-
-ALTER TABLE `chessgame_database`.`gamemoves`
-CHANGE COLUMN `DrawClaimedStatus` `GameStatus` INT NULL DEFAULT NULL
-
-
-ALTER TABLE `chessgame_database`.`gamelog`
-ADD COLUMN `GameId` BIGINT NULL DEFAULT NULL AFTER `MatchResult`,
-ADD COLUMN `GameinPgn` LONGTEXT NULL AFTER `GameId`,
-
-
-CREATE INDEX fk_gameid on gamelod (GameId);
-CREATE INDEX fk_gameid on gamemoves (GameID);
-
-
-ALTER TABLE gamelog ADD FOREIGN KEY(GameId) REFERENCES gamemoves(GameID);
-
-ALTER TABLE gamelog DROP COLUMN GameStatus;
 
 
 create table pgnlog
@@ -90,8 +77,27 @@ create table pgnlog
 
 
 
- ALTER TABLE gamemoves ADD
- GameTillNow longtext;
+
+# updated Queries
 
 
-//Updated in Server
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `idChallengeTable` `idChallengeTable` INT NOT NULL AUTO_INCREMENT ;
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `ChallengeType` `ChallengeType` INT NOT NULL ;
+
+
+ALTER TABLE `chessgame_database`.`challengetable`
+CHANGE COLUMN `ChallengeType` `ChallengeType` VARCHAR(20) NOT NULL ;
+
+
+ALTER TABLE `chessgame_database`.`gamelog`
+DROP FOREIGN KEY `fk_gameid`;
+ALTER TABLE `chessgame_database`.`gamelog`
+DROP INDEX `fk_gameid` ;
+
+
+ALTER TABLE `chessgame_database`.`gamelog`
+CHANGE COLUMN `GameFormat` `GameFormat` VARCHAR(20) NOT NULL ;

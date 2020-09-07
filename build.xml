@@ -69,12 +69,12 @@
            http://localhost:8080/myapp
     -->
 
-    <property name="app.name"       value="chessgame"/>
-    <property name="deploy.home"    value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36\\webapps\\ROOT\\"/>
-    <property name="catalina.home"  value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36"/>
-    <property name="dist.home"      value="C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame"/>
-    <property name="dist.src"       value="chess.jar"/>
-    <property name="dist.war"       value="ROOT.war"/>
+    <property name="app.name" value="chessgame"/>
+    <property name="deploy.home" value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36\\webapps\\ROOT\\"/>
+    <property name="catalina.home" value="C:\\Users\\User\\Desktop\\Saddique\\apache-tomcat-9.0.36"/>
+    <property name="dist.home" value="C:\\Users\\User\\Desktop\\Saddique\\GitHub\\chessgame"/>
+    <property name="dist.src" value="chess.jar"/>
+    <property name="dist.war" value="ROOT.war"/>
 
 
     <!-- The "prepare" target is used to construct the deployment home
@@ -85,21 +85,18 @@
     -->
 
     <target name="prepare">
-        <mkdir  dir="${deploy.home}"/>
+        <mkdir dir="${deploy.home}"/>
         <copy todir="${deploy.home}">
             <fileset dir="src/WebUi"/>
         </copy>
-        <copy todir="${deploy.home}">
-            <fileset dir="src/WebServerletLogic/Uploads"/>
-        </copy>
-        <mkdir  dir="${deploy.home}/WEB-INF"/>
-        <copy  file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
-        <copy  file="src/GameLogic/KongAIConnector.js" tofile="${deploy.home}/WEB-INF/classes/GameLogic/KongAIConnector.js"/>
-        <mkdir  dir="${deploy.home}/WEB-INF/lib"/>
+        <mkdir dir="${deploy.home}/WEB-INF"/>
+        <copy file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
+        <copy file="engine/LinuxStockFish" tofile="${deploy.home}/WEB-INF/engine/stockfish"/>
+        <mkdir dir="${deploy.home}/WEB-INF/lib"/>
         <copy todir="${deploy.home}/WEB-INF/lib">
             <fileset dir="${dist.home}/jars"/>
         </copy>
-        <mkdir  dir="${deploy.home}/WEB-INF/classes"/>
+        <mkdir dir="${deploy.home}/WEB-INF/classes"/>
     </target>
 
 
@@ -113,8 +110,8 @@
     </target>
 
     <target name="tomcat-restart">
-        <antcall target="tomcat-stop" />
-        <antcall target="tomcat-start" />
+        <antcall target="tomcat-stop"/>
+        <antcall target="tomcat-start"/>
     </target>
 
     <!-- The "compile" target is used to compile (or recompile) the Java classes
@@ -162,14 +159,14 @@
     </target>
     <target name="tomcat-start">
         <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
-            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar" />
+            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar"/>
             <jvmarg value="-Dcatalina.home=${catalina.home}"/>
         </java>
     </target>
 
     <target name="tomcat-stop">
         <java classname="org.apache.catalina.startup.Bootstrap" fork="true">
-            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar" />
+            <classpath path="${catalina.home}/bin/bootstrap.jar:${catalina.home}/bin/tomcat-juli.jar"/>
             <jvmarg value="-Dcatalina.home=${catalina.home}"/>
             <arg line="stop"/>
         </java>
@@ -190,7 +187,7 @@
          that separately.
     -->
 
-  <target name="dist" depends="prepare,compile">
+    <target name="dist" depends="prepare,compile">
         <jar jarfile="${dist.home}/${dist.src}"
              basedir="${deploy.home}"/>
         <jar jarfile="${dist.home}/${dist.war}"
