@@ -1,0 +1,897 @@
+<!doctype html>
+<html>
+<head>
+    <style type="text/css">
+
+
+        li:hover {
+            cursor: pointer;
+        }
+        a{
+            color: #1080E1;
+        }
+        a:hover{
+            cursor: pointer;
+        }
+        #board1{
+            visibility:hidden;
+        }
+
+        .active a{
+            color: #134B7C;
+            padding: 3px;
+            background-color: lightgreen;
+        }
+
+        #black_promotion_pieces {
+            visibility: hidden;
+        }
+
+        #white_promotion_pieces {
+            visibility: hidden;
+        }
+        #whiteMove{
+            float:left;  margin: 0 10px;
+        }
+        #blackMove{
+            float:left; margin:0 10px;
+        }
+        #pgnBox {
+            background-color: white;
+            width: 25%;
+            height: 700px;
+            border: 2px solid white;
+            padding-top: 0px;
+            overflow: auto;
+            float: left;
+        }
+
+        #showPgn {
+            background-color: white;
+            width: 81%;
+            height: 475px;
+            border: 2px solid black;
+            font-size: 20px; word-spacing: 20px;letter-spacing: 2px;
+            padding: 15px;
+            overflow: auto;
+        }
+
+        #GameBox {
+            border: 1px solid white;
+            width: 510px;
+            height: 670px;
+            float: left;
+        }
+
+        #timerBox {
+            background-color: white;
+            width:350px;
+            height: 550px;
+            border: 2px solid white;
+            padding-top: 100px;
+            overflow: auto;
+        }
+
+        .time {
+            width: 120px;
+            height: 120px;
+            background-color: #303B3B;
+            padding: 20px;
+            font-size: 40px;
+            color: #EEF9F9;
+            border: 3px solid #5DE1A4;
+        }
+    </style>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
+          integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript">
+        var statusCalled = false;
+        var alterStatus=null;
+        var c = 0;
+        var timer = 0;
+        var t;
+        var timer_is_on = 0;
+        var x = window.location.origin;
+        var position_to = '';
+        var position_from = '';
+        var difficulty;
+        var gameId;
+        var winner;
+        var extraTime;
+        var notWrong;
+        var player2CurrenSeconds;
+        var player1CurrenSeconds;
+        var uniqueId;
+        var gamePgnSoFar;
+        var alertStatus;
+        var winTeam;
+        var player2Score;
+        var player1Score;
+        var boardFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+
+        $.ajax({
+            url: x + "/getUserId",
+            type: 'POST',
+            success: function (response) {
+                if (response.user_id === 'null') {
+                    alert(' Login First !');
+                    location = '/loginpage';
+                }
+                console.log('difficulty ajax success!!');
+            }
+        });
+
+        function timedCount() {
+            timer = c;
+            c = c + 10;
+            t = setTimeout(timedCount, 10);
+        }
+
+        function startCount() {
+            if (!timer_is_on) {
+                timer_is_on = 1;
+                timedCount()
+            }
+        }
+
+        function stopCount() {
+            clearTimeout(t);
+            timer_is_on = 0;
+            c = 0;
+        }
+    </script>
+</head>
+<body>
+<audio id="moveSound">
+    <source src="Sound/move.wav"/></audio>
+<audio id="blackMoveSound">
+    <source src="Sound/blackMove.wav"/></audio>
+<audio id="wrongMove">
+    <source src="Sound/wrongMove.mp3"/>
+</audio>
+<audio id="win">
+    <source src="Sound/win.wav"/>
+</audio>
+<audio id="lose">
+    <source src="Sound/lose.mp3"/>
+</audio>
+<audio id="captureSound">
+    <source src="Sound/captureSound.mp3"/>
+</audio>
+<div id="GameBox">
+    <div id="white_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen" data-piece="wQ" style="width:62px;height:62px;"
+             onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/wN.png" id="wknight" data-piece="wN" style="width:62px;height:62px;"
+             onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/wB.png" id="wbishop" data-piece="wB" style="width:62px;height:62px;"
+             onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/wR.png" id="wrook" data-piece="wR" style="width:62px;height:62px;"
+             onclick="promotePiece('R')">
+    </div>
+    <div id="myBoard" style="width: 500px">
+    </div>
+    <div id="black_promotion_pieces" style="padding-left: 50px;">
+        <img src="img/chesspieces/wikipedia/bQ.png" id="bqueen" data-piece="bQ" style="width:62px;height:62px;"
+             onclick="promotePiece('Q')">
+        <img src="img/chesspieces/wikipedia/bN.png" id="bknight" data-piece="bN" style="width:62px;height:62px;"
+             onclick="promotePiece('N')">
+        <img src="img/chesspieces/wikipedia/bB.png" id="bbishop" data-piece="bB" style="width:62px;height:62px;"
+             onclick="promotePiece('B')">
+        <img src="img/chesspieces/wikipedia/bR.png" id="brook" data-piece="bR" style="width:62px;height:62px;"
+             onclick="promotePiece('R')">
+    </div>
+    <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+    <br>
+    <br>
+    <form id="goToHome" method="post" align="center">
+        <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
+    </form>
+</div>
+
+<div id="pgnBox">
+    <span style="margin-left: 80px; font-size:30px;">Eval Score</span><br>
+    <span style="font-size: 22px;">Your Score: <span style="font-size: 22px;" id="player1Score"></span></span>
+    <span style="margin-left: 40px; font-size:22px;" style="display: inline-block;">Opp Score: <span style="font-size: 22px;" id="player2Score"></span></span>
+
+    <div id="showPgn">
+        <h3 style="margin-left:55px;">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
+    <button onclick="saveTextAsFile()">Save Pgn to File</button>
+</div>
+
+<div id="timerBox">
+    <div id="board1" style="width: 200px"></div>
+    <br>
+    <br>
+    <div><span class="time" id="player2Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Opponent Time </span></div>
+    <br>
+    <br>
+    <br>
+    <div><span class="time" id="player1Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Your Time </span></div>
+    <br>
+    <br>
+    <label style="font-size: 25px">Status:</label>
+    <div style="font-size: 30px" id="status"></div>
+</div>
+<script type="text/javascript" src="clientlib/chessboard-1.0.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
+        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
+        crossorigin="anonymous"></script>
+<script type="text/javascript">
+
+    var board = null;
+    var game = new Chess();
+    var $status = $('#status')
+    var whiteSquareGrey = '#a9a9a9'
+    var blackSquareGrey = '#696969'
+    var alertStatus=null;
+    var interval;
+    var moveNo=0;
+    var baseTime;
+    var player2Timer = document.querySelector('#player2Time');
+    var player1Timer = document.querySelector('#player1Time');
+    var playerColor;
+    var mode;
+    var lastP1currenSec;
+    var lastP2currenSec;
+
+    startCount()
+
+
+    window.onload=function () {
+
+        var url=location.href;
+        mode=url.split('mode=')[1].split('&')[0];
+        if(mode==="computer") {
+            difficulty = url.split('&skill=')[1].split('&')[0];
+        }
+        gameId=url.split('&gameid=')[1].split('&')[0];
+        extraTime=parseInt(url.split('+')[1]);
+        playerColor=url.split('+')[2];
+        uniqueId=url.split('id=')[1].split('&')[0];
+        baseTime=parseInt(url.split('&time=')[1].split('+')[0]);
+        console.log("extraTime "+extraTime)
+        console.log("gameId "+gameId)
+        console.log("skillLevel "+difficulty)
+        console.log("unique "+uniqueId)
+        console.log("baseTime "+baseTime)
+        document.getElementById("goToHome").action="/homepage/"+uniqueId;
+
+        $.ajax({
+            url:x+"/getGamePosition",
+            type:'POST',
+            data:{"gameId":gameId, "uniqueId":uniqueId},
+            success: function (response) {
+                gamePgnSoFar=response.gamePosition;
+                setPositions(gamePgnSoFar);
+                console.log("gameSoFar "+gamePgnSoFar);
+            }
+        })
+        player2CurrenSeconds=parseInt(baseTime);
+        player1CurrenSeconds=parseInt(baseTime);
+        if(playerColor==='b'){
+            if(mode==='computer')
+            { makeAiMove();}
+            board.orientation('black')
+        }
+    }
+
+    function setPositions(gamePgnSoFar){
+
+        if(gamePgnSoFar!=='null') {
+            var result='';
+            game.load_pgn(gamePgnSoFar);
+            board.position(game.fen());
+            var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
+            var filtered = arr.filter(function (el) {
+                return el!=="";
+            });
+            console.log(arr[arr.length-1])
+            if(arr[arr.length-1]==="0-1"){
+                result= " 0-1";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if( arr[arr.length-1]==="1-0"){
+                result= " 1-0";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            } else if(arr[arr.length-1]==="1/2-1/2"){
+                result= " 1/2-1/2";
+                statusCalled=true;
+                alert("Match Over Player 2 Won (Black)");
+            }
+
+            moveNo=filtered.length;
+            player2CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"ai"));
+            player1CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"human"));
+            console.log(extraTime)
+            // console.log(currenSeconds)
+            var secondsFromStorage;
+            var display
+            if(game.turn()==='b' )
+            { secondsFromStorage=player2CurrenSeconds;
+                display=player2Timer;}
+            else
+            { secondsFromStorage=player1CurrenSeconds;
+                display=player1Timer;}
+            if(!statusCalled)
+            {
+                console.log('sec'+secondsFromStorage)
+                startTimer(secondsFromStorage, display);
+            }
+            addPgnDisplayToUi(gamePgnSoFar);
+        }
+
+    }
+
+    function removeGreySquares() {
+        $('#myBoard .square-55d63').css('background', '')
+    }
+
+    function promotePiece(piece) {
+        var promMove
+        stopCount();
+        var userTime = baseTime-player1CurrenSeconds;
+        console.log("timer on prom" + userTime)
+        document.getElementById("white_promotion_pieces").style.visibility = "hidden";
+        document.getElementById("black_promotion_pieces").style.visibility = "hidden";
+        var checkPieceExist = "" + position_to;
+        if (game.get(checkPieceExist) === null) {
+            promMove = "" + position_to + "=" + piece;
+        } else {
+            promMove = "" + position_from.charAt(0) + "x" + position_to + "=" + piece;
+        }
+        var move = game.move(promMove)
+        board.position(game.fen())
+
+        sendUserMove(move, userTime)
+        updateStatus()
+        startTimer(player2CurrenSeconds,player2Timer);
+        if(mode==='computer') {
+            window.setTimeout(makeAiMove, 250)
+        }
+    }
+
+    document.body.addEventListener("click", function (evt) {
+        document.getElementById("board1").style.visibility="hidden";
+    });
+
+
+    function stopTimer() {
+        clearInterval(interval);
+    }
+
+    function playMoveSound(move){
+        var san=move.san;
+        for(var i=0;i<san.length;i++){
+            if(san.charAt(i)==='x'){
+                document.getElementById("captureSound").play();
+                return;
+            }
+        }
+        if(game.turn()==='b') {
+            document.getElementById("moveSound").play();
+        }
+        else
+        {
+            document.getElementById('blackMoveSound').play();
+        }
+    }
+    function wrongMoveSound(){ document.getElementById("wrongMove").play(); }
+
+    function startTimer(duration, display) {
+        var timer = duration, minutes, seconds;
+        interval = setInterval(function () {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+            if(display===player2Timer){
+                player2CurrenSeconds=(minutes*60)+seconds;
+            }
+            else if(display===player1Timer){
+                player1CurrenSeconds=(minutes*60)+seconds;
+            }
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+            display.textContent = minutes + ":" + seconds;
+            window.localStorage.setItem(""+gameId+"ai",player2CurrenSeconds);
+            window.localStorage.setItem(""+gameId+"human",player1CurrenSeconds);
+            if (baseTime!==0 && minutes === "00" && seconds === "00") {
+                if(display===player2Timer)
+                {
+                    alert('Time Up White Won');
+                    sendStatus('1');}
+                else
+                {
+                    alert('Time Up Black Won');
+                    sendStatus('2');
+                }
+            }
+            if (--timer < 0) {
+                timer = duration;
+            }
+        }, 1000);
+    }
+
+    function saveTextAsFile()
+    {
+        var result='';
+        if(statusCalled===true){
+            if(winner==='1'){
+                result=' 1-0';
+            }
+            else if(winner==='2'){
+                result=' 0-1';
+            }
+            else if(winner==='3'){
+                result=' 1/2-1/2';
+            }
+        }
+        var pgn=game.pgn();
+        var textToSave = pgn+result;
+        var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+        var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+        var fileNameToSaveAs = gameId+'.pgn';
+        var downloadLink = document.createElement("a");
+        downloadLink.download = fileNameToSaveAs;
+        downloadLink.innerHTML = "Download File";
+        downloadLink.href = textToSaveAsURL;
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+    }
+    function destroyClickedElement(event)
+    {
+        document.body.removeChild(event.target);
+    }
+
+    function sendStatus(sts) {
+        var gamePgn = game.pgn()
+        if (moveNo >= 1) {
+            moveNo++
+            if (statusCalled === false) {
+                $.ajax({
+                    url: x + "/gamestatus",
+                    type: 'POST',
+                    data: {
+                        "gameStatus": sts,
+                        "gamePgn": gamePgn,
+                        "gameId": gameId,
+                        "moveNo": moveNo,
+                        "uniqueId":uniqueId
+                    },
+                    success: function () {
+
+                        console.log('draw ajax success!!');
+                    },
+                    error: function (jqXHR, exception) {
+                        console.log('draw ajax Error occured!!');
+                    }
+
+                });
+                statusCalled = true;
+                winner=sts;
+                if(sts==='1' && playerColor==='w'){
+                    winTeam='human';
+                }
+                else if (sts==='2' && playerColor==='b'){
+                    winTeam='human';
+                }
+                else
+                {
+                    winTeam='AI';
+                }
+                if (sts === '3') {
+                    alert('Match Draw');
+                    winTeam='Draw';
+                }
+                stopTimer();
+                console.log("winner"+winner)
+            }
+        }
+
+    }
+
+    function greySquare(square) {
+        if(!statusCalled){
+            var $square = $('#myBoard .square-' + square)
+
+            var background = whiteSquareGrey
+            if ($square.hasClass('black-3c85d')) {
+                background = blackSquareGrey
+            }
+
+            $square.css('background', background)
+        }
+    }
+
+    function onDragStart(source, piece, position, orientation) {
+
+        if(game.turn()!==playerColor){
+            return false;
+        }
+
+        if (game.game_over() || statusCalled===true) {
+            return false
+        } else if ((game.turn() === 'w' && piece.search(/^b/) !== -1) ||
+            (game.turn() === 'b' && piece.search(/^w/) !== -1)) {
+            return false
+
+        }
+
+    }
+
+    function onDrop(source, target, piece, newPos, oldPos, orientation) {
+
+        removeGreySquares()
+        position_to = target;
+        position_from = source;
+
+
+
+        if (piece === 'wP' || piece === 'bP') {
+
+            game.moves({square: source})
+            var posMoves = game.moves({verbose: true})
+            if (movePossible(posMoves, source, target)) {
+                if (target.charAt(1) == 1 && source.charAt(1) == 2 || target.charAt(1) == 8 && source.charAt(1) == 7) {
+                    // if (orientation === 'white') {
+                    if (game.turn() === 'w' && target.charAt(1) == 8) {
+                        document.getElementById("white_promotion_pieces").style.visibility = "visible";
+                    } else if (game.turn() === 'b' && target.charAt(1) == 1) {
+                        document.getElementById("black_promotion_pieces").style.visibility = "visible";
+                    }
+                }
+            }
+        }
+
+        if(source===target){
+            notWrong=true;
+        }
+
+        // see if the move is legal
+        var move = game.move({
+            from: source,
+            to: target,
+        })
+
+        // illegal move
+        if (move === null) return 'snapback'
+
+        var x = window.location.origin;
+        stopCount()
+        if(moveNo>0){
+            var uTime = lastP1currenSec-player1CurrenSeconds;
+            var u=Math.abs(uTime)-extraTime;
+            var userTime=Math.abs(u);
+            lastP1currenSec=player1CurrenSeconds;
+        }
+        else{
+            userTime=0;
+            lastP1currenSec=player1CurrenSeconds;
+
+        }
+        startCount()
+        stopTimer();
+        if(moveNo===0){
+            startTimer(player2CurrenSeconds,player2Timer);
+        }else{
+            startTimer(player2CurrenSeconds+extraTime,player2Timer);
+        }
+        sendUserMove(move, userTime)
+        updateStatus()
+        onMoveEnd('null','null')
+        playMoveSound(move)
+        if(mode==='computer') {
+            window.setTimeout(makeAiMove, 1000)
+        }
+    }
+
+    function movePossible(posMoves, source, target) {
+        for (var i = 0; i < posMoves.length; i++) {
+            if (posMoves[i].from === source && posMoves[i].to === target) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    function sendUserMove(move, userTime) {
+        moveNo++;
+        var gameTillNow=game.pgn();
+        var fen=game.fen();
+        $.ajax({
+            url: x + "/usermoves",
+            type: 'POST',
+            data: {"uniqueId":uniqueId,"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
+            async: false,
+            success: function (resp) {
+                var t=parseInt(resp.totalTime);
+                var m=parseInt(resp.totalMoves);
+                // player2CurrenSeconds=(baseTime-t)+(m*extraTime);
+                console.log('ajax success!!');
+            },
+            error: function (jqXHR, exception) {
+                console.log('Error occured!!');
+            }
+        });
+        if(player1Score!==undefined)
+        {
+            document.getElementById("player1Score").innerHTML=player1Score;}
+    }
+
+    function onMouseoverSquare(square, piece) {
+        // get list of possible moves for this square
+        var moves = game.moves({
+            square: square,
+            verbose: true
+        })
+
+        // exit if there are no moves available for this square
+        if (moves.length === 0) return
+
+        // highlight the square they moused over
+        var fen=game.fen()
+        console.log(fen)
+
+        if(boardFen===fen.split(' ')[[0]] && game.turn()===playerColor)
+        {  greySquare(square)
+
+            // highlight the possible squares for this piece
+            for (var i = 0; i < moves.length; i++) {
+                greySquare(moves[i].to)
+            }
+        }
+    }
+
+    function onMouseoutSquare(square, piece) {
+        removeGreySquares()
+    }
+
+
+    function onSnapEnd() {
+        board.position(game.fen())
+    }
+    function onSnapbackEnd(piece, square, position, orientation){
+        if(!notWrong) {
+            wrongMoveSound()
+        }
+        notWrong=false;
+        console.log(game.fen())
+    }
+    function onChange(oldPos, newPos){
+        boardFen=Chessboard.objToFen(newPos);
+    }
+
+    function makeAiMove() {
+        callAIToPlay()
+        stopCount()
+        updateStatus()
+        startCount()
+        console.log(timer);
+        stopTimer()
+        stopTimer()
+        console.log("Currenseconds"+player2CurrenSeconds);
+        if(moveNo===2)
+        {startTimer(player1CurrenSeconds, player1Timer);}
+        else
+        {var sec=player1CurrenSeconds+extraTime;
+            console.log('sec'+sec)
+            startTimer(sec, player1Timer);}
+    }
+
+    function callAIToPlay() {
+        moveNo++;
+        var fen=game.fen();
+        var respMove = '';
+        var x = window.location.origin;
+        console.log("Inside ai Player");
+        $.ajax({
+            url: x + "/aiMove",
+            type: 'POST',
+            async: false,
+            data:{"gameFEN":fen,"skillLevel":difficulty},
+            success: function (response) {
+                respMove = response.aiMove
+                console.log("ai move "+respMove)
+            }
+        });
+        var aiMove = game.move(respMove, {sloppy: true})
+        var p=game.pgn();
+        fen=game.fen();
+        console.log(p);
+        $.ajax({
+            url: x + "/aiMoveinPgn",
+            type: 'POST',
+            async: false,
+            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen,"aiTime":"1"},
+            success: function (resp) {
+                var t=parseInt(resp.totalTime);
+                var m=parseInt(resp.totalMoves);
+                console.log(player2Score);
+            }
+        });
+        playMoveSound(aiMove)
+        board.position(game.fen())
+        if(player2Score!==undefined)
+        {document.getElementById("player2Score").innerHTML=player2Score;}
+    }
+
+    function updateStatus() {
+        var status = ''
+        var moveColor = 'White'
+        if (game.turn() === 'b') {
+            moveColor = 'Black'
+        }
+
+        // checkmate?
+        if (game.in_checkmate()) {
+            status = 'Game over, ' + moveColor + ' is in checkmate.'
+            if (moveColor === 'White' && statusCalled === false) {
+                alertStatus='Black won the Match';
+                sendStatus('2')
+            }
+            if (moveColor === 'Black' && statusCalled === false) {
+                alertStatus='White won the Match';
+                sendStatus('1')
+            }
+        }
+
+        // draw?
+        else if (game.in_draw()) {
+            status = 'Game over, drawn position'
+            stopTimer();
+            sendStatus('3')
+        }
+
+        // game still on
+        else {
+            status = moveColor + ' to move'
+
+            // check?
+            if (game.in_check()) {
+                status += ', ' + moveColor + ' is in check'
+            }
+        }
+
+        $status.html(status)
+        addPgnDisplayToUi(game.pgn());
+    }
+
+    function removePgnListChilds(){
+        const deleteWhitePgnMoves = document.getElementById("whiteMove");
+        while (deleteWhitePgnMoves.lastElementChild) {
+            deleteWhitePgnMoves.removeChild(deleteWhitePgnMoves.lastElementChild);
+        }
+        const deleteBlackPgnMoves = document.getElementById("blackMove");
+        while (deleteBlackPgnMoves.lastElementChild) {
+            deleteBlackPgnMoves.removeChild(deleteBlackPgnMoves.lastElementChild);
+        }
+    }
+
+    function addPgnDisplayToUi(gamePgn){
+        removePgnListChilds();
+        if(gamePgn!=='null'){
+            var  arr =gamePgn.split(/\d+. |\s+/g);
+            var movesMade = arr.filter(function (el) {
+                return el!="";
+            });
+            for(var i=0;i<movesMade.length;i++)
+            {if(i===0 || i%2===0){
+                showPgnInDisplay("whiteMove",movesMade,i);
+            }
+            else if(i>0){
+                showPgnInDisplay("blackMove",movesMade,i);
+            }
+            }
+        }
+    }
+    function showPgnInDisplay(elementId,movesMade,i){
+        var store;
+        var player2ScoreHere;
+        var player1ScoreHere;
+        var onClickIsCalled=false;
+        var node = document.createElement("LI");
+        var a=document.createElement("a");
+        // var textnode = document.createTextNode(""+movesMade[i]);
+        node.onmouseover=function(){
+            store=i;
+            player2ScoreHere=player2Score;
+            player1ScoreHere=player1Score;
+            var length=movesMade.length;
+            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
+            {
+                length=length-1;
+            }
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=((length) - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board1.position(chess.fen())
+            document.getElementById("board1").style.visibility="visible";
+        }
+
+        node.onclick=function(event){
+            $('li').removeClass('active');
+            $(this).addClass('active');
+            onClickIsCalled=true;
+            event.preventDefault()
+            store=i;
+            var length=movesMade.length;
+            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
+            {
+                length=length-1;
+            }
+            var chess=new Chess();
+            chess.load_pgn(game.pgn());
+            var loopfor=((length) - store)-1;
+            for(var j=0;j<loopfor;j++){
+                chess.undo();
+            }
+            board.position(chess.fen());
+            document.getElementById('moveSound').play();
+        }
+        a.textContent=""+movesMade[i];
+        a.setAttribute("href","#");
+        node.appendChild(a);
+        if(i===(movesMade.length-1)){
+            node.classList.add("active");
+        }
+        node.classList.add("displaySmallBoard")
+        document.getElementById(elementId).appendChild(node);
+    }
+
+    function onMoveEnd(oldPos, newPos) {
+        if(alertStatus!=null){
+            if(winTeam==='human'){
+                document.getElementById("win").play();
+                document.getElementById("win").onended=function () {
+                    alert("You Won the Match");
+                };
+            }else if(winTeam==='AI'){
+                document.getElementById("lose").play();
+                document.getElementById("lose").onended=function () {
+                    alert("AI Won the Match");
+                };
+            }
+            stopTimer();
+            alertStatus=null;
+        }
+    }
+
+    var board1 = Chessboard('board1', {
+        position: 'start',
+        showNotation: false
+    })
+
+    var config = {
+        draggable: true,
+        position: 'start',
+        onDragStart: onDragStart,
+        onDrop: onDrop,
+        onMouseoutSquare: onMouseoutSquare,
+        onMouseoverSquare: onMouseoverSquare,
+        onMoveEnd: onMoveEnd,
+        onSnapbackEnd: onSnapbackEnd,
+        onChange:onChange,
+        onSnapEnd: onSnapEnd
+    }
+    board = Chessboard('myBoard', config)
+    updateStatus()
+
+</script>
+<br><br>
+</body>
+</html>
