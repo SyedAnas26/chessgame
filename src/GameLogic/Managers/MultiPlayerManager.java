@@ -35,7 +35,7 @@ public class MultiPlayerManager extends ChessManager {
                     challengeType = rs.getString("ChallengeType");
                     createdPlayAs = rs.getString("CreatedByPlayAs");
                     createdUser = rs.getString("CreatedByUserID");
-                    return "{\"gameId\":\"" + gameId + "\",\"createdByPlayAs\":\"" + createdPlayAs + "\",\"challengeType\":\"" + challengeType + "\",\"createdUser\":\"" + createdUser + "\",\"invalid\":\"false\"}>" + status;
+                    return "{\"gameId\":\"" + gameId + "\",\"createdByPlayAs\":\"" + createdPlayAs + "\",\"challengeType\":\"" + challengeType + "\",\"createdUser\":\"" + createdUser + "\",\"invalid\":\"false\",\"status\":\""+status+"\"}";
                 } else return "{\"invalid\":\"true\"}";
             }
             return "{\"invalid\":\"true\"}";
@@ -45,13 +45,9 @@ public class MultiPlayerManager extends ChessManager {
             if (uniqueId!=(obj.getInt("createdUser"))) {
                 DbConnector.update("UPDATE gamelog SET UserID2='" + uniqueId + "' WHERE GameId='" + obj.getString("gameId") + "'");
             }
-            if (resp.split(">")[1].equals("1")) {
-                DbConnector.update("UPDATE challengetable SET Status='2' WHERE ChallengeToken='" + token + "'");
-            } else {
-                DbConnector.update("UPDATE challengetable SET Status='1' WHERE ChallengeToken='" + token + "'");
-            }
+            DbConnector.update("UPDATE challengetable SET Status='"+(obj.getInt("status")+1)+"' WHERE ChallengeToken='" + token + "'");
         }
-        return resp.split(">")[0];
+        return resp;
     }
 
     private String randomString(int len) throws Exception {

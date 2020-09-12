@@ -50,7 +50,7 @@ public class SinglePlayerServlet extends HttpServlet {
                     String fen = req.getParameter("FEN");
                     String game = req.getParameter("gamePgn");
                     aiManager.addMove(gameId, moveNo, aiMovePgn, null, 0, aiTime, game);
-                    String res = aiManager.getTotalTime(0, gameId);
+                    String res = aiManager.opponentRemainingTime(0, gameId,moveNo);
                     out.print(res);
                     break;
 

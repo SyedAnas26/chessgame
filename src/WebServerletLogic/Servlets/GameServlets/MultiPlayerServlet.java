@@ -1,6 +1,8 @@
 package WebServerletLogic.Servlets.GameServlets;
 
 import GameLogic.Managers.MultiPlayerManager;
+import WebServerletLogic.WebSocketConnector;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -11,7 +13,7 @@ import java.io.PrintWriter;
 
 public class MultiPlayerServlet extends HttpServlet {
 MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
-
+WebSocketConnector webSockConnector=new WebSocketConnector();
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath=req.getServletPath();
         PrintWriter out = resp.getWriter();
@@ -27,6 +29,7 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
             uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
             response=multiPlayerManager.createChallenge(uniqueId, playAs, challengeType);
             out.print(response);
+            break;
 
             case "/joinGame":
             String token=req.getParameter("tokenId");
@@ -34,7 +37,12 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
             System.out.println("token "+token);
             response=multiPlayerManager.acceptChallenge(token,uniqueId);
             System.out.println("response "+response);
+            JSONObject obj = new JSONObject(response);
+             if(obj.getString("status").equals("1") && obj.getString("invalid").equals("false")){
+                 webSockConnector.sendStatus("start",obj.getLong("gameId"));
+             }
             out.print(response);
+            break;
         }
         }catch (Exception e){
             System.out.println("MultiPlayerServlet Exception "+e);

@@ -90,6 +90,7 @@
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
         var statusCalled = false;
+        var uniqueidServer;
         var alterStatus=null;
         var c = 0;
         var timer = 0;
@@ -112,15 +113,25 @@
         var player2Score;
         var player1Score;
         var boardFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
+        var webSocket;
+        var webSocketConnection="notConnected";
+        var url=location.href;
+        var ws=x.replace('https://','wss://').replace('http://','ws://');
+        gameId=url.split('&gameid=')[1].split('&')[0];
+        var webSocketUrl=ws+'/socket/'+gameId;
+        webSocket = new WebSocket(webSocketUrl);
+
 
         $.ajax({
             url: x + "/getUserId",
             type: 'POST',
             success: function (response) {
-                if (response.user_id === 'null') {
+                if (response.user_id=== 'null') {
                     alert(' Login First !');
                     location = '/loginpage';
                 }
+                uniqueidServer=response.unique_id;
+                console.log("uni S "+uniqueidServer)
                 console.log('difficulty ajax success!!');
             }
         });
@@ -185,11 +196,11 @@
         <img src="img/chesspieces/wikipedia/bR.png" id="brook" data-piece="bR" style="width:62px;height:62px;"
              onclick="promotePiece('R')">
     </div>
-    <input type="button"  style="margin-left: 205px" onclick="sendStatus('3')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+    <input type="button"  style="margin-left: 205px" onclick="askForDraw('ask')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
     <br>
     <br>
     <form id="goToHome" method="post" align="center">
-        <input type="submit" onclick="sendStatus('3')" value="Go Back to Home Page"/>
+        <input type="submit" id="home" onclick="askForDraw('leave')" value="Go Back to Home Page"/>
     </form>
 </div>
 
@@ -242,9 +253,7 @@
     var player1Timer = document.querySelector('#player1Time');
     var playerColor;
     var mode;
-    var lastP1currenSec;
-    var lastP2currenSec;
-
+    var GameStatus="waiting";
     startCount()
 
 
@@ -253,85 +262,98 @@
         var url=location.href;
         mode=url.split('mode=')[1].split('&')[0];
         if(mode==="computer") {
-            difficulty = url.split('&skill=')[1].split('&')[0];
+            difficulty = localStorage["skillLevel"];
+            GameStatus="starts";
         }
-        gameId=url.split('&gameid=')[1].split('&')[0];
-        extraTime=parseInt(url.split('+')[1]);
-        playerColor=url.split('+')[2];
+        extraTime=parseInt(localStorage["extraTime"]);
+        playerColor=localStorage["playerColor"];
         uniqueId=url.split('id=')[1].split('&')[0];
-        baseTime=parseInt(url.split('&time=')[1].split('+')[0]);
+        if(uniqueId!==uniqueidServer){
+            alert('Invalid Acess!');
+            location="/homepage/"+uniqueidServer;
+        }
+        baseTime=parseInt(localStorage["baseTime"]);
         console.log("extraTime "+extraTime)
         console.log("gameId "+gameId)
         console.log("skillLevel "+difficulty)
+        console.log("playerColor  "+playerColor)
         console.log("unique "+uniqueId)
         console.log("baseTime "+baseTime)
         document.getElementById("goToHome").action="/homepage/"+uniqueId;
-
+        player2CurrenSeconds=baseTime;
+        player1CurrenSeconds=baseTime;
+        webSocketConnection="connected";
         $.ajax({
             url:x+"/getGamePosition",
             type:'POST',
             data:{"gameId":gameId, "uniqueId":uniqueId},
             success: function (response) {
-                gamePgnSoFar=response.gamePosition;
-                setPositions(gamePgnSoFar);
-                console.log("gameSoFar "+gamePgnSoFar);
+                console.log(response);
+                if(response!==null) {
+                    // player1CurrenSeconds = parseInt(response.player1Time);
+                    // player2CurrenSeconds = parseInt(response.player2Time);
+                    gamePgnSoFar=response.gamePosition;
+                    setPositions(gamePgnSoFar);
+                }
             }
         })
-        player2CurrenSeconds=parseInt(baseTime);
-        player1CurrenSeconds=parseInt(baseTime);
+
         if(playerColor==='b'){
             if(mode==='computer')
             { makeAiMove();}
+            // else {
+            //   //  webSocket.send(gameId+","+moveNo);
+            // }
             board.orientation('black')
         }
     }
 
     function setPositions(gamePgnSoFar){
 
-        if(gamePgnSoFar!=='null') {
-            var result='';
-            game.load_pgn(gamePgnSoFar);
-            board.position(game.fen());
-            var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
-            var filtered = arr.filter(function (el) {
-                return el!=="";
-            });
-            console.log(arr[arr.length-1])
-            if(arr[arr.length-1]==="0-1"){
-                result= " 0-1";
-                statusCalled=true;
-                alert("Match Over Player 2 Won (Black)");
-            } else if( arr[arr.length-1]==="1-0"){
-                result= " 1-0";
-                statusCalled=true;
-                alert("Match Over Player 2 Won (Black)");
-            } else if(arr[arr.length-1]==="1/2-1/2"){
-                result= " 1/2-1/2";
-                statusCalled=true;
-                alert("Match Over Player 2 Won (Black)");
-            }
-
-            moveNo=filtered.length;
-            player2CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"ai"));
-            player1CurrenSeconds=parseInt(window.localStorage.getItem(""+gameId+"human"));
-            console.log(extraTime)
-            // console.log(currenSeconds)
-            var secondsFromStorage;
-            var display
-            if(game.turn()==='b' )
-            { secondsFromStorage=player2CurrenSeconds;
-                display=player2Timer;}
-            else
-            { secondsFromStorage=player1CurrenSeconds;
-                display=player1Timer;}
-            if(!statusCalled)
-            {
-                console.log('sec'+secondsFromStorage)
-                startTimer(secondsFromStorage, display);
-            }
-            addPgnDisplayToUi(gamePgnSoFar);
+        var result='';
+        game.load_pgn(gamePgnSoFar);
+        board.position(game.fen());
+        var  arr =gamePgnSoFar.split(/\d+. |\s+/g);
+        var filtered = arr.filter(function (el) {
+            return el!=="";
+        });
+        console.log(arr[arr.length-1])
+        if(arr[arr.length-1]==="0-1"){
+            result= " 0-1";
+            statusCalled=true;
+            alert("Match Over Player 2 Won (Black)");
+        } else if( arr[arr.length-1]==="1-0"){
+            result= " 1-0";
+            statusCalled=true;
+            alert("Match Over Player 1 Won (White)");
+        } else if(arr[arr.length-1]==="1/2-1/2"){
+            result= " 1/2-1/2";
+            statusCalled=true;
+            alert("Match Over Drawn");
         }
-
+        moveNo=filtered.length;
+        if(moveNo>1) {
+            player2CurrenSeconds = parseInt(window.localStorage.getItem("" + gameId + "Player2")) - 2;
+            player1CurrenSeconds = parseInt(window.localStorage.getItem("" + gameId + "Player1")) - 2;
+        }
+        console.log(extraTime)
+        // console.log(currenSeconds)
+        var secondsFromStorage;
+        var display;
+        GameStatus="starts";
+        if(game.turn()!==playerColor )
+        { secondsFromStorage=player2CurrenSeconds;
+            display=player2Timer;}
+        else
+        { secondsFromStorage=player1CurrenSeconds;
+            display=player1Timer;}
+        if(!statusCalled)
+        {
+            stopTimer();
+            console.log('sec From storage '+secondsFromStorage)
+            startTimer(secondsFromStorage, display);
+        }
+        addPgnDisplayToUi(gamePgnSoFar);
     }
 
     function removeGreySquares() {
@@ -341,7 +363,7 @@
     function promotePiece(piece) {
         var promMove
         stopCount();
-        var userTime = baseTime-player1CurrenSeconds;
+        var userTime = player1CurrenSeconds;
         console.log("timer on prom" + userTime)
         document.getElementById("white_promotion_pieces").style.visibility = "hidden";
         document.getElementById("black_promotion_pieces").style.visibility = "hidden";
@@ -353,7 +375,6 @@
         }
         var move = game.move(promMove)
         board.position(game.fen())
-
         sendUserMove(move, userTime)
         updateStatus()
         startTimer(player2CurrenSeconds,player2Timer);
@@ -366,7 +387,17 @@
         document.getElementById("board1").style.visibility="hidden";
     });
 
+    function askForDraw(event){
 
+        if(!statusCalled){
+            if(event==='ask')
+            { webSocket.send("draw");}
+            else
+            {
+                webSocket.send('left');
+            }
+        }
+    }
     function stopTimer() {
         clearInterval(interval);
     }
@@ -403,17 +434,28 @@
             minutes = minutes < 10 ? "0" + minutes : minutes;
             seconds = seconds < 10 ? "0" + seconds : seconds;
             display.textContent = minutes + ":" + seconds;
-            window.localStorage.setItem(""+gameId+"ai",player2CurrenSeconds);
-            window.localStorage.setItem(""+gameId+"human",player1CurrenSeconds);
+            window.localStorage.setItem(""+gameId+"Player2",player2CurrenSeconds);
+            window.localStorage.setItem(""+gameId+"Player1",player1CurrenSeconds);
             if (baseTime!==0 && minutes === "00" && seconds === "00") {
-                if(display===player2Timer)
+                if(display===player1Timer)
                 {
-                    alert('Time Up White Won');
-                    sendStatus('1');}
+                    alert('Time Up Opponent Won');
+                    if (playerColor==='b') {
+                        sendStatus('1');
+                    }
+                    else{
+                        sendStatus('2');
+                    }
+                }
                 else
                 {
-                    alert('Time Up Black Won');
-                    sendStatus('2');
+                    alert('Opponent Time Up You Won');
+                    if (playerColor==='b') {
+                        sendStatus('2');
+                    }
+                    else{
+                        sendStatus('1');
+                    }
                 }
             }
             if (--timer < 0) {
@@ -517,7 +559,7 @@
 
     function onDragStart(source, piece, position, orientation) {
 
-        if(game.turn()!==playerColor){
+        if(game.turn()!==playerColor || GameStatus!=="starts"){
             return false;
         }
 
@@ -569,20 +611,8 @@
         if (move === null) return 'snapback'
 
         var x = window.location.origin;
-        stopCount()
-        if(moveNo>0){
-            var uTime = lastP1currenSec-player1CurrenSeconds;
-            var u=Math.abs(uTime)-extraTime;
-            var userTime=Math.abs(u);
-            lastP1currenSec=player1CurrenSeconds;
-        }
-        else{
-            userTime=0;
-            lastP1currenSec=player1CurrenSeconds;
-
-        }
-        startCount()
-        stopTimer();
+        stopTimer()
+        var userTime=player1CurrenSeconds;
         if(moveNo===0){
             startTimer(player2CurrenSeconds,player2Timer);
         }else{
@@ -595,6 +625,56 @@
         if(mode==='computer') {
             window.setTimeout(makeAiMove, 1000)
         }
+        else if(mode==='multi'){
+            webSocket.send(move.san);
+        }
+    }
+
+    webSocket.onmessage = function(event) {
+        var msg = event.data;
+        var reply;
+        console.log('onmessage::' +msg);
+        if(msg==='start' && GameStatus!=="starts"){
+            GameStatus="starts";
+            alert(" Opponent Joined Game Starts ! ");
+            webSocket.send('start');
+        }
+        if(msg==='left'){
+            alert("Opponent left the Match !");
+            sendStatus('3');
+        }
+        if(msg==="ok"){
+            alert("Opponent Accepted Draw Request !");
+            sendStatus('3');
+            return;
+        }
+        else if(msg==="no"){
+            alert("Opponent Rejected ur Draw Request !")
+            return;
+        }
+        if(msg==="draw"){
+            if (confirm("Shall we draw the Match ?")) {
+                sendStatus('3');
+                reply="ok";
+            } else {
+                reply="no";
+            }
+            webSocket.send(reply);
+        }
+        var move=game.move(msg, { sloppy: true });
+        if(move===null){
+            return;
+        }
+        board.position(game.fen());
+        moveNo++;
+        playMoveSound(move);
+        stopTimer();
+        if(moveNo<=1){
+            startTimer(player1CurrenSeconds,player1Timer);
+        }else{
+            startTimer(player1CurrenSeconds+extraTime,player1Timer);
+        }
+        updateStatus();
     }
 
     function movePossible(posMoves, source, target) {
@@ -616,10 +696,10 @@
             data: {"uniqueId":uniqueId,"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
             success: function (resp) {
-                var t=parseInt(resp.totalTime);
-                var m=parseInt(resp.totalMoves);
-                // player2CurrenSeconds=(baseTime-t)+(m*extraTime);
-                console.log('ajax success!!');
+                if(moveNo>1) {
+                    player2CurrenSeconds = parseInt(resp.opponentRemainingTime);
+                }
+                console.log('ajax success sendUser oppTime= '+player1CurrenSeconds);
             },
             error: function (jqXHR, exception) {
                 console.log('Error occured!!');
@@ -675,18 +755,12 @@
 
     function makeAiMove() {
         callAIToPlay()
-        stopCount()
         updateStatus()
-        startCount()
-        console.log(timer);
-        stopTimer()
-        stopTimer()
-        console.log("Currenseconds"+player2CurrenSeconds);
         if(moveNo===2)
         {startTimer(player1CurrenSeconds, player1Timer);}
         else
         {var sec=player1CurrenSeconds+extraTime;
-            console.log('sec'+sec)
+            console.log('Seconds = '+sec)
             startTimer(sec, player1Timer);}
     }
 
@@ -694,6 +768,8 @@
         moveNo++;
         var fen=game.fen();
         var respMove = '';
+        stopTimer();
+        var aiTime=player2CurrenSeconds;
         var x = window.location.origin;
         console.log("Inside ai Player");
         $.ajax({
@@ -714,11 +790,12 @@
             url: x + "/aiMoveinPgn",
             type: 'POST',
             async: false,
-            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen,"aiTime":"1"},
+            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen,"aiTime":aiTime},
             success: function (resp) {
-                var t=parseInt(resp.totalTime);
-                var m=parseInt(resp.totalMoves);
-                console.log(player2Score);
+                if(moveNo>1) {
+                    player1CurrenSeconds =parseInt(resp.opponentRemainingTime);
+                    console.log('ajax success aiMoveinPgn oppTime= '+player2CurrenSeconds);
+                }
             }
         });
         playMoveSound(aiMove)

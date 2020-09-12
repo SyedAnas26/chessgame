@@ -173,8 +173,11 @@
                     data: {"difficulty": difficulty, "uniqueId": uniqueId},
                     success: function (response) {
                         var gameId = response.gameId;
-                        document.location.href = x + "/vs?mode=computer&id=" + uniqueId + "&gameid=" + gameId + "&skill=" + skillLevel + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
-                        console.log('difficulty ajax success!!');
+                        localStorage["skillLevel"]=skillLevel;
+                        localStorage["baseTime"]=baseTime;
+                        localStorage["extraTime"]=extratime;
+                        localStorage["playerColor"]=playerColor;
+                        document.location.href = x + "/vs?mode=computer&id=" + uniqueId + "&gameid=" + gameId ;                        console.log('difficulty ajax success!!');
                     }
                 });
             } else if (mode === 'multi') {

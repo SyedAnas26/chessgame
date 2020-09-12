@@ -1,6 +1,7 @@
 package WebServerletLogic.Servlets.GameServlets;
 
 import GameLogic.Managers.ChessManager;
+import WebServerletLogic.WebSocketConnector;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -10,7 +11,7 @@ import java.io.PrintWriter;
 
 public class ChessServlet extends HttpServlet {
     ChessManager chessManager = new ChessManager();
-
+    WebSocketConnector webSocketConnector=new WebSocketConnector();
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         String servletPath = req.getServletPath();
@@ -31,17 +32,22 @@ public class ChessServlet extends HttpServlet {
                 String fen = req.getParameter("FEN");
                 gameId = Long.parseLong(req.getParameter("gameId"));
                 int moveNo = Integer.parseInt(req.getParameter("moveNo"));
+                //webSocketConnector.sendMove(userMove,gameId);
+//                if(gameStatus != null){
+//                    webSocketConnector.sendStatus(gameStatus,gameId);
+//                }
                 chessManager.addMove(gameId, moveNo, userMove, gameStatus, uniqueId, userTimer, gamePgn);
-                String res = chessManager.getTotalTime(uniqueId, gameId);
+                String res = chessManager.opponentRemainingTime(uniqueId, gameId,moveNo);
                 out.print(res);
                 break;
 
                 case "/getGamePosition":
+                    System.out.println("ajaxCame");
                 uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
                 gameId = Long.parseLong(req.getParameter("gameId"));
-                String pgn = chessManager.getGamePosition(gameId, uniqueId);
-                pgn = "{\"gamePosition\":\"" + pgn + "\"}";
-                out.print(pgn);
+                String response = chessManager.getGamePosition(gameId, uniqueId);
+                System.out.println(response);
+                out.print(response);
                 break;
             }
         } catch (Exception e) {

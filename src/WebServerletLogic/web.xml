@@ -190,7 +190,7 @@
         <url-pattern>/aiMoveinPgn</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>AiConverter</servlet-name>
+        <servlet-name>ChessManager</servlet-name>
         <url-pattern>/getGamePosition</url-pattern>
     </servlet-mapping>
     <servlet-mapping>

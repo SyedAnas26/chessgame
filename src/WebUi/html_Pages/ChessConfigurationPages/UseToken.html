@@ -59,8 +59,10 @@
                             baseTime = response.challengeType.split('&')[1];
                             extratime = response.challengeType.split('&')[2];
                         }
-
-                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
+                        localStorage["baseTime"]=baseTime;
+                        localStorage["extraTime"]=extratime;
+                        localStorage["playerColor"]=playerColor;
+                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
                     }
                 }
             });
