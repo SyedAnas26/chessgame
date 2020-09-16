@@ -45,7 +45,9 @@ public class MultiPlayerManager extends ChessManager {
             if (uniqueId!=(obj.getInt("createdUser"))) {
                 DbConnector.update("UPDATE gamelog SET UserID2='" + uniqueId + "' WHERE GameId='" + obj.getString("gameId") + "'");
             }
-            DbConnector.update("UPDATE challengetable SET Status='"+(obj.getInt("status")+1)+"' WHERE ChallengeToken='" + token + "'");
+            else {
+                DbConnector.update("UPDATE challengetable SET Status='1' WHERE ChallengeToken='" + token + "'");
+            }
         }
         return resp;
     }

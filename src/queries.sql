@@ -101,3 +101,16 @@ DROP INDEX `fk_gameid` ;
 
 ALTER TABLE `chessgame_database`.`gamelog`
 CHANGE COLUMN `GameFormat` `GameFormat` VARCHAR(20) NOT NULL ;
+
+ALTER TABLE `chessgame_database`.`login`
+CHANGE COLUMN `password` `password` BLOB NULL DEFAULT NULL;
+
+
+ALTER TABLE `chessgame_database`.`gamelog`
+DROP FOREIGN KEY `UserID2_FK`,
+DROP FOREIGN KEY `UserID1_FK`;
+ALTER TABLE `chessgame_database`.`gamelog`
+DROP INDEX `UserID1_FK_idx` ,
+DROP INDEX `UserID2FK_idx` ;
+;
+

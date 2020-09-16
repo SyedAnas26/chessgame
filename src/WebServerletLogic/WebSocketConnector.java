@@ -1,5 +1,7 @@
 package WebServerletLogic;
 
+import GameLogic.Managers.DbConnector;
+
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
 import javax.websocket.server.ServerEndpoint;
@@ -8,19 +10,28 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@ServerEndpoint("/socket/{gameId}")
+@ServerEndpoint("/socket/{path}/{gameId}")
 public class WebSocketConnector {
 
     private static final Set<Session> allSessions = Collections.synchronizedSet(new HashSet<Session>());
 
 
     @OnOpen
-    public void onOpen(@PathParam("gameId") String gameId,Session session) {
+    public void onOpen(@PathParam("gameId") String gameId,@PathParam("path") String path,Session session) throws IOException {
         System.out.println("onOpen::" + session.getId());
         System.out.println(" Before gameId="+gameId);
         session.getUserProperties().put("gameId",gameId);
         System.out.println("gameId added  OnOpen " +session.getUserProperties().get("gameId"));
         allSessions.add(session);
+        if(!path.equals("waiting")) {
+            for (Session allSession : allSessions) {
+                if (allSession.getUserProperties().get("gameId").equals(gameId)) {
+                    if (!allSession.getId().equals(session.getId())) {
+                        allSession.getBasicRemote().sendText("start");
+                    }
+                }
+            }
+        }
         System.out.println("Session Added");
     }
 
@@ -34,9 +45,11 @@ public class WebSocketConnector {
     @OnMessage
     public void onMessage(@PathParam("gameId") String gameId,String message, Session session) throws Exception {
         System.out.println("onMessage::From=" + session.getId() + " Message=" + message);
-        String gamId = "" + gameId;
+        if(message.equals("start")){
+            DbConnector.update("UPDATE challengetable SET Status='2' WHERE gameID='" + gameId + "'");
+        }
             for (Session allSession : allSessions) {
-                if (allSession.getUserProperties().get("gameId").equals(gamId)) {
+                if (allSession.getUserProperties().get("gameId").equals(gameId)) {
                     if (!allSession.getId().equals(session.getId())) {
                         allSession.getBasicRemote().sendText(message);
                     }

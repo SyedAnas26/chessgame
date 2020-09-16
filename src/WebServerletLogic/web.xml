@@ -111,6 +111,10 @@
         <servlet-name>UseToken</servlet-name>
         <jsp-file>/html_Pages/ChessConfigurationPages/UseToken.html</jsp-file>
     </servlet>
+    <servlet>
+        <servlet-name>InvitePage</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/inviteRedirect.html</jsp-file>
+    </servlet>
     <!-- Define the Manager Servlet Mapping -->
 
    <servlet-mapping>
@@ -224,6 +228,10 @@
     <servlet-mapping>
         <servlet-name>Multiplayer</servlet-name>
         <url-pattern>/joinGame</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InvitePage</servlet-name>
+        <url-pattern>/invite/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>UseToken</servlet-name>

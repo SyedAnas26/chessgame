@@ -8,7 +8,17 @@
         var token;
         var x = window.location.origin;
         var uniqueId;
+        var url = location.href;
+        token = url.split('/')[4];
+        var gameId=url.split('/')[5];
+        var ws=x.replace('https://','wss://').replace('http://','ws://');
+        var webSocketUrl=ws+'/socket/waiting/'+gameId;
+        webSocket = new WebSocket(webSocketUrl);
+
         window.onload = function () {
+            document.getElementById("token").innerHTML = token;
+            document.getElementById("link").innerHTML=x+"/invite/join?token="+token;
+            document.getElementById("linkHref").href=x+"/invite/join?token="+token;
             $.ajax({
                 url: x + "/getUserId",
                 type: 'POST',
@@ -23,10 +33,49 @@
                 }
             });
 
-            var url = location.href;
-            token = url.split('/')[4];
-            document.getElementById("token").innerHTML = token;
-
+            webSocket.onmessage = function(event) {
+                var msg = event.data;
+                if (msg === 'start') {
+                    $.ajax({
+                        url: x + "/joinGame",
+                        type: 'POST',
+                        data: {"tokenId": token, "uniqueId": uniqueId},
+                        success: function (response) {
+                            if (response.invalid === 'true') {
+                                alert("The token is invalid")
+                            } else {
+                                if (uniqueId === response.createdUser) {
+                                    playerColor = response.createdByPlayAs;
+                                } else if (response.createdByPlayAs === 'w') {
+                                    playerColor = 'b';
+                                } else if (response.createdByPlayAs === 'b') {
+                                    playerColor = 'w';
+                                }
+                                if (response.challengeType === '1') {
+                                    baseTime = 15 * 60;
+                                    extratime = 0;
+                                } else if (response.challengeType === '2') {
+                                    baseTime = 0;
+                                    extratime = 0;
+                                } else if (response.challengeType === '3') {
+                                    baseTime = 2 * 60;
+                                    extratime = 10;
+                                } else if (response.challengeType === '4') {
+                                    baseTime = 10 * 60;
+                                    extratime = 30;
+                                } else if (response.challengeType.startsWith("5")) {
+                                    baseTime = response.challengeType.split('&')[1];
+                                    extratime = response.challengeType.split('&')[2];
+                                }
+                                localStorage["baseTime"]=baseTime;
+                                localStorage["extraTime"]=extratime;
+                                localStorage["playerColor"]=playerColor;
+                                location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
+                            }
+                        }
+                    });
+                }
+            }
         }
 
         function copyToClipboard(element) {
@@ -51,9 +100,13 @@
         type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#token')">
     <br>
     <br>
+    <h3>Or Share This link to ur Opponent</h3>
     <br>
-    <input type="button" value="Click here to enter your token and join the game" style="font-size: 20px"
-           onclick="sendRedirect('/usetoken')">
+    <br>
+    <span style="font-size: 30px">Your Challenge Link : <a id="linkHref"><span style="font-size: 30px" id="link"></span></a></span><input type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#link')">
+    <br>
+    <br>
+    <p style="font-size: 20px" >Waiting For your Opponent to Join .. <br>You will be redirected Automatically</p>
 </div>
 </body>
 </html>
