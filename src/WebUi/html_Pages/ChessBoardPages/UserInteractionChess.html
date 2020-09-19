@@ -1,14 +1,47 @@
 <!doctype html>
 <html>
 <head>
+    <link rel="shortcut icon" href="https://lichesspro.com/favicon.ico">
     <style type="text/css">
+        body{
+            background-image:linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.3  )), url('https://lichesspro.com/emailImages/background.jpg');
+            position: relative;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+        #scoreBox{
+            margin-top: 68px;
+            width: 40px;
+            height: 500px;
+            float: left;
+            box-sizing: border-box;
+            border: 2px solid black;
+        }
+        #blackScore{
+            height: 50%;
+            float: top;
+        }
+        #whiteScore{
+            height: 50%;
+            float: bottom;
+        }
+        #whiteColor{
+            height: 100%;
+            background-color: #FFFFFF;
+        }
+        #blackColor{
+            height: 100%;
+            background-color: #000000;
+        }
 
 
         li:hover {
             cursor: pointer;
         }
         a{
-            color: #1080E1;
+            color: #17FFE5;
         }
         a:hover{
             cursor: pointer;
@@ -37,37 +70,38 @@
             float:left; margin:0 10px;
         }
         #pgnBox {
-            background-color: white;
-            width: 25%;
+            margin-left: 150px;
+            background-color: transparent;
+            width: 300px;
             height: 700px;
-            border: 2px solid white;
-            padding-top: 0px;
+            padding-top: 10px;
             overflow: auto;
             float: left;
         }
 
         #showPgn {
-            background-color: white;
-            width: 81%;
+            background-color: transparent;
+            width:260px;
             height: 475px;
             border: 2px solid black;
-            font-size: 20px; word-spacing: 20px;letter-spacing: 2px;
-            padding: 15px;
+            font-size: 20px;
+            padding-left:  0px;
+            padding-bottom:  15px;
+            padding-right: 0px;
             overflow: auto;
         }
 
         #GameBox {
-            border: 1px solid white;
+            margin-left: 5px;
             width: 510px;
             height: 670px;
             float: left;
         }
 
         #timerBox {
-            background-color: white;
+            background-color: transparent;
             width:350px;
             height: 550px;
-            border: 2px solid white;
             padding-top: 100px;
             overflow: auto;
         }
@@ -111,14 +145,15 @@
         var alertStatus;
         var winTeam;
         var player2Score;
-        var player1Score;
+        var Score;
         var boardFen='rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR';
         var webSocket;
         var webSocketConnection="notConnected";
         var url=location.href;
         var ws=x.replace('https://','wss://').replace('http://','ws://');
         gameId=url.split('&gameid=')[1].split('&')[0];
-        var webSocketUrl=ws+'/socket/game/'+gameId;
+        uniqueId=url.split('id=')[1].split('&')[0];
+        var webSocketUrl=ws+'/socket/game/'+gameId+'/'+uniqueId;
         webSocket = new WebSocket(webSocketUrl);
 
         $.ajax({
@@ -172,6 +207,26 @@
 <audio id="captureSound">
     <source src="Sound/captureSound.mp3"/>
 </audio>
+
+<div id="pgnBox">
+    <span style="margin-left: 80px; font-size:30px; color: #E5F3FF ">Eval Score</span><br>
+    <span style="font-size: 22px;  color: #E5F3FF">Score: <span style="font-size: 22px;" id="Score"></span></span>
+    <div id="showPgn">
+        <h3 style="margin-left:55px; color:#D1FFFF">PGN:</h3>
+        <ol id="whiteMove">
+        </ol>
+        <ul id="blackMove">
+        </ul>
+    </div>
+    <br>
+    <button onclick="saveTextAsFile()" style="font-size:16px;">Save Pgn to File</button>
+</div>
+<div id="scoreBox">
+    <div id="blackScore">
+        <div id="blackColor"></div>
+    </div>
+    <div id="whiteScore"><div id="whiteColor"></div></div>
+</div>
 <div id="GameBox">
     <div id="white_promotion_pieces" style="padding-left: 50px;">
         <img src="img/chesspieces/wikipedia/wQ.png" id="wqueen" data-piece="wQ" style="width:62px;height:62px;"
@@ -195,43 +250,27 @@
         <img src="img/chesspieces/wikipedia/bR.png" id="brook" data-piece="bR" style="width:62px;height:62px;"
              onclick="promotePiece('R')">
     </div>
-    <input type="button"  style="margin-left: 205px" onclick="askForDraw('ask')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
+    <input type="button"  style="margin-left: 205px; font-size:16px;" onclick="askForDraw('ask')" value="Claim Draw" cellpadding="0" cellspacing="0"/>
     <br>
     <br>
     <form id="goToHome" method="post" align="center">
-        <input type="submit" id="home" onclick="askForDraw('leave')" value="Go Back to Home Page"/>
+        <input type="submit" style="font-size:16px;" id="home" onclick="askForDraw('leave')" value="Go Back to Home Page"/>
     </form>
-</div>
-
-<div id="pgnBox">
-    <span style="margin-left: 80px; font-size:30px;">Eval Score</span><br>
-    <span style="font-size: 22px;">Your Score: <span style="font-size: 22px;" id="player1Score"></span></span>
-    <span style="margin-left: 40px; font-size:22px;" style="display: inline-block;">Opp Score: <span style="font-size: 22px;" id="player2Score"></span></span>
-
-    <div id="showPgn">
-        <h3 style="margin-left:55px;">PGN:</h3>
-        <ol id="whiteMove">
-        </ol>
-        <ul id="blackMove">
-        </ul>
-    </div>
-    <br>
-    <button onclick="saveTextAsFile()">Save Pgn to File</button>
 </div>
 
 <div id="timerBox">
     <div id="board1" style="width: 200px"></div>
     <br>
     <br>
-    <div><span class="time" id="player2Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Opponent Time </span></div>
+    <div><span class="time" id="player2Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px;color: #E5F3FF">Opponent Time </span></div>
     <br>
     <br>
     <br>
-    <div><span class="time" id="player1Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px">Your Time </span></div>
+    <div><span class="time" id="player1Time">00:00</span>&nbsp&nbsp&nbsp<span style="font-size: 30px; color: #E5F3FF">Your Time </span></div>
     <br>
     <br>
-    <label style="font-size: 25px">Status:</label>
-    <div style="font-size: 30px" id="status"></div>
+    <label style="font-size: 25px; color: #E5F3FF">Status:</label>
+    <div style="font-size: 35px; color: #FFB2B2" id="status"></div>
 </div>
 <script type="text/javascript" src="clientlib/chessboard-1.0.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
@@ -266,7 +305,6 @@
         }
         extraTime=parseInt(localStorage["extraTime"]);
         playerColor=localStorage["playerColor"];
-        uniqueId=url.split('id=')[1].split('&')[0];
         if(uniqueId!==uniqueidServer){
             alert('Invalid Acess!');
             location="/homepage/"+uniqueidServer;
@@ -298,12 +336,9 @@
         })
 
         if(playerColor==='b'){
+            board.orientation('black')
             if(mode==='computer')
             { makeAiMove();}
-            // else {
-            //   //  webSocket.send(gameId+","+moveNo);
-            // }
-            board.orientation('black')
         }
     }
 
@@ -397,8 +432,8 @@
                 if (mode === 'computer') {
                     sendStatus('3');
                 } else {
-                    alert("Draw Request Sent ! Waiting for Opponent response");
                     webSocket.send("draw");
+                    alert("Draw Request Sent ! Waiting for Opponent response");
                 }
             }
             else
@@ -630,7 +665,7 @@
         sendUserMove(move, userTime)
         updateStatus()
         onMoveEnd('null','null')
-        playMoveSound(move)
+        playMoveSound(move);
         if(mode==='computer') {
             window.setTimeout(makeAiMove, 1000)
         }
@@ -679,9 +714,9 @@
         playMoveSound(move);
         stopTimer();
         if(moveNo<=1){
-            startTimer(player1CurrenSeconds,player1Timer);
+            startTimer((player1CurrenSeconds)-1,player1Timer);
         }else{
-            startTimer(player1CurrenSeconds+extraTime,player1Timer);
+            startTimer((player1CurrenSeconds+extraTime)-1,player1Timer);
         }
         updateStatus();
     }
@@ -700,23 +735,24 @@
         var gameTillNow=game.pgn();
         var fen=game.fen();
         $.ajax({
-            url: x + "/usermoves",
+            url: x + "/storeMove",
             type: 'POST',
-            data: {"uniqueId":uniqueId,"FEN":fen,"userMove": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
+            data: {"uniqueId":uniqueId,"FEN":fen,"move": move.san,"timeTaken": userTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":gameTillNow},
             async: false,
             success: function (resp) {
                 if(moveNo>1) {
                     player2CurrenSeconds = parseInt(resp.opponentRemainingTime);
                 }
+                Score=resp.score;
                 console.log('ajax success sendUser oppTime= '+player1CurrenSeconds);
             },
             error: function (jqXHR, exception) {
                 console.log('Error occured!!');
             }
         });
-        if(player1Score!==undefined)
+        if(Score!==undefined)
         {
-            document.getElementById("player1Score").innerHTML=player1Score;}
+            document.getElementById("Score").innerHTML=Score;}
     }
 
     function onMouseoverSquare(square, piece) {
@@ -768,7 +804,7 @@
         if(moveNo===2)
         {startTimer(player1CurrenSeconds, player1Timer);}
         else
-        {var sec=player1CurrenSeconds+extraTime;
+        {   var sec=player1CurrenSeconds+extraTime;
             console.log('Seconds = '+sec)
             startTimer(sec, player1Timer);}
     }
@@ -796,21 +832,22 @@
         fen=game.fen();
         console.log(p);
         $.ajax({
-            url: x + "/aiMoveinPgn",
+            url: x + "/storeMove",
             type: 'POST',
             async: false,
-            data:{"gameId":gameId ,"aiMovePgn":aiMove.san,"moveNo":moveNo,"gamePgn":p,"FEN":fen,"aiTime":aiTime},
+            data:{"uniqueId":0,"FEN":fen,"move": aiMove.san,"timeTaken": aiTime,"gameId":gameId,"moveNo":moveNo,"gamePgn":p},
             success: function (resp) {
                 if(moveNo>1) {
                     player1CurrenSeconds =parseInt(resp.opponentRemainingTime);
                     console.log('ajax success aiMoveinPgn oppTime= '+player2CurrenSeconds);
                 }
+                Score=resp.score;
             }
         });
         playMoveSound(aiMove)
         board.position(game.fen())
         if(player2Score!==undefined)
-        {document.getElementById("player2Score").innerHTML=player2Score;}
+        {document.getElementById("Score").innerHTML=Score;}
     }
 
     function updateStatus() {
@@ -893,7 +930,7 @@
         node.onmouseover=function(){
             store=i;
             player2ScoreHere=player2Score;
-            player1ScoreHere=player1Score;
+            player1ScoreHere=Score;
             var length=movesMade.length;
             if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
             {

@@ -187,7 +187,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>ChessManager</servlet-name>
-        <url-pattern>/usermoves</url-pattern>
+        <url-pattern>/storeMove</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
@@ -228,6 +228,10 @@
     <servlet-mapping>
         <servlet-name>Multiplayer</servlet-name>
         <url-pattern>/joinGame</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Multiplayer</servlet-name>
+        <url-pattern>/sendMail</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>InvitePage</servlet-name>

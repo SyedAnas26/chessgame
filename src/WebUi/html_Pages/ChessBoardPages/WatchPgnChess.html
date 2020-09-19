@@ -1,11 +1,21 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <head>
     <head>
+        <link rel="icon" href="https://lichesspro.com/emailImages/logo2.png">
         <script>
             history.forward();
         </script>
     </head>
     <style type="text/css">
+
+        body{
+            background-image:linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.3  )), url('https://lichesspro.com/emailImages/watchbg.jpg');
+            position: relative;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
 
         li:hover {
             background-color: lightgreen;
@@ -14,7 +24,7 @@
 
         }
         #board1{
-           visibility: hidden;
+            visibility: hidden;
         }
         a {
             color: #1080E1;
@@ -29,36 +39,49 @@
             padding: 3px;
             background-color: lightgreen;
         }
+        #scoreBox{
+            margin-top: 33px;
+            width: 40px;
+            height: 500px;
+            float: left;
+            box-sizing: border-box;
+            border: 2px solid black;
+        }
+        #blackScore{
+            height: 50%;
+            float: top;
+            background-color: lightgrey;
+        }
+        #whiteScore{
+            height: 50%;
+            float: bottom;
+            background-color: #FFFFFF;
+        }
 
 
         #pgnBox {
-            background-color: white;
-            margin-left: 60px;
-            width: 25%;
-            border: 2px solid white;
+            background-color: none;
+            margin-left: 100px;
+            width: 300px;
             overflow: auto;
             padding-top: 30px;
             float: left;
         }
 
         #showPgn {
-            background-color: white;
-            width: 75%;
-            height: 467px;
+            background-color: none;
+            width: 260px;
+            height: 496px;
             border: 2px solid black;
-            padding: 20px;
             padding-top: 0px;
-            font-size: 23px;
-            word-spacing: 20px;
-            letter-spacing: 2px;
+            font-size: 20px;
             overflow: auto;
         }
 
         #smallBoardBox {
-            background-color: white;
+            background-color: none;
             width: 20%;
             height: 400px;
-            border: 2px solid white;
             padding-top: 120px;
             overflow: auto;
         }
@@ -76,19 +99,17 @@
         #GameBox {
             padding-top: 30px;
             margin-left: 30px;
-            border: 1px solid white;
             width: 510px;
             float: left;
         }
 
         .bot {
-            margin-left: 20px;
-            padding: 5px;
             width: 280px;
         }
 
         th {
             border: 30px solid white;
+            border-color: transparent;
             height: 100px;
         }
     </style>
@@ -138,41 +159,49 @@
 <audio id="captureSound">
     <source src="Sound/captureSound.mp3"/>
 </audio>
-<div id="GameBox">
-    <div id="myBoard" style="width: 500px"></div>
-</div>
-<div id="pgnBox">
-    <div id="showPgn">
-        <h3 style="margin-left:55px;">PGN:</h3>
-        <ol id="whiteMove">
-        </ol>
-        <ul id="blackMove">
-        </ul>
+<div id="bg">
+    <div id="pgnBox">
+        <div id="showPgn">
+            <h3 style="margin-left:55px;">PGN:</h3>
+            <ol id="whiteMove">
+            </ol>
+            <ul id="blackMove">
+            </ul>
+        </div>
+        <br>
+        <button style="font-size:16px" onclick="saveTextAsFile()">Save Pgn to File</button>
     </div>
-    <br>
-    <button onclick="saveTextAsFile()">Save Pgn to File</button>
-</div>
-<div id="smallBoardBox">
-    <div id="board1" style="width: 200px"></div>
-    <br>
-    <br>
-    <input type="button" value="Play" onclick="playGame()">
-    <input type="button" value="Stop" onclick="stopGame()">
-</div>
-<div class="bot">
-    <table>
-        <tr>
-            <th><input type="button" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/></th>
-            <th><input type="button" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/></th>
-            <th><input type="button" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
-                       cellspacing="0"/></th>
-        </tr>
-    </table>
-</div>
-<div class="bot">
-    <form action="/homepage" method="post" align="center">
-        <input style="margin-left: 150px" type="submit" value="Go Back to Home Page"/>
-    </form>
+    <div id="scoreBox">
+        <div id="blackScore">
+        </div>
+        <div id="whiteScore"></div>
+    </div>
+    <div id="GameBox">
+        <div id="myBoard" style="width: 500px"></div>
+        <div class="bot">
+            <table>
+                <tr>
+                    <th><input type="button" style="font-size:16px" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/></th>
+                    <th><input type="button" style="font-size:16px" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/></th>
+                    <th><input type="button" style="font-size:16px" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
+                               cellspacing="0"/></th>
+                </tr>
+            </table>
+        </div>
+
+        <div class="bot">
+            <form action="/homepage" method="post" align="center">
+                <input style="margin-left: 150px;font-size:16px"  type="submit" value="Go Back to Home Page"/>
+            </form>
+        </div>
+    </div>
+    <div id="smallBoardBox">
+        <div id="board1" style="width: 200px"></div>
+        <br>
+        <br>
+        <input type="button" value="Play" style="font-size:16px" onclick="playGame()">
+        <input type="button" value="Stop" style="font-size:16px" onclick="stopGame()">
+    </div>
 </div>
 <script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
         integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"

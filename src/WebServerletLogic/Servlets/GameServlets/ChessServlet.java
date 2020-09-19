@@ -1,7 +1,7 @@
 package WebServerletLogic.Servlets.GameServlets;
 
 import GameLogic.Managers.ChessManager;
-import WebServerletLogic.WebSocketConnector;
+import GameLogic.Managers.StockfishConnector;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -11,7 +11,8 @@ import java.io.PrintWriter;
 
 public class ChessServlet extends HttpServlet {
     ChessManager chessManager = new ChessManager();
-    WebSocketConnector webSocketConnector=new WebSocketConnector();
+    StockfishConnector stockfishConnector=new StockfishConnector();
+
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws  IOException {
         String servletPath = req.getServletPath();
@@ -22,22 +23,20 @@ public class ChessServlet extends HttpServlet {
         try {
             switch (servletPath)
             {
-            case "/usermoves" :
+            case "/storeMove" :
             case "/gamestatus":
-                String userTimer = req.getParameter("timeTaken");
-                String userMove = req.getParameter("userMove");
+                String timeTaken = req.getParameter("timeTaken");
+                String move = req.getParameter("move");
                 uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn = req.getParameter("gamePgn");
                 String fen = req.getParameter("FEN");
                 gameId = Long.parseLong(req.getParameter("gameId"));
+                String score=stockfishConnector.getEvalScore(fen);
                 int moveNo = Integer.parseInt(req.getParameter("moveNo"));
-                //webSocketConnector.sendMove(userMove,gameId);
-//                if(gameStatus != null){
-//                    webSocketConnector.sendStatus(gameStatus,gameId);
-//                }
-                chessManager.addMove(gameId, moveNo, userMove, gameStatus, uniqueId, userTimer, gamePgn);
+                chessManager.addMove(gameId, moveNo, move, gameStatus, uniqueId, timeTaken, gamePgn);
                 String res = chessManager.opponentRemainingTime(uniqueId, gameId,moveNo);
+                res=res+",\"score\":\""+score+"\"}";
                 out.print(res);
                 break;
 

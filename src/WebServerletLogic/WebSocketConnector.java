@@ -1,6 +1,7 @@
 package WebServerletLogic;
 
 import GameLogic.Managers.DbConnector;
+import GameLogic.Managers.StockfishConnector;
 
 import javax.websocket.*;
 import javax.websocket.server.PathParam;
@@ -10,41 +11,34 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-@ServerEndpoint("/socket/{path}/{gameId}")
+@ServerEndpoint("/socket/{path}/{gameId}/{userId}")
 public class WebSocketConnector {
 
     private static final Set<Session> allSessions = Collections.synchronizedSet(new HashSet<Session>());
 
-
     @OnOpen
-    public void onOpen(@PathParam("gameId") String gameId,@PathParam("path") String path,Session session) throws IOException {
-        System.out.println("onOpen::" + session.getId());
-        System.out.println(" Before gameId="+gameId);
+    public void onOpen(@PathParam("gameId") String gameId,@PathParam("path") String path,@PathParam("userId") String userId,Session session) throws IOException {
         session.getUserProperties().put("gameId",gameId);
-        System.out.println("gameId added  OnOpen " +session.getUserProperties().get("gameId"));
+        session.getUserProperties().put("userId",userId);
         allSessions.add(session);
         if(!path.equals("waiting")) {
             for (Session allSession : allSessions) {
                 if (allSession.getUserProperties().get("gameId").equals(gameId)) {
-                    if (!allSession.getId().equals(session.getId())) {
+                    if (!allSession.getId().equals(session.getId()) && !allSession.getUserProperties().get("userId").equals(userId)) {
                         allSession.getBasicRemote().sendText("start");
                     }
                 }
             }
         }
-        System.out.println("Session Added");
     }
 
     @OnClose
     public void onClose(@PathParam("gameId") String gameId, Session session) throws IOException {
-        System.out.println("onClose::" +  session.getId());
         allSessions.remove(session);
-        System.out.println("Session Removed");
     }
 
     @OnMessage
     public void onMessage(@PathParam("gameId") String gameId,String message, Session session) throws Exception {
-        System.out.println("onMessage::From=" + session.getId() + " Message=" + message);
         if(message.equals("start")){
             DbConnector.update("UPDATE challengetable SET Status='2' WHERE gameID='" + gameId + "'");
         }

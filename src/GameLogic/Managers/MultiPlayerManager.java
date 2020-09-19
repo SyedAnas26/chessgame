@@ -66,4 +66,13 @@ public class MultiPlayerManager extends ChessManager {
         return rand;
     }
 
+    public String getUserNameOf(int uniqueId) throws Exception {
+        String sql="Select * FROM login WHERE UserId='"+uniqueId+"'";
+        return (String)DbConnector.get(sql,rs->{
+           if(rs.next()){
+               return rs.getString("fullname");
+           }
+           return null;
+        });
+    }
 }

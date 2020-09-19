@@ -1,6 +1,7 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <link rel="icon" href="https://lichesspro.com/emailImages/logo2.png">
     <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <title>Waiting</title>
@@ -11,14 +12,20 @@
         var url = location.href;
         token = url.split('/')[4];
         var gameId=url.split('/')[5];
+        var noOfMails=localStorage.getItem(""+token);
+        if(noOfMails===null){
+            noOfMails=0;
+        }
+        console.log("no Of Mails "+noOfMails);
         var ws=x.replace('https://','wss://').replace('http://','ws://');
-        var webSocketUrl=ws+'/socket/waiting/'+gameId;
-        webSocket = new WebSocket(webSocketUrl);
+        var challengeLink;
+
 
         window.onload = function () {
             document.getElementById("token").innerHTML = token;
-            document.getElementById("link").innerHTML=x+"/invite/join?token="+token;
-            document.getElementById("linkHref").href=x+"/invite/join?token="+token;
+            challengeLink=x+"/invite/join?token="+token;
+            document.getElementById("link").innerHTML=challengeLink;
+            document.getElementById("linkHref").href=challengeLink;
             $.ajax({
                 url: x + "/getUserId",
                 type: 'POST',
@@ -32,6 +39,8 @@
                     }
                 }
             });
+            var webSocketUrl=ws+'/socket/waiting/'+gameId+'/'+uniqueId;
+            webSocket = new WebSocket(webSocketUrl);
 
             webSocket.onmessage = function(event) {
                 var msg = event.data;
@@ -86,8 +95,34 @@
             $temp.remove();
         }
 
-        function sendRedirect(goTo) {
-            window.location.href = x + goTo + "/" + uniqueId;
+        function sendMail() {
+            document.getElementById("mailStatus").innerHTML="Sending...";
+            noOfMails++;
+            localStorage.setItem(""+token,noOfMails);
+            if (noOfMails < 3) {
+                var mailTo = $("#emailId").val();
+                $.ajax({
+                    url: x + "/sendMail",
+                    type: 'POST',
+                    data: {"mailTo": mailTo, "challengeLink": challengeLink, "uniqueId": uniqueId},
+                    success: function (response) {
+                        if (response.sendStatus === 'sent') {
+                            alert('Mail Invitation Sent');
+                            document.getElementById("mailStatus").innerHTML="Sent !";
+                        } else if (response.sendStatus === 'failed') {
+                            alert('Invalid Email');
+                            document.getElementById("mailStatus").innerHTML="Invalid Mail ID !";
+                            noOfMails--;
+                            localStorage.setItem(""+token,noOfMails);
+                        }
+                    }
+                });
+            }else
+            {
+                alert(' Mail send Limit Exceeded !');
+                document.getElementById("mailStatus").innerHTML="Limit Exceeded !";
+
+            }
         }
     </script>
 </head>
@@ -106,6 +141,8 @@
     <span style="font-size: 30px">Your Challenge Link : <a id="linkHref"><span style="font-size: 30px" id="link"></span></a></span><input type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#link')">
     <br>
     <br>
+    <span style="font-size: 30px">Send Mail Invitation to your friend : </span><input type="text" style="font-size: 30px" name="emailId" id="emailId"><input type="button" value="Send" style="font-size: 20px" onclick="sendMail()">
+    <br><span style="font-size: 25px" id="mailStatus"></span>
     <p style="font-size: 20px" >Waiting For your Opponent to Join .. <br>You will be redirected Automatically</p>
 </div>
 </body>
