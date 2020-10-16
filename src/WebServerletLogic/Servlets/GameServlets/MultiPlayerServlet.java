@@ -1,6 +1,7 @@
 package WebServerletLogic.Servlets.GameServlets;
 
 import GameLogic.Managers.MultiPlayerManager;
+import util.MailAgentService;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -27,6 +28,7 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
             uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
             response=multiPlayerManager.createChallenge(uniqueId, playAs, challengeType);
             out.print(response);
+            break;
 
             case "/joinGame":
             String token=req.getParameter("tokenId");
@@ -35,6 +37,17 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
             response=multiPlayerManager.acceptChallenge(token,uniqueId);
             System.out.println("response "+response);
             out.print(response);
+            break;
+
+            case "/sendMail":
+             String challengeLink=req.getParameter("challengeLink");
+             uniqueId=Integer.parseInt(req.getParameter("uniqueId"));
+             String mailTo=req.getParameter("mailTo");
+             String senderName=multiPlayerManager.getUserNameOf(uniqueId);
+             response= MailAgentService.sendMail(mailTo,challengeLink,senderName);
+             out.print(response);
+             break;
+
         }
         }catch (Exception e){
             System.out.println("MultiPlayerServlet Exception "+e);

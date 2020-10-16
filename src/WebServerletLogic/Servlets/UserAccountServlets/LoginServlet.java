@@ -37,7 +37,7 @@ public class LoginServlet extends HttpServlet {
             HttpSession session = request.getSession(true);
             String thisName = request.getParameter("user_id");
             String thisPwd = request.getParameter("password");
-            String query = "SELECT * FROM login WHERE username='" + thisName + "' and password='" + thisPwd + "'";
+            String query = "SELECT * FROM login WHERE username='" + thisName + "' and password= SHA('" + thisPwd + "')";
 
             try {
                 name = (String) DbConnector.get(query, res -> {

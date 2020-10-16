@@ -42,6 +42,7 @@ public class PgnGameServlet extends HttpServlet {
             }
         } catch (Exception exception) {
             System.out.println("Png Game Servlet " + exception);
+            exception.printStackTrace();
             System.out.println("Line No "+exception.getStackTrace()[0].getLineNumber());
         }
         out.print(responseStep);

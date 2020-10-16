@@ -89,6 +89,10 @@
         <copy todir="${deploy.home}">
             <fileset dir="src/WebUi"/>
         </copy>
+        <mkdir dir="${deploy.home}/emailUtils"/>
+        <copy todir="${deploy.home}/emailUtils">
+            <fileset dir="emailUtils"/>
+        </copy>
         <mkdir dir="${deploy.home}/WEB-INF"/>
         <copy file="src/WebServerletLogic/web.xml" tofile="${deploy.home}/WEB-INF/web.xml"/>
 

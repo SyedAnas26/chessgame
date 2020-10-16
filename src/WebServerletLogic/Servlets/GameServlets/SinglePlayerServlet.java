@@ -36,27 +36,19 @@ public class SinglePlayerServlet extends HttpServlet {
                     break;
 
                 case "/aiMove":
-                    int skill = Integer.parseInt(req.getParameter("skillLevel"));
+                    System.out.println("ai came");
                     String FEN = req.getParameter("gameFEN");
-                    String responseStep = aiManager.getAiMove(FEN, skill);
+                    System.out.println(FEN);
+                    String skill = req.getParameter("skillLevel");
+                    System.out.println(skill);
+                    String responseStep = aiManager.getAiMove(FEN, Integer.parseInt(skill));
                     out.print(responseStep);
                     break;
 
-                case "/aiMoveinPgn":
-                    long gameId = Long.parseLong(req.getParameter("gameId"));
-                    int moveNo = Integer.parseInt(req.getParameter("moveNo"));
-                    String aiTime = req.getParameter("aiTime");
-                    String aiMovePgn = req.getParameter("aiMovePgn");
-                    String fen = req.getParameter("FEN");
-                    String game = req.getParameter("gamePgn");
-                    aiManager.addMove(gameId, moveNo, aiMovePgn, null, 0, aiTime, game);
-                    String res = aiManager.getTotalTime(0, gameId);
-                    out.print(res);
-                    break;
 
             }
         } catch (Exception exception) {
-            System.out.println("SinglePlayerServlet "+exception);
+            exception.printStackTrace();
         }
     }
 }

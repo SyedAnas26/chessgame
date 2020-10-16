@@ -31,6 +31,7 @@ public class DbConnector
 		}
 		catch (SQLException e)
 		{
+			e.printStackTrace();
 			throw new ServletException("Servlet Could not display records.", e);
 		}
 		catch (ClassNotFoundException e)

@@ -1,6 +1,7 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head align="center">
+<head>
+    <link rel="icon" href="https://lichesspro.com/favicon.png">
     <style type="text/css">
         #buttons{
             margin-left: 40%;
@@ -11,12 +12,19 @@
     <title>
         Home Page
     </title>
-<h1 align="center">Home</h1><br>
+    <h1 align="center">Home</h1><br>
     <script type="text/javascript">
+        if(localStorage.getItem("invite")==="true") {
+            localStorage.setItem("invite","false");
+            location = localStorage.getItem("inviteLink");
+        }
         var userId= '';
         var userName= '';
         var uniqueId;
+        var path=window.location.href;
+        var paths=path.split('/');
         var x=window.location.origin;
+        var splitPath=path.split('/');
         window.onload = function() {
             $.ajax({
                 url: x+"/getUserId",
@@ -29,13 +37,16 @@
                         alert(' Login First ! ');
                         location='/loginpage';
                     }
-                    document.getElementById('welcome').innerHTML = "Welcome Mr." + userName;
+                    if(paths.length<=4){
+                        location='/homepage/'+uniqueId;
+                    }
+                    document.getElementById('welcome').innerHTML = "Welcome, " + userName;
                 }
             });
         }
 
         function sendRedirect(goTo,mode) {
-             window.location.href=x+goTo+"/"+uniqueId;
+            window.location.href=x+goTo+"/"+uniqueId;
         }
     </script>
 </head>
@@ -44,19 +55,21 @@
 <div id="buttons">
     <br>
     <input  type="button" align="center" value="Click Here to Play Chess Game Vs Computer" onclick="sendRedirect('/difficulty/vscomp')"><br>
-<br>
+    <br>
     <input  type="button" align="center" value="Click Here to Create a Challenge " onclick="sendRedirect('/difficulty/multi')"><br>
     <br>
     <input  type="button" align="center" value="Click Here to Play Chess with ur Friends using Token" onclick="sendRedirect('/usetoken','null')"><br>
     <br>
     <form action="/loadpgn" method="post">
-<input  type="submit" align="center" value="Click Here to Play a Chess Pgn File"><br>
-</form>
+        <input  type="submit" align="center" value="Click Here to Play a Chess Pgn File"><br>
+    </form>
+    <input  type="button" align="center" value="Click Here to Watch ur game History" onclick="sendRedirect('/watchHistory','n')">
     <br>
-    <input  type="button" align="center" value="Click Here to Watch ur game History" onclick="sendRedirect('/watchHistory','n')"><br>
-<form action="/logout" method="post" align="center" >
-    <input type="submit" value="Logout" >
-</form>
+    <br>
+    <br>
+    <form action="/logout" method="post">
+        <input type="submit" align="center" value="Logout" style="margin-left: 100px">
+    </form>
 </div>
 </body>
 </html>

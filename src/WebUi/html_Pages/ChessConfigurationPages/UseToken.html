@@ -1,6 +1,7 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <link rel="icon" href="https://lichesspro.com/favicon.png">
     <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <title>Waiting</title>
@@ -21,6 +22,7 @@
                         alert(' Login First ! ');
                         location = '/loginpage';
                     }
+                    document.getElementById("goToHome").action = "/homepage/" + uniqueId;
                 }
             });
         }
@@ -59,8 +61,10 @@
                             baseTime = response.challengeType.split('&')[1];
                             extratime = response.challengeType.split('&')[2];
                         }
-
-                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token + "&time=" + baseTime + "+" + extratime + "+" + playerColor;
+                        localStorage["baseTime"]=baseTime;
+                        localStorage["extraTime"]=extratime;
+                        localStorage["playerColor"]=playerColor;
+                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
                     }
                 }
             });
@@ -74,6 +78,13 @@
     <br><label style="font-size: 30px" for="token">Enter the Challenge Token: </label>
     <input type="text" id="token" name="token" style="font-size: 30px"/>
     <input type="button" style="font-size: 30px;" value="Join" onclick="joinGame()">
+    <br>
+    <br>
+    <form id="goToHome" method="post" align="center">
+        <input type="submit" style="font-size:16px;" id="home" onclick="askForDraw('leave')"
+               value="Go Back to Home Page"/>
+    </form>
 </div>
+
 </body>
 </html>

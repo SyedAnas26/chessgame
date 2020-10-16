@@ -1,0 +1,85 @@
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <link rel="icon" href="https://lichesspro.com/favicon.png">
+    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
+<title>
+    Redirecting
+</title>
+    <script type="text/javascript">
+        var uniqueId='null';
+        var x = window.location.origin;
+        var url=location.href;
+        var token=url.split('token=')[1];
+        var baseTime,extratime,playerColor;
+        $.ajax({
+            url: x + "/getUserId",
+            type: 'POST',
+            async:false,
+            success: function (response) {
+                if (response.user_id==='null') {
+                    alert(' Login First !');
+                    localStorage.setItem("invite","true");
+                    localStorage.setItem("inviteLink",url);
+                    location = '/loginpage';
+                }
+                uniqueId=response.unique_id;
+                console.log('difficulty ajax success!!');
+            }
+        });
+
+        window.onload=function(){
+            $.ajax({
+                url: x + "/joinGame",
+                type: 'POST',
+                async:false,
+                data: {"tokenId": token, "uniqueId": uniqueId},
+                success: function (response) {
+                    if (response.invalid === 'true') {
+                        alert("The token is invalid")
+                        location=x+"/homepage/"+uniqueId;
+                    } else {
+                        if (uniqueId === response.createdUser) {
+                            playerColor = response.createdByPlayAs;
+                        } else if (response.createdByPlayAs === 'w') {
+                            playerColor = 'b';
+                        } else if (response.createdByPlayAs === 'b') {
+                            playerColor = 'w';
+                        }
+                        if (response.challengeType === '1') {
+                            baseTime = 15 * 60;
+                            extratime = 0;
+                        } else if (response.challengeType === '2') {
+                            baseTime = 0;
+                            extratime = 0;
+                        } else if (response.challengeType === '3') {
+                            baseTime = 2 * 60;
+                            extratime = 10;
+                        } else if (response.challengeType === '4') {
+                            baseTime = 10 * 60;
+                            extratime = 30;
+                        } else if (response.challengeType.startsWith("5")) {
+                            baseTime = response.challengeType.split('&')[1];
+                            extratime = response.challengeType.split('&')[2];
+                        }
+                        localStorage["baseTime"]=baseTime;
+                        localStorage["extraTime"]=extratime;
+                        localStorage["playerColor"]=playerColor;
+                        location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div class="loading">
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+</div>
+</body>
