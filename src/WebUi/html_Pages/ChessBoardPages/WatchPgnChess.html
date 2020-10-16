@@ -1,131 +1,38 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html id="html">
+</body>
+</html>
 <head>
     <head>
-        <link rel="icon" href="https://lichesspro.com/emailImages/logo2.png">
+        <link rel="icon" href="https://lichesspro.com/favicon.png">
         <script>
             history.forward();
         </script>
     </head>
+    <link rel="stylesheet" href="/clientlib/ChessBoard/ChessCss.css">
     <style type="text/css">
-
-        body{
-            background-image:linear-gradient(rgba(255,255,255,.3), rgba(255,255,255,.3  )), url('https://lichesspro.com/emailImages/watchbg.jpg');
-            position: relative;
+        html {
+            background-image: linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/watchpg.jpg');
+            position: static;
             height: 100%;
             background-position: center;
             background-repeat: no-repeat;
             background-size: cover;
-        }
+            background-attachment: fixed;
 
-        li:hover {
-            background-color: lightgreen;
-            color: #134B7C;
-            padding: 5px;
-
-        }
-        #board1{
-            visibility: hidden;
-        }
-        a {
-            color: #1080E1;
-        }
-
-        a:hover {
-            cursor: pointer;
-        }
-
-        .active a {
-            color: #134B7C;
-            padding: 3px;
-            background-color: lightgreen;
-        }
-        #scoreBox{
-            margin-top: 33px;
-            width: 40px;
-            height: 500px;
-            float: left;
-            box-sizing: border-box;
-            border: 2px solid black;
-        }
-        #blackScore{
-            height: 50%;
-            float: top;
-            background-color: lightgrey;
-        }
-        #whiteScore{
-            height: 50%;
-            float: bottom;
-            background-color: #FFFFFF;
-        }
-
-
-        #pgnBox {
-            background-color: none;
-            margin-left: 100px;
-            width: 300px;
-            overflow: auto;
-            padding-top: 30px;
-            float: left;
-        }
-
-        #showPgn {
-            background-color: none;
-            width: 260px;
-            height: 496px;
-            border: 2px solid black;
-            padding-top: 0px;
-            font-size: 20px;
-            overflow: auto;
-        }
-
-        #smallBoardBox {
-            background-color: none;
-            width: 20%;
-            height: 400px;
-            padding-top: 120px;
-            overflow: auto;
-        }
-
-        #whiteMove {
-            float: left;
-            margin: 0 10px;
-        }
-
-        #blackMove {
-            float: left;
-            margin: 0 10px;
-        }
-
-        #GameBox {
-            padding-top: 30px;
-            margin-left: 30px;
-            width: 510px;
-            float: left;
-        }
-
-        .bot {
-            width: 280px;
-        }
-
-        th {
-            border: 30px solid white;
-            border-color: transparent;
-            height: 100px;
         }
     </style>
-    <!-- Order of inclusion : Library -> Utilities -> Pieces -> Controls -->
-
     <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <meta charset="utf-8"/>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-    <link rel="stylesheet" href="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.css"
-          integrity="sha384-q94+BZtLrkL1/ohfjR8c6L+A6qzNH9R2hBLwyoAfu3i/WCvQjzL2RQJ3uNHDISdU" crossorigin="anonymous">
+    <link rel="stylesheet" href="/clientlib/ChessBoard/chessboard-1.0.0.min.css">
     <script type="text/javascript">
         statusCalled = false;
         var logid;
         var log;
         var uniqueId;
+        var mute;
         var x = window.location.origin;
         $.ajax({
             url: x + "/getUserId",
@@ -153,14 +60,18 @@
 </head>
 <body>
 <audio id="moveSound">
-    <source src="Sound/move.wav"/></audio>
+    <source src="Sound/move.wav"/>
+</audio>
 <audio id="blackMoveSound">
-    <source src="Sound/blackMove.wav"/></audio>
+    <source src="Sound/blackMove.wav"/>
+</audio>
 <audio id="captureSound">
     <source src="Sound/captureSound.mp3"/>
 </audio>
 <div id="bg">
     <div id="pgnBox">
+        <span class="spanClass" style="margin-left: 80px; font-size:30px;">Eval Score</span><br>
+        <span class="spanClass" style="font-size: 22px;">Score: <span style="font-size: 22px;" id="Score"></span></span>
         <div id="showPgn">
             <h3 style="margin-left:55px;">PGN:</h3>
             <ol id="whiteMove">
@@ -170,28 +81,42 @@
         </div>
         <br>
         <button style="font-size:16px" onclick="saveTextAsFile()">Save Pgn to File</button>
-    </div>
-    <div id="scoreBox">
-        <div id="blackScore">
+        <br>
+        <br>
+        <div class="center-con">
+            <div class="round">
+                <div class="speaker">
+                    <div id="mute" class="mute"></div>
+                    <span></span>
+                </div>
+            </div>
         </div>
-        <div id="whiteScore"></div>
+        <img src="img/chesspieces/wikipedia/reverse.png" id="reverse" style="margin-left:30px;width: 60px;height: 40px;"
+             onclick="bgReverse()">
     </div>
-    <div id="GameBox">
+    <div id="GameBox" style="margin-top: 70px;">
+        <div id="scoreBox">
+            <div id="blackColor"></div>
+        </div>
         <div id="myBoard" style="width: 500px"></div>
+        <br>
+        <br>
         <div class="bot">
             <table>
                 <tr>
-                    <th><input type="button" style="font-size:16px" onclick="nextMove()" value="Next Step" cellpadding="0" cellspacing="0"/></th>
-                    <th><input type="button" style="font-size:16px" onclick="prevStep()" value="Previous Step" cellpadding="0" cellspacing="0"/></th>
-                    <th><input type="button" style="font-size:16px" onclick="startNew();window.location.reload();" value="Start Again" cellpadding="0"
-                               cellspacing="0"/></th>
+                    <th></th>
+                    <th><input type="button" style="font-size:16px" onclick="nextMove()" value="Next Step"
+                               cellpadding="0" cellspacing="0"/></th>
+                    <th><input type="button" style="font-size:16px" onclick="prevStep()" value="Previous Step"
+                               cellpadding="0" cellspacing="0"/></th>
+                    <th><input type="button" style="font-size:16px" onclick="startNew();window.location.reload();"
+                               value="Start Again" cellpadding="0" cellspacing="0"/></th>
                 </tr>
             </table>
         </div>
-
         <div class="bot">
             <form action="/homepage" method="post" align="center">
-                <input style="margin-left: 150px;font-size:16px"  type="submit" value="Go Back to Home Page"/>
+                <input style="margin-left: 194px;font-size:16px" type="submit" value="Go Back to Home Page"/>
             </form>
         </div>
     </div>
@@ -203,12 +128,8 @@
         <input type="button" value="Stop" style="font-size:16px" onclick="stopGame()">
     </div>
 </div>
-<script src="https://unpkg.com/@chrisoakman/chessboardjs@1.0.0/dist/chessboard-1.0.0.min.js"
-        integrity="sha384-8Vi8VHwn3vjQ9eUHUxex3JSN/NFqUg3QbPyX8kWyb93+8AC/pPWTzj+nHtbC5bxD"
-        crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.2/chess.js"
-        integrity="sha384-s3XgLpvmHyscVpijnseAmye819Ee3yaGa8NxstkJVyA6nuDFjt59u1QvuEl/mecz"
-        crossorigin="anonymous"></script>
+<script src="/clientlib/ChessBoard/chessboard-1.0.0.min.js"></script>
+<script src="/clientlib/ChessBoard/chess.js"></script>
 <script type="text/javascript">
     var step = 0;
     var nextCalled = false;
@@ -217,17 +138,29 @@
     var $pgn = $('#showPgn')
     var game = new Chess()
     var animation_moved;
-    var checkStatus='0';
+    var checkStatus = '0';
     var pgnIsClicked;
     var interval;
+    var changedBg = 0;
+    var Score;
+    var backgroundWorker = undefined;
+    if (typeof (Worker) !== "undefined") {
+        if (typeof (backgroundWorker) == "undefined") {
+            backgroundWorker = new Worker('/clientlib/backgroundWorker.js');
+        }
+    } else {
+        alert("Web Worker Not Supported Please Inform to the Team about ur webBrowser!")
+    }
+
 
     function onMoveEnd(oldPos, newPos) {
         animation_moved = true;
-        if(game.turn()==='b'){
-            document.getElementById("moveSound").play();
-        }
-        else {
-            document.getElementById("blackMoveSound").play();
+        if (!mute) {
+            if (game.turn() === 'b') {
+                document.getElementById("moveSound").play();
+            } else {
+                document.getElementById("blackMoveSound").play();
+            }
         }
         if (alertStatus != null) {
             alert(alertStatus);
@@ -236,6 +169,36 @@
         if (!pgnIsClicked) {
             displayPgnMovesInUi(step);
         }
+    }
+
+    function bgReverse() {
+        if (changedBg >= 2) {
+            changedBg = 0;
+        } else {
+            changedBg++;
+        }
+        if (changedBg == 1) {
+            document.getElementById("html").style.background = "none";
+            document.getElementById("scoreBox").style.backgroundColor = "#C0C7CE";
+            changedBg = true;
+        } else if (changedBg == 0) {
+            document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/background.jpg')";
+            document.getElementById("scoreBox").style.backgroundColor = "white";
+            document.getElementById("html").style.position = "static";
+            document.getElementById("html").style.backgroundPosition = "center";
+            document.getElementById("html").style.backgroundRepeat = "no-repeat";
+            document.getElementById("html").style.backgroundSize = "cover";
+            document.getElementById("html").style.backgroundAttachment = "fixed";
+        } else if (changedBg == 2) {
+            document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/watchpg.jpg')";
+            document.getElementById("scoreBox").style.backgroundColor = "white";
+            document.getElementById("html").style.position = "static";
+            document.getElementById("html").style.backgroundPosition = "center";
+            document.getElementById("html").style.backgroundRepeat = "no-repeat";
+            document.getElementById("html").style.backgroundSize = "cover";
+            document.getElementById("html").style.backgroundAttachment = "fixed";
+        }
+
     }
 
     function removePgnListChilds() {
@@ -249,15 +212,16 @@
         }
     }
 
-    function playGame(){
-        interval=setInterval(function(){
+    function playGame() {
+        interval = setInterval(function () {
             nextMove();
-        },1000)
+        }, 1000)
     }
 
-    function stopGame(){
+    function stopGame() {
         clearInterval(interval);
     }
+
     function displayPgnMovesInUi(steps) {
 
         removePgnListChilds();
@@ -278,7 +242,7 @@
     }
 
     document.body.addEventListener("click", function (evt) {
-        document.getElementById("board1").style.visibility="hidden";
+        document.getElementById("board1").style.visibility = "hidden";
     });
 
 
@@ -287,21 +251,20 @@
         var onClickIsCalled = false;
         var node = document.createElement("LI");
         var a = document.createElement("a");
-        node.onmouseover=function(){
-            store=i;
-            var length=movesMade.length;
-            if(movesMade[movesMade.length-1]==="1/2-1/2" || movesMade[movesMade.length-1]==="1-0" || movesMade[movesMade.length-1]==="0-1" )
-            {
-                length=length-1;
+        node.onmouseover = function () {
+            store = i;
+            var length = movesMade.length;
+            if (movesMade[movesMade.length - 1] === "1/2-1/2" || movesMade[movesMade.length - 1] === "1-0" || movesMade[movesMade.length - 1] === "0-1") {
+                length = length - 1;
             }
-            var chess=new Chess();
+            var chess = new Chess();
             chess.load_pgn(game.pgn());
-            var loopfor=((length) - store)-1;
-            for(var j=0;j<loopfor;j++){
+            var loopfor = ((length) - store) - 1;
+            for (var j = 0; j < loopfor; j++) {
                 chess.undo();
             }
             board1.position(chess.fen())
-            document.getElementById("board1").style.visibility="visible";
+            document.getElementById("board1").style.visibility = "visible";
         }
         node.onclick = function (event) {
             pgnIsClicked = true;
@@ -317,6 +280,8 @@
                 chess.undo();
             }
             board.position(chess.fen());
+            backgroundWorker.postMessage({'do': 'analyse', 'fen': chess.fen()});
+
         }
         a.textContent = "" + movesMade[i];
         a.setAttribute("href", "#");
@@ -368,22 +333,33 @@
                     }
                     animation_moved = false;
                     var pgnMove = response.pgn;
-                    var m= game.move(pgnMove)
+                    var m = game.move(pgnMove)
                     board.position(game.fen())
-                    var san=m.san;
-                    for(var i=0;i<san.length;i++){
-                        if(san.charAt(i)==='x'){
-                            document.getElementById("captureSound").play();
+                    backgroundWorker.postMessage({'do': 'analyse', 'fen': game.fen()});
+                    var san = m.san;
+                    if (!mute) {
+                        for (var i = 0; i < san.length; i++) {
+                            if (san.charAt(i) === 'x') {
+                                document.getElementById("captureSound").play();
+                            }
                         }
                     }
                 }
             });
             nextCalled = true;
             pgnIsClicked = false;
+        } else {
+            stopGame();
         }
-        else{stopGame();}
 
     }
+
+    $('.speaker').click(function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).toggleClass('on');
+        mute = (mute == false) ? true : false;
+    });
 
     function saveTextAsFile() {
         var result = '';
@@ -426,11 +402,35 @@
             statusCalled = false;
             game.undo()
             board.position(game.fen())
+            backgroundWorker.postMessage({'do': 'analyse', 'fen': game.fen()});
             nextCalled = false;
             prevMoveCalled = true;
             pgnIsClicked = false;
         }
     }
+    backgroundWorker.onmessage=function(response){
+        var data = response.data;
+        var res=data.score;
+        if(res.toString().startsWith("-")){
+            var increase=50+(Math.abs(parseFloat(data.score))/100);
+            var set=increase+"%";
+            document.getElementById("blackColor").style.height=set;
+        }
+        else{
+            var decrease=50-(parseFloat(data.score)/100);
+            if(decrease>100){
+                decrease=100;
+            }
+            if(decrease<0){
+                decrease=0;
+            }
+            var set=decrease+"%";
+            document.getElementById("blackColor").style.height=set;
+        }
+        Score = parseFloat(data.score/100);
+        document.getElementById("Score").innerHTML=Score;
+    }
+
 
     function startNew() {
         animation_moved = true;

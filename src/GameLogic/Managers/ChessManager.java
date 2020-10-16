@@ -82,7 +82,7 @@ public class ChessManager {
             return 0;
         });
         System.out.println("remTime " + remainingTime);
-        return "{\"opponentRemainingTime\":\"" + remainingTime + "\"";
+        return "{\"opponentRemainingTime\":\"" + remainingTime + "\"}";
     }
 
     public long createGameId() throws Exception {

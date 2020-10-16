@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 
 public class MultiPlayerServlet extends HttpServlet {
 MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
-MailAgentService mailAgentService = new MailAgentService();
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String servletPath=req.getServletPath();

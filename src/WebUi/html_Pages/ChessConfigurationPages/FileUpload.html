@@ -1,11 +1,12 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <link rel="icon" href="https://lichesspro.com/emailImages/logo2.png">
+    <link rel="icon" href="https://lichesspro.com/favicon.png">
     <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <script type="text/javascript">
         var userId = '';
+        var uniqueId;
         window.onload = function () {
             var x = window.location.origin;
             $.ajax({
@@ -13,10 +14,12 @@
                 type: 'POST',
                 success: function (response) {
                     userId = response.user_id;
+                    uniqueId=response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
                         location = '/loginpage';
                     }
+                    document.getElementById("goToHome").action = "/homepage/" + uniqueId;
                 }
             });
         }
@@ -43,6 +46,13 @@
     Select File:<input type="file" id="fileUpload" name="file" onChange="sendFileName()"/><br>
     <br><input type="submit" value="Upload"/>
 </form>
+<br>
+<br>
+<form id="goToHome" method="post" align="center">
+    <input type="submit" style="font-size:16px;" id="home" onclick="askForDraw('leave')"
+           value="Go Back to Home Page"/>
+</form>
+<br>
 <br>
 <form action="logout" method="post" align="center">
     <input type="submit" value="Logout">

@@ -25,20 +25,29 @@ public class ChessServlet extends HttpServlet {
             {
             case "/storeMove" :
             case "/gamestatus":
+                System.out.println("Store came");
                 String timeTaken = req.getParameter("timeTaken");
                 String move = req.getParameter("move");
+                System.out.println("move= "+move);
                 uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn = req.getParameter("gamePgn");
+                System.out.println("gamePgn= "+gamePgn);
                 String fen = req.getParameter("FEN");
                 gameId = Long.parseLong(req.getParameter("gameId"));
-                String score=stockfishConnector.getEvalScore(fen);
                 int moveNo = Integer.parseInt(req.getParameter("moveNo"));
-                chessManager.addMove(gameId, moveNo, move, gameStatus, uniqueId, timeTaken, gamePgn);
+                if(gamePgn!=null) {
+                    chessManager.addMove(gameId, moveNo, move, gameStatus, uniqueId, timeTaken, gamePgn);
+                }
                 String res = chessManager.opponentRemainingTime(uniqueId, gameId,moveNo);
-                res=res+",\"score\":\""+score+"\"}";
                 out.print(res);
                 break;
+
+                case "/analyseBoard":
+                    String Fen=req.getParameter("fen");
+                    String Score = stockfishConnector.getEvalScore(Fen);
+                    out.print("{\"Score\":\""+Score+"\"}");
+                    break;
 
                 case "/getGamePosition":
                     System.out.println("ajaxCame");
@@ -48,10 +57,13 @@ public class ChessServlet extends HttpServlet {
                 System.out.println(response);
                 out.print(response);
                 break;
+                default:
+                    throw new IllegalStateException("Unexpected value: " + servletPath);
             }
         } catch (Exception e) {
             System.out.println("Chess Servlet Exception " + e);
-            System.out.println("Line No "+e.getStackTrace()[0].getLineNumber());
+            e.printStackTrace();
+            System.out.println("Line No "+e.getStackTrace()[3].getLineNumber());
         }
     }
 }

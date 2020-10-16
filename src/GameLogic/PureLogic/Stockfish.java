@@ -114,6 +114,7 @@ public class Stockfish {
             processReader.close();
             processWriter.close();
         } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -156,8 +157,9 @@ public class Stockfish {
      */
     public float getEvalScore(String fen, int waitTime) {
         sendCommand("position fen " + fen);
-        sendCommand("go depth " + waitTime);
+        sendCommand("go depth " + "10");
         float evalScore = 0.0f;
+        System.out.println(getOutput(100));
         String[] dump = getOutput(waitTime + 20).split("\n");
         for (int i = dump.length - 1; i >= 0; i--) {
             if (dump[i].startsWith("info depth ")) {
@@ -165,8 +167,13 @@ public class Stockfish {
                     evalScore = Float.parseFloat(dump[i].split("score cp ")[1]
                             .split(" nodes")[0]);
                 } catch(Exception e) {
-                    evalScore = Float.parseFloat(dump[i].split("score cp ")[1]
-                            .split(" upperbound nodes")[0]);
+                    try {
+                        evalScore = Float.parseFloat(dump[i].split("score cp ")[1]
+                                .split(" upperbound nodes")[0]);
+                    }catch (Exception  ex){
+                        evalScore = Float.parseFloat(dump[i].split("score cp ")[0]
+                                .split(" upperbound nodes")[0]);
+                    }
                 }
             }
         }

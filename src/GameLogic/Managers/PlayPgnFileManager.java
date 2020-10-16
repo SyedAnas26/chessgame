@@ -100,18 +100,40 @@ public class PlayPgnFileManager {
         try {
             DbConnector.get(sql, rs -> {
                 while (rs.next()) {
-                    long millis = rs.getLong("GameId");
-                    Date matchDate = new Date(millis);
-                    DateFormat est = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    TimeZone estTime = TimeZone.getTimeZone("IST");
-                    DateFormat gmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    TimeZone gmtTime = TimeZone.getTimeZone("GMT");
-                    est.setTimeZone(gmtTime);
-                    gmt.setTimeZone(estTime);
-                    String indFormat = gmt.format(matchDate);
-                    games.add(indFormat);
-                    String gameLogid = rs.getString("idGameLog");
-                    games.add(gameLogid);
+                    String gameInPgn = rs.getString("GameinPgn");
+                    if (!gameInPgn.equals("null")){
+                        long millis = rs.getLong("GameId");
+                        Date matchDate = new Date(millis);
+                        DateFormat est = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        TimeZone estTime = TimeZone.getTimeZone("IST");
+                        DateFormat gmt = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                        TimeZone gmtTime = TimeZone.getTimeZone("GMT");
+                        est.setTimeZone(gmtTime);
+                        gmt.setTimeZone(estTime);
+                        String indFormat = gmt.format(matchDate);
+                        games.add(indFormat);
+                        String gameLogId = rs.getString("idGameLog");
+                        games.add(gameLogId);
+                        String userId1=rs.getString("UserID1");
+                        String userId2=rs.getString("UserID2");
+                        for(int i=0;i<2;i++) {
+                            if(i>=1){
+                                userId1=userId2;
+                            }
+                            if (userId1 == null) {
+                                games.add("AI");
+                            } else {
+                                DbConnector.get(
+                                        "SELECT * FROM login WHERE UserId='" + userId1 + "'", res -> {
+                                            if (res.next()) {
+                                                String name = res.getString("fullname");
+                                                games.add(name);
+                                            }
+                                            return null;
+                                        });
+                            }
+                        }
+                    }
                 }
                 return games;
             });

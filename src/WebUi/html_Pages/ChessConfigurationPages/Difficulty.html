@@ -1,7 +1,7 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <link rel="icon" href="https://lichesspro.com/emailImages/logo2.png">
+    <link rel="icon" href="https://lichesspro.com/favicon.png">
     <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
     <title>Difficulty</title>
@@ -102,6 +102,7 @@
                         alert(' Login First !');
                         location = '/loginpage';
                     }
+                    document.getElementById("goToHome").action = "/homepage/" + uniqueId;
                     console.log('difficulty ajax success!!');
                 }
             });
@@ -114,7 +115,6 @@
         }
 
         function clickResp(type, buttonNo) {
-
             if (type === 'standard') {
                 baseTime = 15 * 60;
                 extratime = 0;
@@ -171,7 +171,7 @@
                 $.ajax({
                     url: x + "/diff",
                     type: 'POST',
-                    data: {"difficulty": difficulty, "uniqueId": uniqueId},
+                    data: {"difficulty": challengeType, "uniqueId": uniqueId},
                     success: function (response) {
                         var gameId = response.gameId;
                         localStorage["skillLevel"]=skillLevel;
@@ -228,5 +228,9 @@
 </div>
 <br>
 <br>
+<form id="goToHome" method="post" align="center">
+    <input type="submit" style="font-size:16px;" id="home" onclick="askForDraw('leave')"
+           value="Go Back to Home Page"/>
+</form>
 </body>
 </html>

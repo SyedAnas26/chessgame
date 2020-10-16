@@ -88,8 +88,8 @@
         <jsp-file>/html_Pages/ChessConfigurationPages/Difficulty.html</jsp-file>
     </servlet>
     <servlet>
-        <servlet-name>UserInteractionChess</servlet-name>
-        <jsp-file>/html_Pages/ChessBoardPages/UserInteractionChess.html</jsp-file>
+        <servlet-name>PlayChess</servlet-name>
+        <jsp-file>/html_Pages/ChessBoardPages/PlayChess.html</jsp-file>
     </servlet>
     <servlet>
         <servlet-name>HomePage</servlet-name>
@@ -178,7 +178,7 @@
         <url-pattern>/difficulty/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
-        <servlet-name>UserInteractionChess</servlet-name>
+        <servlet-name>PlayChess</servlet-name>
         <url-pattern>/vs/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
@@ -188,6 +188,10 @@
     <servlet-mapping>
         <servlet-name>ChessManager</servlet-name>
         <url-pattern>/storeMove</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessManager</servlet-name>
+        <url-pattern>/analyseBoard</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>AiConverter</servlet-name>
