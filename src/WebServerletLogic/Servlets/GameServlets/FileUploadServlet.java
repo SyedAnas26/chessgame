@@ -23,7 +23,12 @@ public class FileUploadServlet extends HttpServlet {
             throws  IOException {
         PlayPgnFileManager playPgnFileManager = new PlayPgnFileManager();
         HttpSession session = request.getSession();
-        int uniqueId = (int) session.getAttribute("uniqueId");
+        int uniqueId;
+        try {
+             uniqueId = (int) session.getAttribute("uniqueId");
+        }catch (NullPointerException n){
+            uniqueId=0;
+        }
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
         if (request.getServletPath().equals("/setFileName")) {
@@ -49,7 +54,7 @@ public class FileUploadServlet extends HttpServlet {
                 System.out.println("Line No "+ex.getStackTrace()[0].getLineNumber());
                 out.println("<script type=\"text/javascript\">");
                 out.println("alert('You Have not uploaded a File !');");
-                out.println("location='/load';");
+                out.println("location='/homepage';");
                 out.println("</script>");
 
             }

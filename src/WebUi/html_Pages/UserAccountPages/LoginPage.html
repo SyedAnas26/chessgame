@@ -1,14 +1,185 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://lichesspro.com/favicon.png">
     <title>Chess Game</title>
+    <style type="text/css">
+        body{
+            margin:0;
+            color:#6a6f8c;
+            background:#c8c8c8;
+            font:600 16px/18px 'Open Sans',sans-serif;
+        }
+
+
+
+        *,:after,:before{box-sizing:border-box}
+        .clearfix:after,.clearfix:before{content:'';display:table}
+        .clearfix:after{clear:both;display:block}
+        a{color:lightgrey;text-decoration:none}
+
+
+        body{
+            background-image: linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('/img/c3-min.jpg');
+            position: static;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+
+        }
+
+        .login-wrap{
+            border-radius: 25px;
+            width:100%;
+            margin:auto;
+            margin-top: 70px;
+            max-width:515px;
+            min-height:575px;
+            position:relative;
+            box-shadow:0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);
+        }
+        .login-html{
+            width:100%;
+            height:100%;
+            position:absolute;
+            padding:60px 70px 50px 70px;
+            background:rgba(40,57,101,.9);
+        }
+        .login-html .sign-in-htm,
+        .login-html .sign-up-htm{
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            position:absolute;
+            transform:rotateY(180deg);
+            backface-visibility:hidden;
+            transition:all .4s linear;
+        }
+        .login-html .sign-in,
+        .login-html .sign-up,
+        .login-form .group .check{
+            display:none;
+        }
+        .login-html .tab,
+        .login-form .group .label,
+        .login-form .group .button{
+            text-transform:uppercase;
+        }
+        .login-html .tab{
+            font-size:22px;
+            margin-right:15px;
+            padding-bottom:5px;
+            margin:0 15px 10px 0;
+            display:inline-block;
+            border-bottom:2px solid transparent;
+        }
+        .login-html .sign-in:checked + .tab,
+        .login-html .sign-up:checked + .tab{
+            color:#fff;
+            border-color:#1161ee;
+        }
+        .login-form{
+            min-height:345px;
+            position:relative;
+            perspective:1000px;
+            transform-style:preserve-3d;
+        }
+        .login-form .group{
+            margin-bottom:15px;
+        }
+        .login-form .group .label,
+        .login-form .group .input,
+        .login-form .group .button{
+            width:100%;
+            color:#fff;
+            display:block;
+        }
+        .login-form .group .input,
+        .login-form .group .button{
+            border:none;
+            padding:15px 20px;
+            border-radius:25px;
+            background:rgba(255,255,255,.1);
+        }
+        .login-form .group input[data-type="password"]{
+            text-security:circle;
+            -webkit-text-security:circle;
+        }
+        .login-form .group .label{
+            color:#aaa;
+            font-size:12px;
+        }
+        .login-form .group .button{
+            background:#1161ee;
+        }
+        .login-form .group label .icon{
+            width:15px;
+            height:15px;
+            border-radius:2px;
+            position:relative;
+            display:inline-block;
+            background:rgba(255,255,255,.1);
+        }
+        .login-form .group label .icon:before,
+        .login-form .group label .icon:after{
+            content:'';
+            width:10px;
+            height:2px;
+            background:#fff;
+            position:absolute;
+            transition:all .2s ease-in-out 0s;
+        }
+        .login-form .group label .icon:before{
+            left:3px;
+            width:5px;
+            bottom:6px;
+            transform:scale(0) rotate(0);
+        }
+        .login-form .group label .icon:after{
+            top:6px;
+            right:0;
+            transform:scale(0) rotate(0);
+        }
+        .login-form .group .check:checked + label{
+            color:#fff;
+        }
+        .login-form .group .check:checked + label .icon{
+            background:#1161ee;
+        }
+        .login-form .group .check:checked + label .icon:before{
+            transform:scale(1) rotate(45deg);
+        }
+        .login-form .group .check:checked + label .icon:after{
+            transform:scale(1) rotate(-45deg);
+        }
+        .login-html .sign-in:checked + .tab + .sign-up + .tab + .login-form .sign-in-htm{
+            transform:rotate(0);
+        }
+        .login-html .sign-up:checked + .tab + .login-form .sign-up-htm{
+            transform:rotate(0);
+        }
+
+        .hr{
+            height:2px;
+            margin:60px 0 50px 0;
+            background:rgba(255,255,255,.2);
+        }
+        .foot-lnk{
+            text-align:center;
+        }
+    </style>
     <script>
+
+
         function validateForm() {
             var y=document.forms["Login"]["user_id"].value;
             if (y==null || y=="")
             {
-                alert("User id must be filled out");
+                alert("User-ID must be filled out");
                 return false;
             }
             var z=document.forms["Login"]["password"].value;
@@ -18,11 +189,123 @@
                 return false;
             }
         }
+
+        function validateRegForm()
+        {
+            var u=document.forms["Register"]["userId"].value;
+            if (u==null || u=="")
+            {
+                alert("User id must be filled out");
+                return false;
+            }
+            var y=document.forms["Register"]["name"].value;
+            if (y==null || y=="")
+            {
+                alert("Name must be filled out");
+                return false;
+            }
+            var z=document.forms["Register"]["Password"].value;
+            if (z==null || z=="")
+            {
+                alert("Password must be filled out");
+                return false;
+            }
+            var k=document.forms["Register"]["rePassword"].value;
+            if(k!==z){
+                alert("Wrongly re-Entered Password");
+                return false;
+            }
+            var x=document.forms["Register"]["email"].value;
+            var atpos=x.indexOf("@");
+            var pos=x.indexOf(".");
+            var dotpos=x.lastIndexOf(".");
+            if (atpos<1 || dotpos<atpos+2 || dotpos+2>=x.length || (x.charAt(pos+1)=="."))
+            {
+                alert("Not a valid e-mail address");
+                return false;
+            }
+        }
     </script>
 </head>
 
 <body>
-<div align="center">
+<br>
+<script type="text/javascript">
+    window.onload=function(){
+        var x=location.href;
+        var path=x.split('/loginpage/')[1];
+        if(path==='signin'){
+            document.getElementById('tab-1').checked='true';
+        }
+        else if(path==='signup'){
+            document.getElementById('tab-2').checked='true';
+        }
+    }
+</script>
+
+<div class="login-wrap">
+    <div class="login-html">
+        <input id="tab-1" type="radio" name="tab" class="sign-in"><label for="tab-1" class="tab">Sign In</label>
+        <input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab">Sign Up</label>
+        <div class="login-form">
+            <form action="LoginServlet" name="Login" method="post" onsubmit="return validateForm();">
+                <div class="sign-in-htm">
+                    <div class="group">
+                        <label for="user_id" class="label">User-ID</label>
+                        <input id="user_id" autocomplete="off" name="user_id" type="text" class="input">
+                    </div>
+                    <div class="group">
+                        <label for="pass" class="label">Password</label>
+                        <input id="passL" type="password" name="password" class="input" data-type="password">
+                    </div>
+                    <div class="group">
+                        <input id="check" type="checkbox" class="check" checked>
+                        <label for="check"><span class="icon"></span> Keep me Signed in</label>
+                    </div>
+                    <div class="group">
+                        <input type="submit" class="button" value="Sign In">
+                    </div>
+            </form>
+            <div class="hr"></div>
+            <div class="foot-lnk">
+                <a>Forgot Password?</a>
+            </div>
+        </div>
+        <form action="RegisterServlet" method="post" name="Register" onsubmit="return validateRegForm();">
+
+            <div class="sign-up-htm">
+                <div class="group">
+                    <label for="userId" class="label">User-ID</label>
+                    <input id="userId" autocomplete="off" name="userId" type="text" class="input">
+                </div>
+                <div class="group">
+                    <label for="name" class="label">Name</label>
+                    <input id="name" autocomplete="off" type="text" name="name" class="input">
+                </div>
+                <div class="group">
+                    <label for="pass" class="label">Password</label>
+                    <input id="pass" name="Password" type="password" class="input" data-type="password">
+                </div>
+                <div class="group">
+                    <label for="repass" class="label">Repeat Password</label>
+                    <input id="repass" name="rePassword" type="password" class="input" data-type="password">
+                </div>
+                <div class="group">
+                    <label for="e-mail" class="label">Email Address</label>
+                    <input id="e-mail" autocomplete="off" name="email" type="text" class="input">
+                </div>
+                <div class="group">
+                    <input type="submit" class="button" value="Sign Up">
+                </div>
+        </form>
+        <div class="foot-lnk">
+            <a><label for="tab-1">Already Member?</a>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+<!-- <div align="center">
     <form action="LoginServlet" name="Login" align= "center" method="post" onsubmit="return validateForm();">
         <div>
             <div id="login-box">
@@ -50,6 +333,6 @@
 <h4 align="center">New user?Sign Up here</h4>
     <form align ="center" action="/Register" method="post">
         <input type="submit" value="Sign Up"/>
-    </form>
+    </form> -->
 </body>
 </html>

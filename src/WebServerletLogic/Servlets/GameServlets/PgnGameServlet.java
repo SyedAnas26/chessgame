@@ -28,7 +28,12 @@ public class PgnGameServlet extends HttpServlet {
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         HttpSession session = req.getSession();
-        int uniqueId = (int) session.getAttribute("uniqueId");
+        int uniqueId;
+        try {
+             uniqueId = (int) session.getAttribute("uniqueId");
+        }catch (NullPointerException n){
+            uniqueId=0;
+        }
         try {
             if (servletPath.equals("/getHistory")) {
                 List<String> games = playPgnFileManager.getHistoryOfGames(uniqueId);

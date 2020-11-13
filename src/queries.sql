@@ -114,3 +114,4 @@ DROP INDEX `UserID1_FK_idx` ,
 DROP INDEX `UserID2FK_idx` ;
 ;
 
+ALTER TABLE login DROP gender;

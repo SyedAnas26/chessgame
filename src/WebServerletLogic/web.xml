@@ -26,9 +26,9 @@
        Web based chess app.
     </description>
 
-    <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
-    </welcome-file-list>
+<!--    <welcome-file-list>-->
+<!--        <welcome-file>index.html</welcome-file>-->
+<!--    </welcome-file-list>-->
 
     <servlet>
         <servlet-name>LoginPage</servlet-name>
@@ -151,7 +151,7 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginServlet</servlet-name>
-        <url-pattern>/LoginServlet</url-pattern>
+        <url-pattern>/loginpage/LoginServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterPage</servlet-name>
@@ -159,11 +159,15 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>RegisterServlet</servlet-name>
-        <url-pattern>/RegisterServlet</url-pattern>
+        <url-pattern>/loginpage/RegisterServlet</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LoginPage</servlet-name>
-        <url-pattern>/loginpage</url-pattern>
+        <url-pattern>/loginpage/signin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginPage</servlet-name>
+        <url-pattern>/loginpage/signup</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>LogoutServlet</servlet-name>
@@ -173,6 +177,12 @@
         <servlet-name>HomePage</servlet-name>
         <url-pattern>/homepage/*</url-pattern>
     </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>HomePage</servlet-name>
+        <url-pattern></url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>Difficulty</servlet-name>
         <url-pattern>/difficulty/*</url-pattern>

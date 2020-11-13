@@ -1,12 +1,13 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="https://lichesspro.com/favicon.png">
-    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery-ui.min.js"></script>
     <style type="text/css">
         html {
-            background-image: linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/history3.jpg');
+            background-image: linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/history3.jpg');
             position: static;
             height: 100%;
             background-position: center;
@@ -20,6 +21,16 @@
             overflow: auto;
             padding-bottom: 20px;
         }
+
+        @media screen and (max-width: 600px){
+            #historyBox{
+                height:480px;
+            }
+            #historyTable{
+                width:360px;
+            }
+        }
+
         table{
             border-collapse: separate;
             border-spacing: 10px;
@@ -54,7 +65,7 @@
                     uniqueId = response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
-                        location = '/loginpage';
+                        location = '/loginpage/signin';
                     }
                     document.getElementById("goToHome").action = "/homepage/" + uniqueId;
                 }
@@ -85,11 +96,16 @@
         var row = table.insertRow(0);
         var cell1 = row.insertCell(0);
         var playImg = document.createElement('img');
+        console.log("game ="+game);
+        console.log("id ="+id);
+        console.log("player1 ="+player1);
+        console.log("player2 ="+player2);
+
         if(player1===' AI' || player2===' AI'){
-            cell1.style.backgroundImage="linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/ai3.jpeg')";
+            cell1.style.backgroundImage="linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/ai3-min.jpeg')";
         }
         else{
-            cell1.style.backgroundImage="linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/versus.png')";
+            cell1.style.backgroundImage="linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/versus.png')";
         }
         cell1.style.backgroundPosition="50% 60%";
         cell1.style.backgroundSize="cover";
@@ -100,7 +116,7 @@
         cell1.appendChild(names);
         cell1.appendChild(linebreak);
         cell1.appendChild(time);
-        playImg.src="/img/chesspieces/wikipedia/play.png";
+        playImg.src="/img/play.png";
         playImg.style.width="50px";
         playImg.style.height="50px";
         playImg.style.float="right";

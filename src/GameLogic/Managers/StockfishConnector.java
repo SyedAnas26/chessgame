@@ -44,8 +44,8 @@ public class StockfishConnector {
             System.out.println("Oops! Something went wrong..");
         }
         client.sendCommand("uci");
-        System.out.println(client.getOutput(0));
-        String evalScore = "" + client.getEvalScore(FEN, 100);
+        client.getOutput(0);
+        String evalScore = "" + client.getEvalScore(FEN, 200);
         System.out.println("Score "+evalScore);
         client.stopEngine();
         return evalScore;

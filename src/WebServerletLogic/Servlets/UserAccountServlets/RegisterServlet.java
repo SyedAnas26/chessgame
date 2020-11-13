@@ -28,15 +28,16 @@ public class RegisterServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
 
         try {
-            String username = request.getParameter("username");
+            String username = request.getParameter("userId");
             String fullname = request.getParameter("name");
-            String password = request.getParameter("password");
-            String gender = request.getParameter("gender");
+            String password = request.getParameter("Password");
             String email_id = request.getParameter("email");
+            String rePass=request.getParameter("rePassword");
+
             String q = "SELECT * FROM login WHERE username='" + username + "'";
             success = (Boolean) DbConnector.get(q, res -> {
                 if (!res.next()) {
-                    DbConnector.update("insert into login(username,fullname,password,email_id,gender) values('" + username + "','" + fullname + "',SHA('" + password + "'),'" + email_id + "','" + gender + "')");
+                    DbConnector.update("insert into login(username,fullname,password,email_id) values('" + username + "','" + fullname + "',SHA('" + password + "'),'" + email_id + "')");
                     return true;
                 }
                 return false;
@@ -46,7 +47,7 @@ public class RegisterServlet extends HttpServlet {
 
             out.println("<script type=\"text/javascript\">");
             out.println("alert('User Name Already Exists');");
-            out.println("location='/Register';");
+            out.println("location='/loginpage/signup';");
             out.println("</script>");
             System.out.println("User Name Already Exists " + e);
 
@@ -59,11 +60,11 @@ public class RegisterServlet extends HttpServlet {
             session.setAttribute("username", request.getParameter("username"));
             out.println("<script type=\"text/javascript\">");
             out.println("alert('Sign up Successful, Log in Now !');");
-            out.println("location='/loginpage';");
+            out.println("location='/loginpage/signin';");
         } else {
             out.println("<script type=\"text/javascript\">");
             out.println("alert('User Name Already Exists');");
-            out.println("location='/Register';");
+            out.println("location='/loginpage/signup';");
         }
         out.println("</script>");
         out.println("</body>");

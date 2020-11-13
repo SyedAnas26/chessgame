@@ -33,6 +33,11 @@ export class ChessboardView {
         this.createSvgAndGroups()
         this.updateMetrics()
         callbackAfterCreation()
+        if (chessboard.props.responsive) {
+            setTimeout(() => {
+                this.handleResize()
+            })
+        }
     }
 
     pointerDownHandler(e) {
@@ -95,6 +100,9 @@ export class ChessboardView {
     handleResize() {
         window.clearTimeout(this.resizeDebounce)
         this.resizeDebounce = setTimeout(() => {
+            if(this.chessboard.props.style.aspectRatio) {
+                this.chessboard.element.style.height = (this.chessboard.element.offsetWidth * this.chessboard.props.style.aspectRatio) + "px"
+            }
             if (this.chessboard.element.offsetWidth !== this.width ||
                 this.chessboard.element.offsetHeight !== this.height) {
                 this.updateMetrics()
@@ -354,11 +362,13 @@ export class ChessboardView {
         }
     }
 
-    moveCanceledCallback() {
+    moveCanceledCallback(reason, index) {
         if (this.chessboard.moveInputCallback) {
             this.chessboard.moveInputCallback({
                 chessboard: this.chessboard,
-                type: INPUT_EVENT_TYPE.moveCanceled
+                type: INPUT_EVENT_TYPE.moveCanceled,
+                reason: reason,
+                square: index ? SQUARE_COORDINATES[index] : undefined
             })
         }
     }
@@ -367,7 +377,7 @@ export class ChessboardView {
 
     setCursor() {
         this.chessboard.initialization.then(() => {
-            if (this.chessboard.state.inputWhiteEnabled || this.chessboard.state.inputBlackEnabled) {
+            if (this.chessboard.state.inputWhiteEnabled || this.chessboard.state.inputBlackEnabled || this.chessboard.boardClickListener) {
                 this.boardGroup.setAttribute("class", "board input-enabled")
             } else {
                 this.boardGroup.setAttribute("class", "board")
@@ -420,11 +430,13 @@ export class Svg {
             attributes["xlink:href"] = attributes["href"]; // fix for safari
         }
         for (let attribute in attributes) {
-            if (attribute.indexOf(":") !== -1) {
-                const value = attribute.split(":");
-                element.setAttributeNS("http://www.w3.org/1999/" + value[0], value[1], attributes[attribute]);
-            } else {
-                element.setAttribute(attribute, attributes[attribute]);
+            if(attributes.hasOwnProperty(attribute)) {
+                if (attribute.indexOf(":") !== -1) {
+                    const value = attribute.split(":");
+                    element.setAttributeNS("http://www.w3.org/1999/" + value[0], value[1], attributes[attribute]);
+                } else {
+                    element.setAttribute(attribute, attributes[attribute]);
+                }
             }
         }
         parent.appendChild(element);

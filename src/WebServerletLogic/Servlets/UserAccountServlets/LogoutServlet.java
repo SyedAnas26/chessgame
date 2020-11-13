@@ -16,6 +16,10 @@ public class LogoutServlet extends HttpServlet {
         HttpSession session = request.getSession(true);
         session.setAttribute("userId", null);
         session.invalidate();
+        out.println("<script type=\"text/javascript\">");
+        out.println("alert('Logout Successful');");
+        out.println("location='/';");
+        out.println("</script>");
 
     }
     public void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -28,7 +32,7 @@ public class LogoutServlet extends HttpServlet {
         session.invalidate();
         out.println("<script type=\"text/javascript\">");
         out.println("alert('Logout Successful');");
-        out.println("location='/loginpage';");
+        out.println("location='/';");
         out.println("</script>");
     }
 }
