@@ -40,7 +40,12 @@ var baseTime = null;
                     uniqueId=response.unique_id;
                     console.log('userId '+userId);
                     if (userId==='null'){
-                        uniqueId='000';
+                        console.log("sadas "+localStorage.getItem("guestId"))
+                        if(localStorage.getItem("guestId")!==null){
+                            uniqueId=localStorage.getItem("guestId");
+                        }else {
+                            uniqueId = '0';
+                        }
                         guest=true;
                         userName="to LichessPro ";
                         document.getElementById('signin').style.display='block';
@@ -230,6 +235,16 @@ slider.oninput = function() {
                     localStorage["baseTime"]=baseTime;
                     localStorage["extraTime"]=extratime;
                     localStorage["playerColor"]=playerColor;
+                    if(uniqueId==='0') {
+                        var value = gameId,
+                            sum = 0;
+
+                        while (value) {
+                            sum += value % 10;
+                            value = Math.floor(value / 10);
+                        }
+                        uniqueId='g'+sum;
+                    }
                     document.location.href = x + "/vs?mode=computer&id=" + uniqueId + "&gameid=" + gameId ;                        console.log('difficulty ajax success!!');
                 }
             });
@@ -300,6 +315,16 @@ slider.oninput = function() {
                     localStorage["baseTime"]=baseTime;
                     localStorage["extraTime"]=extratime;
                     localStorage["playerColor"]=playerColor;
+                    if(uniqueId==='0') {
+                        var value = response.gameId,
+                            sum = 0;
+
+                        while (value) {
+                            sum += value % 10;
+                            value = Math.floor(value / 10);
+                        }
+                        uniqueId='g'+sum;
+                    }
                     location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
                 }
             }

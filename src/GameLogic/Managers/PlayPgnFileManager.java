@@ -122,7 +122,7 @@ public class PlayPgnFileManager {
                             }
                             if (userId1 == null) {
                                 games.add("AI");
-                            }else if(userId1.equals("0")){
+                            }else if(userId1.contains("g") || userId1.equals("0")){
                                 games.add("Guest");
                             }
                             else{

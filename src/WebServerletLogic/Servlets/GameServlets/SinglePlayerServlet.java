@@ -29,7 +29,7 @@ public class SinglePlayerServlet extends HttpServlet {
         try {
             switch (servletPath) {
                 case "/diff":
-                    int uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
+                    String uniqueId = req.getParameter("uniqueId");
                     String challengeType = req.getParameter("difficulty");
                     String response = aiManager.createAiGame(uniqueId, challengeType);
                     out.print(response);

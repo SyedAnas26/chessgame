@@ -8,6 +8,7 @@ var baseTime;
 var player2Timer = document.querySelector('#player2Time');
 var player1Timer = document.querySelector('#player1Time');
 var mode;
+var left=false  ;
 let chessboard = null;
 var GameStatus = "waiting";
 var playerColor = localStorage["playerColor"];
@@ -54,6 +55,7 @@ gameId = url.split('&gameid=')[1].split('&')[0];
 uniqueId = url.split('id=')[1].split('&')[0];
 var webSocketUrl = ws + '/socket/game/' + gameId + '/' + uniqueId;
 webSocket = new WebSocket(webSocketUrl);
+var mightBeBack=false;
 var backgroundWorker = undefined;
 if (typeof (Worker) !== "undefined") {
     if (typeof (backgroundWorker) == "undefined") {
@@ -79,8 +81,9 @@ $.ajax({
     type: 'POST',
     success: function (response) {
         if (response.user_id === 'null') {
-            uniqueidServer = uniqueId = '000';
+            uniqueidServer = uniqueId ;
             fullName = 'Guest User';
+            localStorage.setItem("guestId",uniqueId);
         } else {
             fullName = response.user_name;
             uniqueidServer = response.unique_id;
@@ -110,7 +113,7 @@ window.onload = function () {
     console.log("playerColor  " + playerColor)
     console.log("unique " + uniqueId)
     console.log("baseTime " + baseTime)
-    if (uniqueId === '000') {
+    if (uniqueId === '0' || uniqueId.includes('g')) {
         document.getElementById("goToHome").action = "/";
     } else {
         document.getElementById("goToHome").action = "/homepage/" + uniqueId;
@@ -669,18 +672,38 @@ webSocket.onmessage = function (event) {
             break;
 
         case "status":
-            if (data.content === 'start' && GameStatus !== "starts") {
-                GameStatus = "starts";
-                if (playerColor == 'w') {
-                    chessboard.enableMoveInput(inputHandler, COLOR.white)
+
+            if (data.content === 'start') {
+                if (mightBeBack) {
+                    alert('Opponent rejoined !');
+                    webSocket.send(JSON.stringify({type: "status", content: "alive"}));
+                    mightBeBack = false;
+                } else if (GameStatus !== "starts") {
+                    GameStatus = "starts";
+                    alert(" Opponent Joined Game Starts ! ");
+                    if (playerColor == 'w') {
+                        chessboard.enableMoveInput(inputHandler, COLOR.white)
+                    }
+                    webSocket.send(JSON.stringify({type: "status", content: "start"}));
                 }
-                alert(" Opponent Joined Game Starts ! ");
-                webSocket.send(JSON.stringify({type: "status", content: "start"}));
-            } else if (data.content === 'left') {
+            }
+            else if (data.content === 'left') {
                 alert("Opponent left the Match !");
                 sendStatus('3');
+                left=true;
                 hangUp();
+                return;
+            } else if (data.content === 'oppleft' && left!==true) {
+                alert(" Opponent Left the page , opponent might be back !");
+                mightBeBack = true;
+                return;
+            }else if(data.content==='alive'){
+                alert("Your opponent is still here , continue your game !");
+                if(chess.turn()===playerColor){
+                    chessboard.enableMoveInput();
+                }
             }
+
             break;
 
         case "draw":
@@ -1054,7 +1077,7 @@ backgroundWorker.onmessage = function (response) {
             }
             backgroundWorker.postMessage({
                 'do': 'storeMove',
-                'uniqueId': '0',
+                'uniqueId': uniqueId,
                 'fen': fen,
                 'move': aiMove.san,
                 'time': player2CurrenSeconds,
@@ -1111,25 +1134,23 @@ window.bgReverse = function () {
         changedBg++;
     }
     if (changedBg == 1) {
-        document.getElementById("html").style.background = "none";
+        document.getElementById("body").style.background = "none";
         document.getElementById("scoreBox").style.backgroundColor = "#C0C7CE";
         changedBg = true;
     } else if (changedBg == 0) {
-        document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/background-min.jpg')";
+        document.getElementById("body").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/background-min.jpg')";
         document.getElementById("scoreBox").style.backgroundColor = "white";
-        document.getElementById("html").style.position = "static";
-        document.getElementById("html").style.backgroundPosition = "center";
-        document.getElementById("html").style.backgroundRepeat = "no-repeat";
-        document.getElementById("html").style.backgroundSize = "cover";
-        document.getElementById("html").style.backgroundAttachment = "fixed";
+        document.getElementById("body").style.backgroundPosition = "center";
+        document.getElementById("body").style.backgroundRepeat = "no-repeat";
+        document.getElementById("body").style.backgroundSize = "cover";
+        document.getElementById("body").style.backgroundAttachment = "fixed";
     } else if (changedBg == 2) {
-        document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/watchpg-min.jpg')";
+        document.getElementById("body").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/watchpg-min.jpg')";
         document.getElementById("scoreBox").style.backgroundColor = "white";
-        document.getElementById("html").style.position = "static";
-        document.getElementById("html").style.backgroundPosition = "center";
-        document.getElementById("html").style.backgroundRepeat = "no-repeat";
-        document.getElementById("html").style.backgroundSize = "cover";
-        document.getElementById("html").style.backgroundAttachment = "fixed";
+        document.getElementById("body").style.backgroundPosition = "center";
+        document.getElementById("body").style.backgroundRepeat = "no-repeat";
+        document.getElementById("body").style.backgroundSize = "cover";
+        document.getElementById("body").style.backgroundAttachment = "fixed";
     }
 
 }

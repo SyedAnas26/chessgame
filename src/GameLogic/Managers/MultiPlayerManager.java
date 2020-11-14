@@ -19,7 +19,7 @@ public class MultiPlayerManager extends ChessManager {
 
     }
 
-    public String acceptChallenge(String token, int uniqueId) throws Exception {
+    public String acceptChallenge(String token, String uniqueId) throws Exception {
         String resp = "invalid";
         String sql = "SELECT *  FROM challengetable WHERE ChallengeToken='" + token + "'";
         resp = (String) DbConnector.get(sql, rs -> {
@@ -30,8 +30,8 @@ public class MultiPlayerManager extends ChessManager {
             String createdUser;
             if (rs.next()) {
                 status = rs.getString("Status");
-                if (status.equals("0") || status.equals("1")) {
-                    gameId = rs.getLong("gameID");
+                gameId = rs.getLong("gameID");
+                if (status.equals("0") || status.equals("1") || uniqueId.equals(rs.getString("CreatedByUserID")) || checkOtherPlayer(gameId,uniqueId) ) {
                     challengeType = rs.getString("ChallengeType");
                     createdPlayAs = rs.getString("CreatedByPlayAs");
                     createdUser = rs.getString("CreatedByUserID");
@@ -41,15 +41,41 @@ public class MultiPlayerManager extends ChessManager {
             return "{\"invalid\":\"true\"}";
         });
         JSONObject obj = new JSONObject(resp);
-        if (obj.getString("invalid").equals("false")) {
-            if (uniqueId!=(obj.getInt("createdUser"))) {
-                DbConnector.update("UPDATE gamelog SET UserID2='" + uniqueId + "' WHERE GameId='" + obj.getString("gameId") + "'");
+        String Id;
+        if (obj.getString("invalid").equals("false") && !obj.getString("status").equals("2")) {
+            if (!uniqueId.equals(obj.getString("createdUser"))) {
+                if(uniqueId.equals("0")) {
+                    long value = obj.getLong("gameId");
+                         int   sum = 0;
+
+                    while (value!=0) {
+                        sum += value % 10;
+                        value = Math.abs(value / 10);
+                    }
+                    Id="g"+sum;
+                }else {
+                    Id=""+uniqueId;
+                }
+                DbConnector.update("UPDATE gamelog SET UserID2='" + Id + "' WHERE GameId='" + obj.getString("gameId") + "'");
             }
             else {
                 DbConnector.update("UPDATE challengetable SET Status='1' WHERE ChallengeToken='" + token + "'");
             }
         }
         return resp;
+    }
+
+    private boolean checkOtherPlayer(long gameId, String uniqueI) throws Exception {
+        String sql="SELECT * from gamelog WHERE GameId='"+gameId+"'";
+        return (boolean) DbConnector.get(sql,rs->{
+            if(rs.next()) {
+                String user1 = rs.getString("UserID1");
+                String user2 = rs.getString("UserID2");
+                System.out.println(user1+","+user2+","+uniqueI);
+                return uniqueI.equals(user1) || uniqueI.equals(user2);
+            }
+            return false;
+        });
     }
 
     private String randomString(int len) throws Exception {

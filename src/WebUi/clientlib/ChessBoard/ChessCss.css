@@ -314,6 +314,7 @@ a:hover {
 
     #videoElements {
         width: 330px;
+        height: 800px;
     }
 
     #remoteVideo {

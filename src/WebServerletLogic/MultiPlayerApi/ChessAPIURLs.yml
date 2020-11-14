@@ -1,2 +1,0 @@
-CREATE-GAME-ONE: http://chess-api-chess.herokuapp.com/api/v1/chess/one
-CREATE-GAME-TWO: http://chess-api-chess.herokuapp.com/api/v1/chess/two

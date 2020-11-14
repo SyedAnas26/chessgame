@@ -34,15 +34,25 @@ public class WebSocketConnector {
     }
 
     @OnClose
-    public void onClose(@PathParam("gameId") String gameId, Session session) throws IOException {
-        System.out.println("Session Id "+session.getId());
+    public void onClose(@PathParam("gameId") String gameId,@PathParam("userId") String userId, @PathParam("path") String path, Session session) throws IOException {
+        System.out.println("Session Id " + session.getId());
         allSessions.remove(session);
+        if (!path.equals("waiting")) {
+            for (Session allSession : allSessions) {
+                if (allSession.getUserProperties().get("gameId").equals(gameId)) {
+                    if (!allSession.getId().equals(session.getId()) && !allSession.getUserProperties().get("userId").equals(userId)) {
+                        allSession.getBasicRemote().sendText("{\"type\":\"status\",\"content\":\"oppleft\"}");
+                    }
+                }
+            }
+        }
     }
 
     @OnMessage
     public void onMessage(@PathParam("gameId") String gameId, @PathParam("userId") String userId, String message, Session session) throws Exception {
         if (message.contains("start")) {
             DbConnector.update("UPDATE challengetable SET Status='2' WHERE gameID='" + gameId + "'");
+            System.out.println("setted ! ! ! !");
         }
         if (message.contains("left")) {
             for (Session allSession : allSessions) {

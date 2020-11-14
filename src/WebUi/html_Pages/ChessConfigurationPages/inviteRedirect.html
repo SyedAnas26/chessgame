@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="https://lichesspro.com/favicon.png">
+    <link rel="icon" href="https://lichesspro.com/favicon.ico">
     <script type="text/javascript" src="../../clientlib/js/jquery.min-3.5.js"></script>
     <script type="text/javascript" src="../../clientlib/js/jquery-ui.min.js"></script>
 <title>
@@ -20,7 +20,11 @@
             async:false,
             success: function (response) {
                 if (response.user_id==='null') {
-                    uniqueId='000';
+                    if(localStorage.getItem("guestId")!==null){
+                        uniqueId=localStorage.getItem("guestId");
+                    }else {
+                        uniqueId = '0';
+                    }
                     // alert(' Login First !');
                     // localStorage.setItem("invite","true");
                     // localStorage.setItem("inviteLink",url);
@@ -74,6 +78,16 @@
                         localStorage["baseTime"]=baseTime;
                         localStorage["extraTime"]=extratime;
                         localStorage["playerColor"]=playerColor;
+                        if(uniqueId==='0') {
+                            var value = response.gameId,
+                                sum = 0;
+
+                            while (value) {
+                                sum += value % 10;
+                                value = Math.floor(value / 10);
+                            }
+                            uniqueId='g'+sum;
+                        }
                         location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
                     }
                 }
