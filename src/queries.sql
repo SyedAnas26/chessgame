@@ -114,3 +114,16 @@ DROP INDEX `UserID1_FK_idx` ,
 DROP INDEX `UserID2FK_idx` ;
 ;
 
+ALTER TABLE login DROP gender;
+
+
+
+
+$/
+
+
+
+
+ALTER TABLE `chessgame_database`.`gamelog`
+CHANGE COLUMN `UserID1` `UserID1` VARCHAR(255) NULL DEFAULT NULL,
+CHANGE COLUMN `UserID2` `UserID2` VARCHAR(255) NULL DEFAULT NULL;

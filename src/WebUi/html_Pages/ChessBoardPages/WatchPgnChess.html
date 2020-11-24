@@ -3,28 +3,30 @@
 </body>
 </html>
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <head>
-        <link rel="icon" href="https://lichesspro.com/favicon.png">
+        <link rel="icon" href="https://lichesspro.com/favicon.ico">
         <script>
             history.forward();
         </script>
     </head>
     <link rel="stylesheet" href="/clientlib/ChessBoard/ChessCss.css">
     <style type="text/css">
-        html {
-            background-image: linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/watchpg.jpg');
-            position: static;
-            height: 100%;
-            background-position: center;
+        body{
+
+            background-image: linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/watchpg-min.jpg');
+            background-position: center center;
             background-repeat: no-repeat;
             background-size: cover;
             background-attachment: fixed;
+            margin: 0;
 
         }
     </style>
-    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery-ui.min.js"></script>
     <meta charset="utf-8"/>
+    <script src="https://kit.fontawesome.com/3cd6602617.js" crossorigin="anonymous"></script>
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
     <link rel="stylesheet" href="/clientlib/ChessBoard/chessboard-1.0.0.min.css">
     <script type="text/javascript">
@@ -39,8 +41,7 @@
             type: 'POST',
             success: function (response) {
                 if (response.user_id === 'null') {
-                    alert(' Login First !');
-                    location = '/loginpage';
+                    uniqueId='0';
                 }
                 console.log('difficulty ajax success!!');
             }
@@ -58,7 +59,7 @@
         };
     </script>
 </head>
-<body>
+<body id="body">
 <audio id="moveSound">
     <source src="Sound/move.wav"/>
 </audio>
@@ -74,9 +75,9 @@
         <span class="spanClass" style="font-size: 22px;">Score: <span style="font-size: 22px;" id="Score"></span></span>
         <div id="showPgn">
             <h3 style="margin-left:55px;">PGN:</h3>
-            <ol id="whiteMove">
+            <ol id="whiteMove" style="background-color: #86cfda">
             </ol>
-            <ul id="blackMove">
+            <ul id="blackMove" style="background-color: peachpuff">
             </ul>
         </div>
         <br>
@@ -91,41 +92,49 @@
                 </div>
             </div>
         </div>
-        <img src="img/chesspieces/wikipedia/reverse.png" id="reverse" style="margin-left:30px;width: 60px;height: 40px;"
+        <img src="img/reverse.png" id="reverse" style="margin-left:30px;width: 60px;height: 40px;"
              onclick="bgReverse()">
     </div>
     <div id="GameBox" style="margin-top: 70px;">
         <div id="scoreBox">
             <div id="blackColor"></div>
         </div>
-        <div id="myBoard" style="width: 500px"></div>
+        <div id="myBoard" style="width: 90%;float: right;"></div>
         <br>
         <br>
-        <div class="bot">
-            <table>
-                <tr>
-                    <th></th>
-                    <th><input type="button" style="font-size:16px" onclick="nextMove()" value="Next Step"
-                               cellpadding="0" cellspacing="0"/></th>
-                    <th><input type="button" style="font-size:16px" onclick="prevStep()" value="Previous Step"
-                               cellpadding="0" cellspacing="0"/></th>
-                    <th><input type="button" style="font-size:16px" onclick="startNew();window.location.reload();"
-                               value="Start Again" cellpadding="0" cellspacing="0"/></th>
-                </tr>
-            </table>
+        <div class="bot" style="margin:20px;">
+            <i id="previous" class="fas fa-chevron-circle-left controls" style="margin-left:35%;" onclick="prevStep()"></i>
+            <i id="autoPlay" class="fas fa-play-circle controls"  onclick="togglePlay()"></i>
+            <i id="next" class="fas fa-chevron-circle-right controls"  onclick="nextMove()"></i>
+            <i id="startAgain" class="fas fa-redo-alt controls" style="padding-top:7px;" onclick="startNew();window.location.reload();"></i>
+
+            <!--            <table>-->
+            <!--                <tr>-->
+            <!--                    <th></th>-->
+            <!--                    <th><input type="button" style="font-size:16px" onclick="nextMove()" value="Next Step"-->
+            <!--                               cellpadding="0" cellspacing="0"/></th>-->
+            <!--                    <th><input type="button" style="font-size:16px" onclick="prevStep()" value="Previous Step"-->
+            <!--                               cellpadding="0" cellspacing="0"/></th>-->
+            <!--                    <th><input type="button" style="font-size:16px" onclick="startNew();window.location.reload();"-->
+            <!--                               value="Start Again" cellpadding="0" cellspacing="0"/></th>-->
+            <!--                </tr>-->
+            <!--            <tr>-->
+            <!--                <th></th>-->
+            <!--                <th><input type="button" value="Play" style="font-size:16px" onclick="playGame()">-->
+            <!--                </th>-->
+            <!--                <th><input type="button" value="Stop" style="font-size:16px" onclick="stopGame()">-->
+            <!--                </th>-->
+            <!--            </tr>-->
+            <!--            </table>-->
         </div>
         <div class="bot">
             <form action="/homepage" method="post" align="center">
-                <input style="margin-left: 194px;font-size:16px" type="submit" value="Go Back to Home Page"/>
+                <input style="margin-left:11%;font-size:20px" type="submit" value="Go Back to Home Page"/>
             </form>
         </div>
     </div>
     <div id="smallBoardBox">
         <div id="board1" style="width: 200px"></div>
-        <br>
-        <br>
-        <input type="button" value="Play" style="font-size:16px" onclick="playGame()">
-        <input type="button" value="Stop" style="font-size:16px" onclick="stopGame()">
     </div>
 </div>
 <script src="/clientlib/ChessBoard/chessboard-1.0.0.min.js"></script>
@@ -146,7 +155,7 @@
     var backgroundWorker = undefined;
     if (typeof (Worker) !== "undefined") {
         if (typeof (backgroundWorker) == "undefined") {
-            backgroundWorker = new Worker('/clientlib/backgroundWorker.js');
+            backgroundWorker = new Worker('/clientlib/js/backgroundWorker.js');
         }
     } else {
         alert("Web Worker Not Supported Please Inform to the Team about ur webBrowser!")
@@ -178,25 +187,24 @@
             changedBg++;
         }
         if (changedBg == 1) {
-            document.getElementById("html").style.background = "none";
+            document.getElementById("body").style.backgroundImage = "none";
             document.getElementById("scoreBox").style.backgroundColor = "#C0C7CE";
             changedBg = true;
         } else if (changedBg == 0) {
-            document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/background.jpg')";
+            document.getElementById("body").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/background-min.jpg')";
             document.getElementById("scoreBox").style.backgroundColor = "white";
-            document.getElementById("html").style.position = "static";
-            document.getElementById("html").style.backgroundPosition = "center";
-            document.getElementById("html").style.backgroundRepeat = "no-repeat";
-            document.getElementById("html").style.backgroundSize = "cover";
-            document.getElementById("html").style.backgroundAttachment = "fixed";
+            document.getElementById("body").style.position = "static";
+            document.getElementById("body").style.backgroundPosition = "center center";
+            document.getElementById("body").style.backgroundRepeat = "no-repeat";
+            document.getElementById("body").style.backgroundSize = "cover";
+            document.getElementById("body").style.backgroundAttachment = "fixed";
         } else if (changedBg == 2) {
-            document.getElementById("html").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/chesspieces/wikipedia/watchpg.jpg')";
+            document.getElementById("body").style.backgroundImage = "linear-gradient(rgba(255, 255, 255, .3), rgba(255, 255, 255, .3)), url('/img/watchpg-min.jpg')";
             document.getElementById("scoreBox").style.backgroundColor = "white";
-            document.getElementById("html").style.position = "static";
-            document.getElementById("html").style.backgroundPosition = "center";
-            document.getElementById("html").style.backgroundRepeat = "no-repeat";
-            document.getElementById("html").style.backgroundSize = "cover";
-            document.getElementById("html").style.backgroundAttachment = "fixed";
+            document.getElementById("body").style.backgroundPosition = "center center";
+            document.getElementById("body").style.backgroundRepeat = "no-repeat";
+            document.getElementById("body").style.backgroundSize = "cover";
+            document.getElementById("body").style.backgroundAttachment = "fixed";
         }
 
     }
@@ -212,10 +220,21 @@
         }
     }
 
+    function togglePlay(){
+        var autoplay= document.getElementById('autoPlay');
+        if(autoplay.classList.contains('fa-play-circle')){
+            playGame();
+        }else {
+            stopGame();
+        }
+        autoplay.classList.toggle('fa-play-circle');
+        autoplay.classList.toggle('fa-pause-circle');
+    }
+
     function playGame() {
         interval = setInterval(function () {
             nextMove();
-        }, 1000)
+        }, 1300)
     }
 
     function stopGame() {
@@ -410,25 +429,38 @@
     }
     backgroundWorker.onmessage=function(response){
         var data = response.data;
-        var res=data.score;
-        if(res.toString().startsWith("-")){
-            var increase=50+(Math.abs(parseFloat(data.score))/100);
-            var set=increase+"%";
-            document.getElementById("blackColor").style.height=set;
-        }
-        else{
-            var decrease=50-(parseFloat(data.score)/100);
-            if(decrease>100){
-                decrease=100;
+        var res = data.score;
+        if(game.turn()==='b'){
+            if (res.toString().startsWith("-")){
+                res="+"+Math.abs(parseFloat(res));
             }
-            if(decrease<0){
-                decrease=0;
+            else{
+                res="-"+Math.abs(parseFloat(res));
             }
-            var set=decrease+"%";
-            document.getElementById("blackColor").style.height=set;
         }
-        Score = parseFloat(data.score/100);
-        document.getElementById("Score").innerHTML=Score;
+        if (res.toString().startsWith("-")) {
+            var increase = 50 + (Math.abs(parseFloat(res)));
+            if (increase > 100) {
+                increase = 100;
+            }
+            if (increase < 0) {
+                increase = 0;
+            }
+            var set = increase + "%";
+            document.getElementById("blackColor").style.height = set;
+        } else {
+            var decrease = 50 - (parseFloat(res));
+            if (decrease > 100) {
+                decrease = 100;
+            }
+            if (decrease < 0) {
+                decrease = 0;
+            }
+            var set = decrease + "%";
+            document.getElementById("blackColor").style.height = set;
+        }
+        Score = parseFloat(res);
+        document.getElementById("Score").innerHTML = Score;
     }
 
 

@@ -29,11 +29,11 @@
 .cm-chessboard .coordinates {
   pointer-events: none;
   user-select: none; }
-/* line 45, cm-chessboard.scss */
-.cm-chessboard .coordinates .coordinate {
-  fill: rgba(0, 0, 0, 0.7);
-  font-size: 7px;
-  cursor: default; }
+  /* line 45, cm-chessboard.scss */
+  .cm-chessboard .coordinates .coordinate {
+    fill: rgba(0, 0, 0, 0.7);
+    font-size: 7px;
+    cursor: default; }
 
 /* line 54, cm-chessboard.scss */
 .cm-chessboard.green .board .square.white {

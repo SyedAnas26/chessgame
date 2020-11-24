@@ -19,7 +19,7 @@ public class ChessServlet extends HttpServlet {
         PrintWriter out = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        int uniqueId; long gameId;
+        String uniqueId; long gameId;
         try {
             switch (servletPath)
             {
@@ -27,9 +27,9 @@ public class ChessServlet extends HttpServlet {
             case "/gamestatus":
                 System.out.println("Store came");
                 String timeTaken = req.getParameter("timeTaken");
+                System.out.println("tt "+timeTaken);
                 String move = req.getParameter("move");
                 System.out.println("move= "+move);
-                uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
                 String gameStatus = req.getParameter("gameStatus");
                 String gamePgn = req.getParameter("gamePgn");
                 System.out.println("gamePgn= "+gamePgn);
@@ -37,9 +37,9 @@ public class ChessServlet extends HttpServlet {
                 gameId = Long.parseLong(req.getParameter("gameId"));
                 int moveNo = Integer.parseInt(req.getParameter("moveNo"));
                 if(gamePgn!=null) {
-                    chessManager.addMove(gameId, moveNo, move, gameStatus, uniqueId, timeTaken, gamePgn);
+                    chessManager.addMove(gameId, moveNo, move, gameStatus, req.getParameter("uniqueId"), timeTaken, gamePgn);
                 }
-                String res = chessManager.opponentRemainingTime(uniqueId, gameId,moveNo);
+                String res = chessManager.opponentRemainingTime(req.getParameter("uniqueId"), gameId,moveNo);
                 out.print(res);
                 break;
 
@@ -50,8 +50,8 @@ public class ChessServlet extends HttpServlet {
                     break;
 
                 case "/getGamePosition":
-                    System.out.println("ajaxCame");
-                uniqueId = Integer.parseInt(req.getParameter("uniqueId"));
+                System.out.println("ajaxCame");
+                uniqueId = req.getParameter("uniqueId");
                 gameId = Long.parseLong(req.getParameter("gameId"));
                 String response = chessManager.getGamePosition(gameId, uniqueId);
                 System.out.println(response);

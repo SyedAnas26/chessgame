@@ -1,9 +1,21 @@
 <!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <link rel="icon" href="https://lichesspro.com/favicon.png">
-    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://lichesspro.com/favicon.ico">
+    <script type="text/javascript" src="../../clientlib/js/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery-ui.min.js"></script>
+    <style type="text/css">
+        html {
+            background-image: linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('/img/c2-min.jpg');
+            position: static;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+    </style>
     <title>Waiting</title>
     <script type="text/javascript">
         var token;
@@ -35,17 +47,17 @@
                     uniqueId = response.unique_id;
                     if (userId === 'null') {
                         alert(' Login First ! ');
-                        location = '/loginpage';
+                        location = '/loginpage/signin';
                     }
                     document.getElementById("goToHome").action = "/homepage/" + uniqueId;
                 }
             });
             var webSocketUrl=ws+'/socket/waiting/'+gameId+'/'+uniqueId;
-            webSocket = new WebSocket(webSocketUrl);
+            var webSocket = new WebSocket(webSocketUrl);
 
             webSocket.onmessage = function(event) {
-                var msg = event.data;
-                if (msg === 'start') {
+                var msg = JSON.parse(event.data);
+                if (msg.content === 'start') {
                     $.ajax({
                         url: x + "/joinGame",
                         type: 'POST',
@@ -132,14 +144,14 @@
     <h3>Share this token to your friend to join</h3>
     <br>
     <br>
-    <span style="font-size: 30px">Your Challenge Token:   <span style="font-size: 30px" id="token"></span></span><input
+    <span style="font-size: 30px">Your Challenge Token:   <span style="font-size: 30px" id="token">Creating your Token ... </span></span><input
         type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#token')">
     <br>
     <br>
     <h3>Or Share This link to ur Opponent</h3>
     <br>
     <br>
-    <span style="font-size: 30px">Your Challenge Link : <a id="linkHref"><span style="font-size: 30px" id="link"></span></a></span><input type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#link')">
+    <span style="font-size: 30px">Your Challenge Link : <a id="linkHref"><span style="font-size: 30px" id="link">Creating ... </span></a></span><input type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#link')">
     <br>
     <br>
     <span style="font-size: 30px">Send Mail Invitation to your friend : </span><input type="text" style="font-size: 30px" name="emailId" id="emailId"><input type="button" value="Send" style="font-size: 20px" onclick="sendMail()">

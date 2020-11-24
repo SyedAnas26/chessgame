@@ -77,7 +77,10 @@ public class LoginServlet extends HttpServlet {
                 response.sendRedirect("/homepage/" + uniqueId);
 
             } else {
-                response.sendRedirect("/usernotfound");
+                out.println("<script type=\"text/javascript\">");
+                out.println("alert('Incorrect UserId or Password');");
+                out.println("location='/loginpage/signin';");
+                out.println("</script>");
                 session.invalidate();
             }
         }

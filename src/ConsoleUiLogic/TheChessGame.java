@@ -1,23 +1,50 @@
 package ConsoleUiLogic;
 
-import GameLogic.Managers.StockfishConnector;
-
-public class TheChessGame {
-    public static void main(String[] args) throws Exception {
-//        String file = "src/ConsoleUiLogic/ChessPgn.txt";
-//        BufferedReader br = new BufferedReader(new FileReader(file));
-//        String line = br.readLine();
-//        StringBuilder sb = new StringBuilder();
-//        String gamePlay = null;
-//        while (line != null) {
-//            sb.append(line).append("\n");
-//            line = br.readLine();
-//            gamePlay = sb.toString();
+//public class TheChessGame {
+//    public static void main(String[] args) throws Exception {
+////        String file = "src/ConsoleUiLogic/ChessPgn.txt";
+////        BufferedReader br = new BufferedReader(new FileReader(file));
+////        String line = br.readLine();
+////        StringBuilder sb = new StringBuilder();
+////        String gamePlay = null;
+////        while (line != null) {
+////            sb.append(line).append("\n");
+////            line = br.readLine();
+////            gamePlay = sb.toString();
+////        }
+////        new ConsoleUi(gamePlay);
+//        int result = 0;
+//        for (int i = 0; i < 5; i++) {
+//            if (i == 3) {
+//                result += 10;
+//            } else {
+//                result += i;
+//            }
 //        }
-//        new ConsoleUi(gamePlay);
-        StockfishConnector st=new StockfishConnector();
-        System.out.println(st.getEvalScore("rnbqkbnr/ppp1pppp/8/3p4/5P2/8/PPPPP1PP/RNBQKBNR w KQkq - 0 2"));
-
+//        System.out.println(result);
+//
+//    }
+//}
+interface calculate
+{
+    void cal(int item);
+}
+class display implements calculate
+{
+    int x;
+    public void cal(int item)
+    {
+        x = item * item;
+    }
+}
+class InterfaceExample
+{
+    public static void main(String args[])
+    {
+        display arr = new display();
+        arr.x = 0;
+        arr.cal(2);
+        System.out.print(arr.x);
     }
 }
 

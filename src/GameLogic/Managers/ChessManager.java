@@ -2,7 +2,7 @@ package GameLogic.Managers;
 
 public class ChessManager {
 
-    public void addMove(long gameId, int moveNo, String userMove, String status, int uniqueId, String userTime, String gamePgn) throws Exception {
+    public void addMove(long gameId, int moveNo, String userMove, String status, String uniqueId, String userTime, String gamePgn) throws Exception {
 
         try {
             long time = 0;
@@ -55,7 +55,7 @@ public class ChessManager {
         });
     }
 
-    public String getGamePosition(long gameId, int uniqueId) throws Exception {
+    public String getGamePosition(long gameId, String uniqueId) throws Exception {
 
         int lastMoveNo = getMaxMoveOf(gameId, "*", "");
         System.out.println("lastmove No: " + lastMoveNo);
@@ -71,7 +71,7 @@ public class ChessManager {
         return null;
     }
 
-    public String opponentRemainingTime(int uniqueId, long gameId, int moveNo) throws Exception {
+    public String opponentRemainingTime(String uniqueId, long gameId, int moveNo) throws Exception {
         int oppMoveNo = moveNo - 1;
         System.out.println("moveNo " + moveNo);
         String sql = "SELECT * FROM gamemoves WHERE MoveNo='" + oppMoveNo + "' AND GameID='" + gameId + "'";

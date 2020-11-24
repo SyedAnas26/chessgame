@@ -21,7 +21,7 @@ export const INPUT_EVENT_TYPE = {
     moveDone: "moveDone",
     moveCanceled: "moveCanceled",
     context: "context",
-    primary: "primary"
+    click: "click"
 }
 export const MARKER_TYPE = {
     move: {class: "move", slice: "marker1"},
@@ -30,18 +30,8 @@ export const MARKER_TYPE = {
     capture:{class:"capture",slice:"marker1"}
 }
 export const PIECE = {
-    whitePawn: "wp",
-    whiteBishop: "wb",
-    whiteKnight: "wn",
-    whiteRook: "wr",
-    whiteQueen: "wq",
-    whiteKing: "wk",
-    blackPawn: "bp",
-    blackBishop: "bb",
-    blackKnight: "bn",
-    blackRook: "br",
-    blackQueen: "bq",
-    blackKing: "bk",
+    wp: "wp", wb: "wb", wn: "wn", wr: "wr", wq: "wq", wk: "wk",
+    bp: "bp", bb: "bb", bn: "bn", br: "br", bq: "bq", bk: "bk",
 }
 export const FEN_START_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 export const FEN_EMPTY_POSITION = "8/8/8/8/8/8/8/8"
@@ -52,13 +42,14 @@ export class Chessboard {
 
     constructor(element, props = {}, callback = null) {
         this.element = element
-        this.props = {
+        let defaultProps = {
             position: "empty", // set as fen, "start" or "empty"
             orientation: COLOR.white, // white on bottom
             style: {
                 cssClass: "default",
                 showCoordinates: true, // show ranks and files
                 showBorder: false, // display a border around the board
+                aspectRatio: 1 // height/width. Set to null, if you want to define it only in the css.
             },
             responsive: false, // resizes the board on window resize, if true
             animationDuration: 300, // pieces animation duration in milliseconds
@@ -68,9 +59,19 @@ export class Chessboard {
                 grid: DEFAULT_SPRITE_GRID // the sprite is tiled with one piece every 40px
             }
         }
+        this.props = {}
+        Object.assign(this.props, defaultProps)
         Object.assign(this.props, props)
-        if (!this.props.sprite.grid) {
-            this.props.sprite.grid = DEFAULT_SPRITE_GRID
+        this.props.sprite = defaultProps.sprite
+        this.props.style = defaultProps.style
+        if (props.sprite) {
+            Object.assign(this.props.sprite, props.sprite)
+        }
+        if (props.style) {
+            Object.assign(this.props.style, props.style)
+        }
+        if (this.props.style.aspectRatio) {
+            this.element.style.height = (this.element.offsetWidth * this.props.style.aspectRatio) + "px"
         }
         this.state = new ChessboardState()
         this.state.orientation = this.props.orientation
@@ -231,24 +232,33 @@ export class Chessboard {
                 square: SQUARE_COORDINATES[index]
             })
         }
-
         this.element.addEventListener("contextmenu", this.contextMenuListener)
     }
 
-    // noinspection JSUnusedGlobalSymbols
     disableContextInput() {
         this.element.removeEventListener("contextmenu", this.contextMenuListener)
+        this.contextMenuListener = null
     }
 
-    onPrimaryInput(eventHandler) {
-        this.element.addEventListener("click", function (e) {
+    enableBoardClick(eventHandler) {
+        if (this.boardClickListener) {
+            console.warn("boardClickListener already existing")
+            return
+        }
+        this.boardClickListener = function(e) {
             const index = e.target.getAttribute("data-index")
             eventHandler({
                 chessboard: this,
-                type: INPUT_EVENT_TYPE.primary,
+                type: INPUT_EVENT_TYPE.click,
                 square: SQUARE_COORDINATES[index]
             })
-        })
+        }
+        this.element.addEventListener("click", this.boardClickListener)
+    }
+
+    disableBoardClick() {
+        this.element.removeEventListener("click", this.boardClickListener)
+        this.boardClickListener = null
     }
 
 }

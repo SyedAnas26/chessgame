@@ -32,9 +32,8 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
 
             case "/joinGame":
             String token=req.getParameter("tokenId");
-            uniqueId=Integer.parseInt(req.getParameter("uniqueId"));
             System.out.println("token "+token);
-            response=multiPlayerManager.acceptChallenge(token,uniqueId);
+            response=multiPlayerManager.acceptChallenge(token,req.getParameter("uniqueId"));
             System.out.println("response "+response);
             out.print(response);
             break;
@@ -52,6 +51,7 @@ MultiPlayerManager multiPlayerManager=new MultiPlayerManager();
         }catch (Exception e){
             System.out.println("MultiPlayerServlet Exception "+e);
             System.out.println("Line No "+e.getStackTrace()[0].getLineNumber());
+            e.printStackTrace();
         }
     }
     }

@@ -13,9 +13,22 @@ public class AiManager extends ChessManager {
 
     }
 
-    public String createAiGame(int uniqueId, String challengeType) throws Exception {
+    public String createAiGame(String uniqueId, String challengeType) throws Exception {
         long gameId=createGameId();
-        DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + uniqueId + "','" + challengeType + "','" + 0 +"','" + gameId +"','" + "null" + "')");
+        String id;
+        if(uniqueId.equals("0")) {
+            long value = gameId;
+            int sum = 0;
+
+            while (value != 0) {
+                sum += value % 10;
+                value = Math.abs(value / 10);
+            }
+            id = "g" + sum;
+        }else {
+            id=""+uniqueId;
+        }
+        DbConnector.update("insert into gamelog (GameType,UserID1,GameFormat,MatchResult,GameId,GameinPgn) values('" + 1 + "','" + id + "','" + challengeType + "','" + 0 +"','" + gameId +"','" + "null" + "')");
         return "{\"gameId\":\""+gameId+"\"}";
     }
 }

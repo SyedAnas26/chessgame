@@ -18,6 +18,11 @@ const STATE = {
     reset: 7
 }
 
+export const MOVE_CANCELED_REASON = {
+    secondClick: "secondClick",
+    movedOutOfBoard: "movedOutOfBoard"
+}
+
 const DRAG_THRESHOLD = 2
 
 export class ChessboardMoveInput {
@@ -175,6 +180,7 @@ export class ChessboardMoveInput {
             throw Error("draggablePiece exists")
         }
         this.draggablePiece = Svg.createSvg(document.body)
+        this.draggablePiece.classList.add("cm-chessboard-draggable-piece")
         this.draggablePiece.setAttribute("width", this.view.squareWidth)
         this.draggablePiece.setAttribute("height", this.view.squareHeight)
         this.draggablePiece.setAttribute("style", "pointer-events: none")
@@ -312,12 +318,12 @@ export class ChessboardMoveInput {
                     this.setMoveInputState(STATE.clickTo, {index: index})
                 } else if (this.moveInputState === STATE.secondClickThreshold) {
                     this.setMoveInputState(STATE.reset)
-                    this.moveCanceledCallback()
+                    this.moveCanceledCallback(MOVE_CANCELED_REASON.secondClick, index)
                 }
             } else {
                 this.view.drawPiecesDebounced()
                 this.setMoveInputState(STATE.reset)
-                this.moveCanceledCallback()
+                this.moveCanceledCallback(MOVE_CANCELED_REASON.movedOutOfBoard, undefined)
             }
         } else {
             this.view.drawPiecesDebounced()
@@ -343,4 +349,5 @@ export class ChessboardMoveInput {
     destroy() {
         this.reset()
     }
+
 }

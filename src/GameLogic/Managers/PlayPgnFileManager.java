@@ -122,7 +122,10 @@ public class PlayPgnFileManager {
                             }
                             if (userId1 == null) {
                                 games.add("AI");
-                            } else {
+                            }else if(userId1.contains("g") || userId1.equals("0")){
+                                games.add("Guest");
+                            }
+                            else{
                                 DbConnector.get(
                                         "SELECT * FROM login WHERE UserId='" + userId1 + "'", res -> {
                                             if (res.next()) {

@@ -1,76 +1,474 @@
-<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!DOCTYPE html>
 <html>
 <head>
-    <link rel="icon" href="https://lichesspro.com/favicon.png">
-    <style type="text/css">
-        #buttons{
-            margin-left: 40%;
-        }
-    </style>
-    <script type="text/javascript" src="../../clientlib/jquery.min-3.5.js"></script>
-    <script type="text/javascript" src="../../clientlib/jquery-ui.min.js"></script>
-    <title>
-        Home Page
-    </title>
-    <h1 align="center">Home</h1><br>
-    <script type="text/javascript">
-        if(localStorage.getItem("invite")==="true") {
-            localStorage.setItem("invite","false");
-            location = localStorage.getItem("inviteLink");
-        }
-        var userId= '';
-        var userName= '';
-        var uniqueId;
-        var path=window.location.href;
-        var paths=path.split('/');
-        var x=window.location.origin;
-        var splitPath=path.split('/');
-        window.onload = function() {
-            $.ajax({
-                url: x+"/getUserId",
-                type: 'POST',
-                success: function(response) {
-                    userId=response.user_id;
-                    userName=response.user_name;
-                    uniqueId=response.unique_id;
-                    if (userId==='null'){
-                        alert(' Login First ! ');
-                        location='/loginpage';
-                    }
-                    if(paths.length<=4){
-                        location='/homepage/'+uniqueId;
-                    }
-                    document.getElementById('welcome').innerHTML = "Welcome, " + userName;
-                }
-            });
-        }
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>LichessPro</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        function sendRedirect(goTo,mode) {
-            window.location.href=x+goTo+"/"+uniqueId;
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+    <script src="https://kit.fontawesome.com/3cd6602617.js" crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="/clientlib/homepage/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/fontAwesome.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/hero-slider.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/owl-carousel.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/templatemo-style.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/lightbox.css">
+    <link rel="stylesheet" href="/clientlib/homepage/css/homeCss.css">
+
+
+    <script src="/clientlib/homepage/js/vendor/modernizr-2.8.3-respond-1.4.2.min.js"></script>
 </head>
+
 <body>
-<h2 align="center" id="welcome"></h2>
-<div id="buttons">
-    <br>
-    <input  type="button" align="center" value="Click Here to Play Chess Game Vs Computer" onclick="sendRedirect('/difficulty/vscomp')"><br>
-    <br>
-    <input  type="button" align="center" value="Click Here to Create a Challenge " onclick="sendRedirect('/difficulty/multi')"><br>
-    <br>
-    <input  type="button" align="center" value="Click Here to Play Chess with ur Friends using Token" onclick="sendRedirect('/usetoken','null')"><br>
-    <br>
-    <form action="/loadpgn" method="post">
-        <input  type="submit" align="center" value="Click Here to Play a Chess Pgn File"><br>
-    </form>
-    <input  type="button" align="center" value="Click Here to Watch ur game History" onclick="sendRedirect('/watchHistory','n')">
-    <br>
-    <br>
-    <br>
-    <form action="/logout" method="post">
-        <input type="submit" align="center" value="Logout" style="margin-left: 100px">
-    </form>
+<div class="header">
+    <div class="container">
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <button type="button" id="nav-toggle" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="#" class="navbar-brand scroll-top"><em>L</em>ichesspro</a>
+            </div>
+            <!--/.navbar-header-->
+            <div id="main-nav" class="collapse navbar-collapse">
+                <ul class="nav navbar-nav">
+                    <li><a href="#" class="scroll-top" style="font-size:14px;">Home</a></li>
+                    <li><a href="#" class="scroll-link" data-id="testimonial" style="font-size:14px;">About Us</a></li>
+                    <li><a href="#" class="scroll-link" data-id="contact-us" style="font-size:14px;" >Contact Us</a></li>
+                    <li><a href="/loginpage/signin"  id="signin" style="font-size:14px;display: none;">Signin</a></li>
+                    <li><a href="/loginpage/signup"  id="signup" style="font-size:14px;display: none;">Signup</a></li>
+                    <li><a href="#" id="analyseMyHistory" style="font-size:14px;display: none;" onclick="showConfiguration('history')">Analyse History</a></li>
+                    <li><a href="/logout" id="logout" style="font-size:14px;display: none;">Logout</a></li>
+
+                </ul>
+            </div>
+            <!--/.navbar-collapse-->
+        </nav>
+        <!--/.navbar-->
+    </div>
+    <!--/.container-->
 </div>
+<!--/.header-->
+
+
+<div class="parallax-content baner-content" id="home">
+    <div class="container">
+        <div class="text-content">
+            <h2><em>Welcome</em>  to <span>LichessPro</span></h2>
+            <p>Web Based Chess Game</p>
+            <div class="primary-white-button">
+                <a href="#" class="scroll-link" data-id="about">Let's Play</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<section id="about" class="page-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="service-item">
+                    <div class="icon">
+                        <i class="fas fa-chess-king" style="font-size: 40px;padding-top:30px;"></i>
+                    </div>
+                    <h4>MULTIPLAYER</h4>
+                    <div class="line-dec"></div>
+                    <p> Create a game to play with your friend , invite them through joining link or token or mail.During game u can audio,video chat with your opponent. </p>
+                    <div class="primary-blue-button">
+                        <a onclick="showConfiguration('multi')">Create Game</a>
+                        <img class="lock" src="/clientlib/homepage/img/lock.png">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12" >
+                <div class="service-item">
+                    <div class="icon">
+                        <i class="fas fa-robot" style="font-size:40px;padding-top: 30px;"></i>
+                    </div>
+                    <h4>VS COMPUTER</h4>
+                    <div class="line-dec"></div>
+                    <p id="content">Compete with the World's best Chess Engine - Stockfish. It is also much stronger than the best human chess grandmasters.</p>
+                    <div class="primary-blue-button" style="padding-bottom: 20px;">
+                        <a onclick="showConfiguration('vsComp')" >Create Game</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="service-item">
+                    <div class="icon">
+                        <i class="fas fa-chess" style="font-size: 40px;padding-top:30px;"></i>
+                    </div>
+                    <h4>JOIN UR FRIEND</h4>
+                    <div class="line-dec"></div>
+                    <p>Join your friend who is waiting for your arrival there !.. Just paste the invite token here and enjoy the game with your opponent.</p>
+                    <div class="primary-blue-button">
+                        <a onclick="showConfiguration('join')">JOIN GAME</a>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 col-xs-12">
+                <div class="service-item">
+                    <div class="icon">
+                        <i class="fas fa-chess-rook" style="font-size: 40px;padding-top:30px;"></i>
+                    </div>
+                    <h4>ANALYSE PGN</h4>
+                    <div class="line-dec"></div>
+                    <p>Analyse a game by just uploading the pgn, sit and watch each move.Identify the peaks and steep points of the match, see the live eval score for each move.</p>
+                    <div class="primary-blue-button">
+                        <a onclick="showConfiguration('pgnAnalyse')">Analyse pgn</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div id="myModal" class="modal">
+    <div id="difficultyModal" class="modal-content">
+        <span class="close">&times;</span>
+        <span align="center" style="margin-left:30%;font-size:20px;">Game Configuration</span>
+        <div id="difficultyBox">
+            <h4 style="margin-left: 180px">Select Game Type</h4>
+            <br>
+            <input align="center" id="button1" type="submit" onclick="clickResp('standard',1)" value="Standard"> &nbsp &nbsp
+            <span>[Base Time: 15mins , Increment: 30 secs ]</span><br><br>
+            <input align="center" id="button2" type="submit" onclick="clickResp('unlimited',2)" value="Unlimited"> &nbsp &nbsp
+            <span>[UNLIMITED]</span><br><br>
+            <input align="center" id="button3" type="submit" onclick="clickResp('lightning',3)" value="Lightning"> &nbsp &nbsp
+            <span>[Base Time: 2mins , Increment: 10 secs ]</span><br><br>
+            <input align="center" id="button4" type="submit" onclick="clickResp('blitz',4)" value="Blitz"> &nbsp &nbsp <span>[Base Time: 10mins , Increment: 0 secs ]</span><br><br>
+            <input type="submit" id="button5" onclick="clickResp('custom',5)" value="Custom"> &nbsp &nbsp <span>Base Time</span>
+            <input type="number" name="baseTime" id="baseTime" min="1" max="30" value="5" onchange="clickResp('custom',5)"
+                   style="font-size: 20px">
+            <span>Extra Time</span>
+            <input type="number" name="extratime" id="extratime" min="0" max="60" value="10" onchange="clickResp('custom',5)"style="font-size: 20px">
+            <br>
+            <br>
+            <span class="skillLevel" id="aiLevel">AI LEVEL[0-20]: [ <span id="sliderValue"></span> ]</span>
+            <input type="range" min="1" max="20" value="10"  class="slider skillLevel" id="skill">
+            <br>
+            <span id="playAs">Play As</span> <input type="radio" name="playerColor" checked="true" value="w"><span>White</span> <input
+                type="radio" name="playerColor" value="b"> <span>Black</span>
+            <br>
+            <br>
+            <input type="button"  class="createGames" onclick="return createGame()" value="Create">
+        </div>
+    </div>
+    <div id="joinModal" class="modal-content">
+        <span class="close">&times;</span>
+        <div align="center" style="margin-top:250px">
+            <h3>Enter the token to join a Game</h3>
+            <br>
+            <br><label style="font-size: 30px" for="token">Enter the Challenge Token: </label>
+            <input type="text" id="token" name="token" style="font-size: 30px"/>
+            <input type="button" style="font-size: 30px;" value="Join" onclick="joinGame()">
+            <br>
+            <br>
+        </div>
+    </div>
+    <div id="pgnAnalyse" class="modal-content">
+        <span class="close">&times;</span>
+        <h2 align="center" style="font-family:verdana;">Upload and Watch the Game By a click of Next</h2>
+        <br>
+        <br>
+        <br>
+        <form align="center" id="fileUpload" method="post" enctype="multipart/form-data">
+            <span style="font-size:25px;">Select File:</span>
+            <input style="margin-left:180px;margin-top:20px;" type="file" id="fileName" name="file" style="font-size:45px;" onChange="sendFileName()"/><br>
+            <br><input style="font-size:15px;"type="submit" value="Upload"/>
+        </form>
+    </div>
+</div>
+<!-- <section id="portfolio">
+    <div class="content-wrapper">
+        <div class="inner-container container">
+            <div class="row">
+                <div class="col-md-4 col-sm-12">
+                    <div class="section-heading">
+                        <h4>Our Gallery</h4>
+                        <div class="line-dec"></div>
+                        <p>In malesuada placerat ligula et bibendum. Aenean eget urna enim. Sed enim ante, bibendum nec dictum ac, gravida ac lectus.</p>
+                        <div class="filter-categories">
+                            <ul class="project-filter">
+                                <li class="filter" data-filter="all"><span>Show All</span></li>
+                                <li class="filter" data-filter="branding"><span>Branding</span></li>
+                                <li class="filter" data-filter="graphic"><span>Graphic</span></li>
+                                <li class="filter" data-filter="nature"><span>Nature</span></li>
+                                <li class="filter" data-filter="animation"><span>Animation</span></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="projects-holder-3">
+                        <div class="projects-holder">
+                            <div class="row">
+                                <div class="col-md-6 col-sm-6 project-item mix nature">
+                                  <div class="thumb">
+
+                                            <a href="https://google.com" data-lightbox="image-1"><img src="img/portfolio_item_01.jpg"></a>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 project-item mix animation">
+                                  <div class="thumb">
+                                    <div class="image">
+                                            <a href="img/portfolio_big_item_02.jpg" data-lightbox="image-1"><img src="img/portfolio_item_02.jpg"></a>
+                                        </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 project-item mix branding">
+                                  <div class="thumb">
+                                        <div class="image">
+                                            <a href="img/portfolio_big_item_03.jpg" data-lightbox="image-1"><img src="img/portfolio_item_03.jpg"></a>
+                                        </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 project-item mix graphic nature">
+                                    <div class="thumb">
+                                        <div class="image">
+                                            <a href="img/portfolio_big_item_04.jpg" data-lightbox="image-1"><img src="img/portfolio_item_04.jpg"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 project-item mix branding">
+                                  <div class="thumb">
+                                        <div class="image">
+                                            <a href="img/portfolio_big_item_05.jpg" data-lightbox="image-1"><img src="img/portfolio_item_05.jpg"></a>
+                                        </div>
+                                  </div>
+                                </div>
+                                <div class="col-md-6 col-sm-6 project-item mix graphic animation">
+                                    <div class="thumb">
+                                        <div class="image">
+                                            <a href="img/portfolio_big_item_06.jpg" data-lightbox="image-1"><img src="img/portfolio_item_06.jpg"></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+-->
+
+<section id="testimonial">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div id="owl-testimonials" class="owl-carousel owl-theme">
+                    <div class="item">
+                        <div class="testimonials-item">
+                            <div class="cc-profile-image"><a href="#"><img src="/clientlib/homepage/img/syedPic.jpeg" alt="Image"/></a></div>
+
+                            <h4>Syed Anas Ahmed</h4>
+                            <span>CEO</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!--  <div class="tabs-content" id="blog">
+     <div class="container">
+         <div class="row">
+             <div class="wrapper">
+                 <div class="col-md-4">
+                     <div class="section-heading">
+                         <h4>Our Blog Posts</h4>
+                         <div class="line-dec"></div>
+                         <p>Nam vulputate elementum nulla, sit amet congue ipsum malesuada pretium. Vivamus vel gravida quam.</p>
+                         <ul class="tabs clearfix" data-tabgroup="first-tab-group">
+                             <li><a href="#tab1" class="active">Nulla eget convallis augue</a></li>
+                             <li><a href="#tab2">Quisque ultricies maximus</a></li>
+                             <li><a href="#tab3">Sed vel elit et lorem</a></li>
+                             <li><a href="#tab4">Vivamus purus neque</a></li>
+                         </ul>
+                     </div>
+                 </div>
+                 <div class="col-md-8">
+                     <section id="first-tab-group" class="tabgroup">
+                         <div id="tab1">
+                             <img src="img/blog_item_01.jpg" alt="">
+                             <div class="text-content">
+                                 <h4>Nulla eget convallis augue</h4>
+                                 <span><a href="#">Digital Marketing</a> / <a href="#">Honey</a> / <a href="#">21 September 2020</a></span>
+                                 <p>Donec interdum scelerisque auctor. Nulla id lorem auctor, bibendum lectus elementum, porta felis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos.</p>
+                             </div>
+                         </div>
+                         <div id="tab2">
+                             <img src="img/blog_item_02.jpg" alt="">
+                             <div class="text-content">
+                                 <h4>Quisque ultricies maximus</h4>
+                                 <span><a href="#">Branding</a> / <a href="#">David</a> / <a href="#">24 August 2020</a></span>
+                                 <p>Etiam fringilla posuere pretium. Maecenas tempor pellentesque elit in dapibus. Curabitur viverra urna sem, ut sollicitudin sem congue vel. Donec fringilla augue in justo molestie fermentum quis ac mi.</p>
+                             </div>
+                         </div>
+                         <div id="tab3">
+                             <img src="img/blog_item_03.jpg" alt="">
+                             <div class="text-content">
+                                 <h4>Sed vel elit et lorem</h4>
+                                 <span><a href="#">Web Design</a> / <a href="#">William</a> / <a href="#">18 July 2020</a></span>
+                                 <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Fusce id ipsum porta, dictum sem sed, bibendum quam. Maecenas mattis risus eget orci rhoncus.</p>
+                             </div>
+                         </div>
+                         <div id="tab4">
+                             <img src="img/blog_item_04.jpg" alt="">
+                             <div class="text-content">
+                                 <h4>Vivamus purus neque</h4>
+                                 <span><a href="#">E-Commerce</a> / <a href="#">George</a> / <a href="#">14 July 2020</a></span>
+                                 <p>Aliquam erat volutpat. Nulla at nunc nec ante rutrum congue id in diam. Nulla at lectus non turpis placerat volutpat lacinia ut mi. Quisque ultricies maximus justo a blandit. Donec sit amet commodo arcu. Sed sit amet iaculis mi, vel fermentum nisi. Morbi dui enim, vestibulum non accumsan ac, tempor non nisl.</p>
+                             </div>
+                         </div>
+                     </section>
+                 </div>
+             </div>
+         </div>
+     </div>
+ </div>
+-->
+<div id="contact-us">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="section-heading">
+                    <h4>Contact Us</h4>
+                    <div class="line-dec"></div>
+                    <p>We welcome your feedbacks for this site, it is a deveoping  site so we need your help, post your queries and feedbacks here.<br>Thank you</p>
+                    <div class="pop-button">
+                        <h4>Send us a message</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col-md-offset-3">
+                <div class="pop">
+                    <span>X</span>
+                    <form id="contact" action="https://formspree.io/f/xnqoznwk" method="post">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <input name="name" type="text" autocomplete="off" class="form-control" id="name" placeholder="Your name..." required="">
+                                </fieldset>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <input name="_replyto" type="email" autocomplete="off" class="form-control" id="email" placeholder="Your email..." required="">
+                                </fieldset>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <textarea name="message" rows="6" autocomplete="off" class="form-control" id="message" placeholder="Your message..." required=""></textarea>
+                                </fieldset>
+                            </div>
+                            <div class="col-md-12">
+                                <fieldset>
+                                    <button type="submit" id="form-submit" class="btn" onclick="resetForm();">Send Message</button>
+                                </fieldset>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 col-sm-12">
+                <div class="logo">
+                    <a class="logo-ft scroll-top" href="#"><em>L</em>ichesspro</a>
+                    <p>Copyright &copy; 2020 lichesspro
+                        <br>Design: TemplateMo</p>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-12">
+                <div class="contact-info">
+                    <h4>Contact developers</h4>
+                    <ul>
+                        <li><em>Email</em>: muthu@lichesspro.com</li>
+                        <li><em>Email</em>: syed@lichesspro.com</li>
+                    </ul>
+                </div>
+            </div>
+            <!--                 <div class="col-md-2 col-sm-12">
+                                <div class="connect-us">
+                                    <h4>Get Social with us</h4>
+                                    <ul>
+                                        <li><a href="#"><i class="fa fa-twitter"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-facebook"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-google"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-rss"></i></a></li>
+                                        <li><a href="#"><i class="fa fa-dribbble"></i></a></li>
+                                    </ul>
+                                </div>
+                            </div> -->
+        </div>
+    </div>
+</footer>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>window.jQuery || document.write('<script src="/clientlib/homepage/js/vendor/jquery-1.11.2.min.js"><\/script>')</script>
+
+<script src="/clientlib/homepage/js/vendor/bootstrap.min.js"></script>
+
+<script src="/clientlib/homepage/js/plugins.js"></script>
+<script src="/clientlib/homepage/js/main.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        // navigation click actions
+        $('.scroll-link').on('click', function(event){
+            event.preventDefault();
+            var sectionID = $(this).attr("data-id");
+            scrollToID('#' + sectionID, 750);
+        });
+        // scroll to top action
+        $('.scroll-top').on('click', function(event) {
+            event.preventDefault();
+            $('html, body').animate({scrollTop:0}, 'slow');
+        });
+        // mobile nav toggle
+        $('#nav-toggle').on('click', function (event) {
+            event.preventDefault();
+            $('#main-nav').toggleClass("open");
+        });
+    });
+    // scroll function
+    function scrollToID(id, speed){
+        var offSet = 50;
+        var targetOffset = $(id).offset().top - offSet;
+        var mainNav = $('#main-nav');
+        $('html,body').animate({scrollTop:targetOffset}, speed);
+        if (mainNav.hasClass("open")) {
+            mainNav.css("height", "1px").removeClass("in").addClass("collapse");
+            mainNav.removeClass("open");
+        }
+    }
+    if (typeof console === "undefined") {
+        console = {
+            log: function() { }
+        };
+    }
+</script>
 </body>
 </html>
-
