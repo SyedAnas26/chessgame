@@ -372,15 +372,15 @@ function setPositions(gamePgnSoFar) {
     if (arr[arr.length - 1] === "0-1") {
         result = " 0-1";
         statusCalled = true;
-        alert("Match Over Player 2 Won (Black)");
+        alert("Match Over, Player 2 Won (Black)");
     } else if (arr[arr.length - 1] === "1-0") {
         result = " 1-0";
         statusCalled = true;
-        alert("Match Over Player 1 Won (White)");
+        alert("Match Over, Player 1 Won (White)");
     } else if (arr[arr.length - 1] === "1/2-1/2") {
         result = " 1/2-1/2";
         statusCalled = true;
-        alert("Match Over Drawn");
+        alert("Match Over, Draw");
     }
     moveNo = filtered.length;
     if (moveNo > 1) {
@@ -409,8 +409,9 @@ function setPositions(gamePgnSoFar) {
                 chessboard.enableMoveInput(inputHandler, COLOR.black);
             }
         }
-    }
+    }else {
     chessboard.disableMoveInput();
+    }
     addPgnDisplayToUi(gamePgnSoFar);
 }
 
@@ -699,9 +700,6 @@ webSocket.onmessage = function (event) {
                 return;
             }else if(data.content==='alive'){
                 alert("Your opponent is still here , continue your game !");
-                if(chess.turn()===playerColor){
-                    chessboard.enableMoveInput();
-                }
             }
 
             break;
