@@ -31,9 +31,11 @@ public class LoginServlet extends HttpServlet {
             response.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
+
             String name = null;
             int uniqueId = 0;
             boolean success = false;
+
             HttpSession session = request.getSession(true);
             String thisName = request.getParameter("user_id");
             String thisPwd = request.getParameter("password");
@@ -50,6 +52,7 @@ public class LoginServlet extends HttpServlet {
                     }
                     return null;
                 });
+
                 uniqueId = (int) DbConnector.get(query, res -> {
                     try {
                         if (res.next()) {

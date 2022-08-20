@@ -1,0 +1,168 @@
+<!DOCTYPE unspecified PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://lichesspro.com/favicon.ico">
+    <script type="text/javascript" src="../../clientlib/js/jquery.min-3.5.js"></script>
+    <script type="text/javascript" src="../../clientlib/js/jquery-ui.min.js"></script>
+    <style type="text/css">
+        html {
+            background-image: linear-gradient(rgba(255, 255, 255, .4), rgba(255, 255, 255, .4)), url('/img/c2-min.jpg');
+            position: static;
+            height: 100%;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+    </style>
+    <title>Waiting</title>
+    <script type="text/javascript">
+        var token;
+        var x = window.location.origin;
+        var uniqueId;
+        var url = location.href;
+        token = url.split('/')[4];
+        var gameId=url.split('/')[5];
+        var noOfMails=localStorage.getItem(""+token);
+        if(noOfMails===null){
+            noOfMails=0;
+        }
+        console.log("no Of Mails "+noOfMails);
+        var ws=x.replace('https://','wss://').replace('http://','ws://');
+        var challengeLink;
+
+
+        window.onload = function () {
+            document.getElementById("token").innerHTML = token;
+            challengeLink=x+"/invite/join?token="+token;
+            document.getElementById("link").innerHTML=challengeLink;
+            document.getElementById("linkHref").href=challengeLink;
+            $.ajax({
+                url: x + "/getUserId",
+                type: 'POST',
+                success: function (response) {
+                    var userId = response.user_id;
+                    var userName = response.user_name;
+                    uniqueId = response.unique_id;
+                    if (userId === 'null') {
+                        alert(' Login First ! ');
+                        location = '/loginpage/signin';
+                    }
+                    document.getElementById("goToHome").action = "/homepage/" + uniqueId;
+                }
+            });
+            var webSocketUrl=ws+'/socket/waiting/'+gameId+'/'+uniqueId;
+            var webSocket = new WebSocket(webSocketUrl);
+
+            webSocket.onmessage = function(event) {
+                var msg = JSON.parse(event.data);
+                if (msg.content === 'start') {
+                    $.ajax({
+                        url: x + "/joinGame",
+                        type: 'POST',
+                        data: {"tokenId": token, "uniqueId": uniqueId},
+                        success: function (response) {
+                            if (response.invalid === 'true') {
+                                alert("The token is invalid")
+                            } else {
+                                if (uniqueId === response.createdUser) {
+                                    playerColor = response.createdByPlayAs;
+                                } else if (response.createdByPlayAs === 'w') {
+                                    playerColor = 'b';
+                                } else if (response.createdByPlayAs === 'b') {
+                                    playerColor = 'w';
+                                }
+                                if (response.challengeType === '1') {
+                                    baseTime = 15 * 60;
+                                    extratime = 0;
+                                } else if (response.challengeType === '2') {
+                                    baseTime = 0;
+                                    extratime = 0;
+                                } else if (response.challengeType === '3') {
+                                    baseTime = 2 * 60;
+                                    extratime = 10;
+                                } else if (response.challengeType === '4') {
+                                    baseTime = 10 * 60;
+                                    extratime = 30;
+                                } else if (response.challengeType.startsWith("5")) {
+                                    baseTime = response.challengeType.split('&')[1];
+                                    extratime = response.challengeType.split('&')[2];
+                                }
+                                localStorage["baseTime"]=baseTime;
+                                localStorage["extraTime"]=extratime;
+                                localStorage["playerColor"]=playerColor;
+                                location = "/vs?mode=multi&id=" + uniqueId + "&gameid=" + response.gameId + "&token=" + token;
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+        function copyToClipboard(element) {
+            var $temp = $("<input>");
+            $("body").append($temp);
+            $temp.val($(element).text()).select();
+            document.execCommand("copy");
+            $temp.remove();
+        }
+
+        function sendMail() {
+            document.getElementById("mailStatus").innerHTML="Sending...";
+            noOfMails++;
+            localStorage.setItem(""+token,noOfMails);
+            if (noOfMails < 3) {
+                var mailTo = $("#emailId").val();
+                $.ajax({
+                    url: x + "/sendMail",
+                    type: 'POST',
+                    data: {"mailTo": mailTo, "challengeLink": challengeLink, "uniqueId": uniqueId},
+                    success: function (response) {
+                        if (response.sendStatus === 'sent') {
+                            alert('Mail Invitation Sent');
+                            document.getElementById("mailStatus").innerHTML="Sent !";
+                        } else if (response.sendStatus === 'failed') {
+                            alert('Invalid Email');
+                            document.getElementById("mailStatus").innerHTML="Invalid Mail ID !";
+                            noOfMails--;
+                            localStorage.setItem(""+token,noOfMails);
+                        }
+                    }
+                });
+            }else
+            {
+                alert(' Mail send Limit Exceeded !');
+                document.getElementById("mailStatus").innerHTML="Limit Exceeded !";
+
+            }
+        }
+    </script>
+</head>
+<body>
+<div align="center" style="margin-top:150px">
+    <h3>Share this token to your friend to join</h3>
+    <br>
+    <br>
+    <span style="font-size: 30px">Your Challenge Token:   <span style="font-size: 30px" id="token">Creating your Token ... </span></span><input
+        type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#token')">
+    <br>
+    <br>
+    <h3>Or Share This link to ur Opponent</h3>
+    <br>
+    <br>
+    <span style="font-size: 30px">Your Challenge Link : <a id="linkHref"><span style="font-size: 30px" id="link">Creating ... </span></a></span><input type="button" value="Copy" style="font-size: 20px" onclick="copyToClipboard('#link')">
+    <br>
+    <br>
+    <span style="font-size: 30px">Send Mail Invitation to your friend : </span><input type="text" style="font-size: 30px" name="emailId" id="emailId"><input type="button" value="Send" style="font-size: 20px" onclick="sendMail()">
+    <br><span style="font-size: 25px" id="mailStatus"></span>
+    <p style="font-size: 20px" >Waiting For your Opponent to Join .. <br>You will be redirected Automatically</p>
+</div>
+<br>
+<form id="goToHome" method="post" align="center">
+    <input type="submit" style="font-size:16px;" id="home" onclick="askForDraw('leave')"
+           value="Go Back to Home Page"/>
+</form>
+</body>
+</html>
+

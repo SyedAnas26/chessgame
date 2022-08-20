@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one or more
+  contributor license agreements.  See the NOTICE file distributed with
+  this work for additional information regarding copyright ownership.
+  The ASF licenses this file to You under the Apache License, Version 2.0
+  (the "License"); you may not use this file except in compliance with
+  the License.  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         version="2.5">
+
+    <display-name>Chess Application</display-name>
+    <description>
+       Web based chess app.
+    </description>
+
+<!--    <welcome-file-list>-->
+<!--        <welcome-file>index.html</welcome-file>-->
+<!--    </welcome-file-list>-->
+
+    <servlet>
+        <servlet-name>LoginPage</servlet-name>
+        <jsp-file>/html_Pages/UserAccountPages/LoginPage.html</jsp-file>
+    </servlet>
+
+    <servlet>
+        <servlet-name>ChessApplication</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.GameServlets.PgnGameServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Fileupload</servlet-name>
+   <servlet-class>WebServerletLogic.Servlets.GameServlets.FileUploadServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.UserAccountServlets.LoginServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.UserAccountServlets.RegisterServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ChessManager</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.GameServlets.ChessServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.UserAccountServlets.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AiConverter</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.GameServlets.SinglePlayerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>Multiplayer</servlet-name>
+        <servlet-class>WebServerletLogic.Servlets.GameServlets.MultiPlayerServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>PgnGame</servlet-name>
+        <jsp-file>/html_Pages/ChessBoardPages/WatchPgnChess.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/FileUpload.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>FuSuccess</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/FileUploadSuccess.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterPage</servlet-name>
+        <jsp-file>/html_Pages/UserAccountPages/Register.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>Difficulty</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/Difficulty.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>PlayChess</servlet-name>
+        <jsp-file>/html_Pages/ChessBoardPages/PlayChess.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>HomePage</servlet-name>
+        <jsp-file>/html_Pages/UserAccountPages/Homepage.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>History</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/GamesHistory.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>LoginError</servlet-name>
+        <jsp-file>/html_Pages/UserAccountPages/UserNotFound.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>waiting</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/WaitingForOpponent.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>UseToken</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/UseToken.html</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>InvitePage</servlet-name>
+        <jsp-file>/html_Pages/ChessConfigurationPages/inviteRedirect.html</jsp-file>
+    </servlet>
+    <!-- Define the Manager Servlet Mapping -->
+
+   <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/nextMove</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Fileupload</servlet-name>
+        <url-pattern>/upload</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Fileupload</servlet-name>
+        <url-pattern>/setFileName</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PgnGame</servlet-name>
+        <url-pattern>/PlayPgn/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/setGame</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessApplication</servlet-name>
+        <url-pattern>/getHistory</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>History</servlet-name>
+        <url-pattern>/watchHistory/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoadFileUpload</servlet-name>
+        <url-pattern>/loadpgn</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/loginpage/LoginServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterPage</servlet-name>
+        <url-pattern>/Register</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterServlet</servlet-name>
+        <url-pattern>/loginpage/RegisterServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginPage</servlet-name>
+        <url-pattern>/loginpage/signin</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginPage</servlet-name>
+        <url-pattern>/loginpage/signup</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/logout</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>HomePage</servlet-name>
+        <url-pattern>/homepage/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>HomePage</servlet-name>
+        <url-pattern></url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>Difficulty</servlet-name>
+        <url-pattern>/difficulty/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>PlayChess</servlet-name>
+        <url-pattern>/vs/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>waiting</servlet-name>
+        <url-pattern>/waitingforopponent/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessManager</servlet-name>
+        <url-pattern>/storeMove</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessManager</servlet-name>
+        <url-pattern>/analyseBoard</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/aiMoveinPgn</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessManager</servlet-name>
+        <url-pattern>/getGamePosition</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ChessManager</servlet-name>
+        <url-pattern>/gamestatus</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/aiMove</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AiConverter</servlet-name>
+        <url-pattern>/diff</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginServlet</servlet-name>
+        <url-pattern>/getUserId</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LoginError</servlet-name>
+        <url-pattern>/usernotfound</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>FuSuccess</servlet-name>
+        <url-pattern>/fileuploadsuccess/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Multiplayer</servlet-name>
+        <url-pattern>/createChallenge</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Multiplayer</servlet-name>
+        <url-pattern>/joinGame</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>Multiplayer</servlet-name>
+        <url-pattern>/sendMail</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>InvitePage</servlet-name>
+        <url-pattern>/invite/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>UseToken</servlet-name>
+        <url-pattern>/usetoken/*</url-pattern>
+    </servlet-mapping>
+</web-app>

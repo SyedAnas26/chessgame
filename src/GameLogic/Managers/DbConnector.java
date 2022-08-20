@@ -22,6 +22,8 @@ public class DbConnector
 				con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "");
 				break;
 				case UNIX:
+					con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "pass@123");
+					break;
 				case WINDOWS:
 					con = DriverManager.getConnection("jdbc:mysql://localhost:3306/chessgame_database?useSSL=false", "root", "admin123");
 					break;

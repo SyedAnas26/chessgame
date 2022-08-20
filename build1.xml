@@ -70,11 +70,11 @@
     -->
 
     <property name="app.name" value="chessgame"/>
-    <property name="deploy.home" value="/usr/local/opt/tomcat/libexec/webapps/ROOT"/>
-    <property name="catalina.home" value="/usr/local/opt/tomcat/libexec"/>
-    <property name="dist.home" value="/Users/muthu-1987/git/chessgame"/>
+    <property name="deploy.home" value="/home/syed/GitHub/chessgame/out/dep"/>
+    <property name="catalina.home" value="/opt/tomcat"/>
+    <property name="dist.home" value="/home/syed/GitHub/chessgame"/>
     <property name="dist.src" value="chess.jar"/>
-    <property name="dist.war" value="chess.war"/>
+    <property name="dist.war" value="ROOT.war"/>
 
 
     <!-- The "prepare" target is used to construct the deployment home
@@ -195,7 +195,7 @@
 
     <target name="dist" depends="prepare,compile">
         <jar jarfile="${dist.home}/${dist.src}"
-             basedir="."/>
+             basedir="${deploy.home}"/>
         <jar jarfile="${dist.home}/${dist.war}"
              basedir="${deploy.home}"/>
     </target>

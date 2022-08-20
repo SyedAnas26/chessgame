@@ -42,5 +42,6 @@
     <orderEntry type="library" name="javax.websocket-api-1.1" level="project" />
     <orderEntry type="library" name="activation-1.1" level="project" />
     <orderEntry type="library" name="java-security-2.7.7" level="project" />
+    <orderEntry type="library" name="Java EE 6" level="project" />
   </component>
 </module>

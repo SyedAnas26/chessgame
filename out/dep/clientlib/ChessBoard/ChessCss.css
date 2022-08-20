@@ -1,0 +1,532 @@
+.spanClass {
+    color: #00E3FF;
+}
+
+#scoreBox {
+    width: 40px;
+    height: 450px;
+    float: left;
+    background: white;
+    box-sizing: border-box;
+    border: 2px solid black;
+}
+
+
+#blackScore {
+    height: 50%;
+    float: top;
+}
+
+#whiteScore {
+    height: 50%;
+    float: bottom;
+}
+
+#whiteColor {
+    height: 50%;
+    background-color: #FFFFFF;
+}
+
+#blackColor {
+    height: 50%;
+    background-color: #000000;
+}
+
+
+li:hover {
+    cursor: pointer;
+}
+
+a {
+    color: black;
+}
+
+a:hover {
+    cursor: pointer;
+}
+
+#board1 {
+    display: block;
+}
+
+.active a {
+    color: #134B7C;
+    padding: 3px;
+    background-color: lightgreen;
+}
+
+#black_promotion_pieces {
+    display: none;
+}
+
+#white_promotion_pieces {
+    display: none;
+}
+
+#whiteMove {
+    float: left;
+    margin: 0 10px;
+}
+
+#blackMove {
+    float: left;
+    margin: 0 10px;
+}
+
+#pgnBox {
+    margin-left: 10px;
+    background-color: transparent;
+    width: 280px;
+    height: 700px;
+    padding-top: 10px;
+    overflow: auto;
+    float: left;
+}
+
+#showPgn {
+    background-color: transparent;
+    width: 260px;
+    height: 445px;
+    border: 2px solid black;
+    font-size: 20px;
+    padding-left: 0px;
+    padding-bottom: 15px;
+    padding-right: 0px;
+    overflow: auto;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #4c4c6a;
+    border-radius: 2px;
+}
+
+.chatbox {
+    border-radius: 15px;
+    width: 300px;
+    height: 400px;
+    max-height: 400px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.chat-window {
+
+    flex: auto;
+    max-height: calc(100% - 60px);
+    background: #2f323b;
+    overflow: auto;
+}
+
+.chat-input {
+    flex: 0 0 auto;
+    height: 60px;
+    background: #40434e;
+    border-top: 1px solid #2671ff;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.chat-input input {
+    height: 59px;
+    line-height: 60px;
+    outline: 0 none;
+    border: none;
+    width: calc(100% - 60px);
+    color: white;
+    text-indent: 10px;
+    font-size: 12pt;
+    padding: 0;
+    background: #40434e;
+}
+
+.chat-input button {
+    float: right;
+    outline: 0 none;
+    border: none;
+    background: rgba(255, 255, 255, .25);
+    height: 40px;
+    width: 40px;
+    border-radius: 50%;
+    padding: 2px 0 0 0;
+    margin: 10px;
+    transition: all 0.15s ease-in-out;
+}
+
+.chat-input input[good] + button {
+    box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24);
+    background: #2671ff;
+}
+
+.chat-input input[good] + button:hover {
+    box-shadow: 0 8px 17px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.chat-input input[good] + button path {
+    fill: white;
+}
+
+.msg-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin: 0 0 10px 0;
+    padding: 0;
+}
+
+.msg-box {
+    display: flex;
+    background: #5b5e6c;
+    padding: 10px 10px 0 10px;
+    border-radius: 0 6px 6px 0;
+    max-width: 80%;
+    width: auto;
+    float: left;
+    box-shadow: 0 0 2px rgba(0, 0, 0, .12), 0 2px 4px rgba(0, 0, 0, .24);
+}
+
+.user-img {
+    display: inline-block;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    background: #2671ff;
+    margin: 0 10px 10px 0;
+}
+
+.flr {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 50px);
+}
+
+.messages {
+    flex: 1 0 auto;
+}
+
+.msg {
+    display: inline-block;
+    font-size: 15pt;
+    line-height: 13pt;
+    color: rgba(255, 255, 255, .7);
+    margin: 0 0 4px 0;
+}
+
+.msg:first-of-type {
+    margin-top: 8px;
+}
+
+.timestamp {
+    color: rgba(0, 0, 0, .38);
+    font-size: 8pt;
+    margin-bottom: 10px;
+}
+
+.username {
+    margin-right: 3px;
+}
+
+.posttime {
+    margin-left: 3px;
+}
+
+.msg-self .msg-box {
+    border-radius: 6px 0 0 6px;
+    background: #2671ff;
+    float: right;
+}
+
+.msg-self .user-img {
+    margin: 0 0 10px 10px;
+}
+
+.msg-self .msg {
+    text-align: right;
+}
+
+.msg-self .timestamp {
+    text-align: right;
+}
+
+#GameBox {
+    margin-left: 5px;
+    width: 550px;
+    float: left;
+    padding-right: 10px;
+}
+
+#videoElements {
+    margin-top: 20px;
+    width: 450px;
+    border: 4px solid black;
+    z-index: 1;
+    position: absolute;
+    display: none;
+}
+
+#localVideo {
+    width: 150px;
+    position: absolute;
+    margin-left: 150px;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+    -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+#remoteVideo {
+    width: 430px;
+    margin-left: 10px;
+    transform: rotateY(180deg);
+    -webkit-transform: rotateY(180deg); /* Safari and Chrome */
+    -moz-transform: rotateY(180deg); /* Firefox */
+}
+
+#timerBoxes {
+    height: 60px;
+    float: left;
+}
+
+#player1Time {
+    margin-left: 350px;
+}
+
+.controls {
+    float: left;
+    font-size: 45px;
+    cursor: pointer;
+    padding: 5px;
+}
+
+@media screen and (max-width: 600px) {
+    #GameBox {
+        width: 400px;
+    }
+
+    #scoreBox {
+        width: 30px;
+        height: 330px;
+    }
+
+    #videoElements {
+        width: 330px;
+        height: 800px;
+    }
+
+    #remoteVideo {
+        width: 310px;
+    }
+
+    .controls{
+        font-size: 35px;
+    }
+
+    #startAgain{
+     font-size: 30px;
+    }
+
+    #pgnBox {
+        width: 70%;
+    }
+
+    #showPgn {
+        width: 90%;
+    }
+
+    #player1Time {
+        margin-left: 70px;
+    }
+
+    .bot th {
+        border: 10px solid white;
+        border-color: transparent;
+    }
+
+}
+
+#callOption {
+    background: #797B7D;
+    width: 300px;
+    height: 40px;
+}
+
+th {
+    border: 27px solid white;
+    border-color: transparent;
+    height: 100px;
+}
+
+
+.bot {
+    width: 100%;
+    float: left;
+}
+
+#smallBoardBox {
+    background-color: transparent;
+    width: 300px;
+    height: 400px;
+    padding-top: 120px;
+    overflow: auto;
+}
+
+#timerBox {
+    background-color: transparent;
+    width: 500px;
+    height: 700px;
+    overflow: auto;
+    padding-top: 20px; /*30*/
+    float: left;
+}
+
+.time {
+    margin-left: 5px;
+    border-radius: 15px;
+    width: 120px;
+    height: 120px;
+    background-color: #303B3B;
+    padding: 5px;
+    font-size: 28px;
+    color: #EEF9F9;
+    border: 1px solid #5DE1A4;
+}
+
+.center-con {
+    display: flex;
+    height: 20px;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: center;
+    margin-left: 20px;
+    float: left;
+}
+
+
+.round {
+    position: absolute;
+    border: 2px solid #000000;
+    width: 40px;
+    height: 40px;
+    border-radius: 100%;
+}
+
+/* ---- */
+.speaker {
+    height: 40px;
+    width: 40px;
+    position: absolute;
+    overflow: hidden;
+    margin: 5px;
+}
+
+.speaker span {
+    display: block;
+    width: 7px;
+    height: 7px;
+    background: #000000;
+    margin: 12px 0 0 1px;
+}
+
+.speaker span:after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-color: transparent #000000 transparent transparent;
+    border-width: 10px 12px 10px 15px;
+    left: -13px;
+    top: 5px;
+}
+
+.speaker span:before {
+    transform: rotate(45deg);
+    border-radius: 0 50px 0 0;
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    border-style: double;
+    border-color: #000000;
+    border-width: 7px 7px 0 0;
+    left: 18px;
+    top: 9px;
+    transition: all 0.2s ease-out;
+}
+
+
+.speaker.on .mute {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.speaker.on span:before {
+    transform: scale(0.8) translate(-17px, 0) rotate(42deg);
+}
+
+/*.speaker.on:hover .mute {transform: rotate(180deg); }*/
+
+.mute {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    opacity: 0;
+    left: 15px;
+    top: 7px;
+    transform: scale(0.3);
+    transition: all 0.2s ease-out;
+
+}
+
+.mute:before, .mute:after {
+    position: absolute;
+    margin-left: 7px;
+    content: ' ';
+    height: 15px;
+    width: 2px;
+    background-color: #000000;
+}
+
+.on .mute:before, .on .mute:after {
+    position: absolute;
+    margin-left: 7px;
+    content: ' ';
+    height: 15px;
+    width: 2px;
+    background-color: #000000;
+}
+
+.mute:before {
+    transform: rotate(45deg);
+}
+
+.mute:after {
+    transform: rotate(-45deg);
+}
+
+
+/* ----- */
+footer {
+    position: fixed;
+    bottom: 20px;
+    font-family: Arial, Helvetica;
+    font-size: 12px;
+    color: #fff;
+}
+
+footer img {
+    margin-left: 20px;
+}
+
+footer span {
+    position: relative;
+    bottom: 4px;
+}
+
+
+
+
